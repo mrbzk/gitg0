@@ -197,7 +197,7 @@ def rounded_top_path(x, y, w, h, r):
     return f"M{x},{y+h} L{x},{y+r} Q{x},{y} {x+r},{y} L{x+w-r},{y} Q{x+w},{y} {x+w},{y+r} L{x+w},{y+h} Z"
 
 
-def bar_chart(periods_labeled, series, height=240, width=740):
+def bar_chart(periods_labeled, series, height=240, width=740, scrollable=False):
     if not periods_labeled:
         return "<p class='empty'>No data yet.</p>"
     pad_l, pad_r, pad_t, pad_b = 44, 12, 16, 32
@@ -243,8 +243,10 @@ def bar_chart(periods_labeled, series, height=240, width=740):
     baseline = f"<line x1='{pad_l}' y1='{pad_t+plot_h}' x2='{width-pad_r}' y2='{pad_t+plot_h}' class='baseline'/>"
     legend = "".join(f"<span class='legend-item'><i style='background:var(--series-{color})'></i>{escape(slabel)}</span>" for _, slabel, color in series)
 
+    wrap_class = "chart-wrap wide" if scrollable else "chart-wrap"
+    svg_style = f" style='width:{width}px'" if scrollable else ""
     return (
-        f"<div class='chart-wrap'><svg viewBox='0 0 {width} {height}' class='chart' role='img' aria-label='Weekly activity'>"
+        f"<div class='{wrap_class}'><svg viewBox='0 0 {width} {height}' class='chart'{svg_style} role='img' aria-label='Activity'>"
         f"{''.join(grid)}{baseline}{''.join(bars)}{''.join(xlabels)}</svg>"
         f"<div class='legend'>{legend}</div></div>"
     )
@@ -364,6 +366,33 @@ def kakiyo_daily_table(rows):
     return f"<div class='table-wrap'><table><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
 
 
+def granularity_section(weekly_chart, weekly_table, monthly_chart, monthly_table, daily_chart, daily_table, note=""):
+    return f"""
+    <div class="granularity-group">
+      <div class="granularity-switch">
+        <label>View: <select data-role="granularity-select">
+          <option value="weekly" selected>Weekly totals</option>
+          <option value="monthly">Monthly totals</option>
+          <option value="daily">Daily activity</option>
+        </select></label>
+      </div>
+      {note}
+      <div class="granularity-panel active" data-granularity="weekly">
+        {weekly_chart}
+        {weekly_table}
+      </div>
+      <div class="granularity-panel" data-granularity="monthly">
+        {monthly_chart}
+        {monthly_table}
+      </div>
+      <div class="granularity-panel" data-granularity="daily">
+        {daily_chart}
+        {daily_table}
+      </div>
+    </div>
+    """
+
+
 # Metric key can be a plain daily-row field name, or a 2-item list of field names to sum
 # together (used by Overview to merge Instantly + Kakiyo into one number — see the footnote
 # that ships next to it).
@@ -472,6 +501,7 @@ section { background: var(--surface); border: 1px solid var(--border); border-ra
 .delta.flat { color: var(--ink-mut); font-weight: 400; }
 .note { font-size: 0.85rem; color: var(--ink-2); margin: 8px 0 0; }
 .chart-wrap { margin-top: 16px; }
+.chart-wrap.wide { overflow-x: auto; }
 .chart { width: 100%; height: auto; }
 .gridline { stroke: var(--grid); stroke-width: 1; }
 .baseline { stroke: var(--baseline); stroke-width: 1; }
@@ -575,6 +605,12 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
 .tabs button.active { color: var(--ink-1); border-bottom-color: var(--ink-1); }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
+
+.granularity-switch { margin: 12px 0 4px; font-size: 0.85rem; color: var(--ink-2); }
+.granularity-switch select { font: inherit; font-size: 0.85rem; font-weight: 600; background: var(--page);
+  color: var(--ink-1); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+.granularity-panel { display: none; }
+.granularity-panel.active { display: block; }
 """
 
 
@@ -810,6 +846,21 @@ TABS_JS = """
 })();
 """
 
+GRANULARITY_JS = """
+(function () {
+  document.querySelectorAll('.granularity-group').forEach(function (group) {
+    var select = group.querySelector('[data-role="granularity-select"]');
+    var panels = group.querySelectorAll('.granularity-panel');
+    if (!select) return;
+    function activate(val) {
+      panels.forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-granularity') === val); });
+    }
+    select.addEventListener('change', function () { activate(select.value); });
+    activate(select.value);
+  });
+})();
+"""
+
 INFO_JS = """
 (function () {
   function closeAll() {
@@ -952,15 +1003,33 @@ def main():
     )
 
     weekly_chart_periods = [(week_label(k), p) for k, p in weekly_sorted]
+    monthly_chart_periods = [(month_label(k), p) for k, p in monthly_sorted]
+    daily_chart_periods = [
+        (r["date"], {
+            "sent": r["sent"], "opens": r["opens"], "interested": r["interested"],
+            "conn_sent": r["conn_sent"] or 0, "conn_accepted": r["conn_accepted"] or 0,
+            "completing_goal": r["completing_goal"] or 0,
+        })
+        for r in daily_rows
+    ]
+    daily_chart_width = max(740, len(daily_chart_periods) * 50 + 60)
+
     instantly_weekly_table = totals_table(weekly_sorted, INSTANTLY_PERIOD_COLS, lambda k: week_label(k))
     kakiyo_weekly_table = totals_table(weekly_sorted, KAKIYO_PERIOD_COLS, lambda k: week_label(k))
     instantly_monthly_table = totals_table(monthly_sorted, INSTANTLY_PERIOD_COLS, lambda k: month_label(k))
     kakiyo_monthly_table = totals_table(monthly_sorted, KAKIYO_PERIOD_COLS, lambda k: month_label(k))
 
     instantly_chart = bar_chart(weekly_chart_periods, INSTANTLY_WEEKLY_METRICS)
-    kakiyo_chart = bar_chart(weekly_chart_periods, KAKIYO_WEEKLY_METRICS) if kakiyo_has_history else (
-        "<p class='empty'>Not enough Kakiyo snapshots yet to chart week-over-week change — need at least 2.</p>"
-    )
+    instantly_chart_monthly = bar_chart(monthly_chart_periods, INSTANTLY_WEEKLY_METRICS)
+    instantly_chart_daily = bar_chart(daily_chart_periods, INSTANTLY_WEEKLY_METRICS, width=daily_chart_width, scrollable=True)
+
+    if kakiyo_has_history:
+        kakiyo_chart = bar_chart(weekly_chart_periods, KAKIYO_WEEKLY_METRICS)
+        kakiyo_chart_monthly = bar_chart(monthly_chart_periods, KAKIYO_WEEKLY_METRICS)
+        kakiyo_chart_daily = bar_chart(daily_chart_periods, KAKIYO_WEEKLY_METRICS, width=daily_chart_width, scrollable=True)
+    else:
+        no_history_msg = "<p class='empty'>Not enough Kakiyo snapshots yet to chart change over time — need at least 2.</p>"
+        kakiyo_chart = kakiyo_chart_monthly = kakiyo_chart_daily = no_history_msg
 
     instantly_daily = instantly_daily_table(daily_rows)
     kakiyo_daily = kakiyo_daily_table(daily_rows)
@@ -1006,9 +1075,21 @@ def main():
         "dated snapshot of those totals, and this dashboard works out day/week/month activity by comparing each "
         "snapshot to the one before it. The 2026-07-30 baseline came from the team's existing tracking spreadsheet; "
         "everything after that is pulled live. Because there's no earlier snapshot to compare that first one against, "
-        "its whole running total (80 connections sent, 15 accepted, 1 qualified) is counted as that week's Kakiyo "
-        "activity in the Weekly and Monthly totals below. Weeks/months before snapshot tracking began show 0 for "
-        "Kakiyo columns because no snapshot existed yet, not because activity was zero.</p>"
+        "its whole running total (80 connections sent, 15 accepted, 1 qualified) shows up as a single day's/week's "
+        "activity on 2026-07-30 below, whichever view you're looking at. Periods before snapshot tracking began "
+        "show 0 for Kakiyo columns because no snapshot existed yet, not because activity was zero.</p>"
+    )
+
+    instantly_granularity = granularity_section(
+        instantly_chart, instantly_weekly_table,
+        instantly_chart_monthly, instantly_monthly_table,
+        instantly_chart_daily, instantly_daily,
+    )
+    kakiyo_granularity = granularity_section(
+        kakiyo_chart, kakiyo_weekly_table,
+        kakiyo_chart_monthly, kakiyo_monthly_table,
+        kakiyo_chart_daily, kakiyo_daily,
+        note=kakiyo_note,
     )
 
     html_out = f"""<!doctype html>
@@ -1054,19 +1135,8 @@ def main():
     </section>
 
     <section>
-      <h2>Weekly totals {info_icon("Every week of loaded data, Monday to Sunday, charted and tabled side by side. This is a full history view and isn't affected by the date picker above.")}</h2>
-      {instantly_chart}
-      {instantly_weekly_table}
-    </section>
-
-    <section>
-      <h2>Monthly totals {info_icon("The same weekly numbers rolled up by calendar month.")}</h2>
-      {instantly_monthly_table}
-    </section>
-
-    <section>
-      <h2>Daily activity {info_icon("The raw day-by-day numbers everything else on this page is built from.")}</h2>
-      {instantly_daily}
+      <h2>Activity over time {info_icon("Every day, week, or month of loaded data, charted and tabled — pick which one with the dropdown below. This is a full history view and isn't affected by the date picker above.")}</h2>
+      {instantly_granularity}
     </section>
   </div>
 
@@ -1087,20 +1157,8 @@ def main():
     </section>
 
     <section>
-      <h2>Weekly totals {info_icon("Every week of loaded data, Monday to Sunday, charted and tabled side by side. Reconstructed from daily snapshots of Kakiyo's running totals, not a native history feed — see the note below. Not affected by the date picker above.")}</h2>
-      {kakiyo_chart}
-      {kakiyo_note}
-      {kakiyo_weekly_table}
-    </section>
-
-    <section>
-      <h2>Monthly totals {info_icon("The same weekly numbers rolled up by calendar month.")}</h2>
-      {kakiyo_monthly_table}
-    </section>
-
-    <section>
-      <h2>Daily activity {info_icon("The raw day-by-day numbers everything else on this page is built from — reconstructed from snapshot diffs, so days between refreshes show N/A rather than a true daily figure.")}</h2>
-      {kakiyo_daily}
+      <h2>Activity over time {info_icon("Every day, week, or month of loaded data, charted and tabled — pick which one with the dropdown below. Reconstructed from daily snapshots of Kakiyo's running totals, not a native history feed — see the note below. Not affected by the date picker above.")}</h2>
+      {kakiyo_granularity}
     </section>
   </div>
 
@@ -1110,6 +1168,7 @@ def main():
 <script id="daily-data" type="application/json">{daily_rows_json}</script>
 <script>{COMPARE_JS}</script>
 <script>{TABS_JS}</script>
+<script>{GRANULARITY_JS}</script>
 <script>{INFO_JS}</script>
 <script>{PAGINATION_JS}</script>
 </body>
