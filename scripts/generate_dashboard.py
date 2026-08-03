@@ -350,24 +350,6 @@ def kakiyo_daily_table(rows):
     return f"<div class='table-wrap'><table><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
 
 
-def kakiyo_raw_table(snaps, changes):
-    fields = [("prospects", "Prospects"), ("invitationsSent", "Conn. sent"), ("invitationsAccepted", "Conn. accepted"),
-              ("messagesSent", "Messages sent"), ("prospectsAnswers", "Replies"), ("qualified", "Qualified")]
-    head = "".join(f"<th>Cumulative {h}</th>" for _, h in fields) + "".join(f"<th>Δ {h}</th>" for _, h in fields)
-    rows = []
-    for snap in snaps:
-        c = changes[snap["date"]]
-        t = c["totals"]
-        cum_cells = "".join(f"<td>{fmt_or_na(t.get(f))}</td>" for f, _ in fields)
-        if c["baseline"]:
-            delta_cells = f"<td colspan='{len(fields)}' class='mut'>Baseline (first snapshot)</td>"
-        else:
-            delta_cells = "".join(f"<td>{fmt_or_na(c.get(f))}</td>" for f, _ in fields)
-        src = f" <span class='pill'>{escape(snap['source'])}</span>" if snap.get("source") else ""
-        rows.append(f"<tr><td class='rowhead'>{snap['date']}{src}</td>{cum_cells}{delta_cells}</tr>")
-    return f"<div class='table-wrap'><table><thead><tr><th>Snapshot date</th>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
-
-
 INSTANTLY_COMPARE_METRICS = [["sent", "Sends", False], ["opens", "Opens", False], ["openRate", "Open rate", True], ["interested", "Interested", False]]
 KAKIYO_COMPARE_METRICS = [["connSent", "Connections sent", False], ["connAccepted", "Connections accepted", False], ["completingGoal", "# Completing goal", False]]
 
@@ -729,7 +711,6 @@ def main():
 
     instantly_daily = instantly_daily_table(daily_rows)
     kakiyo_daily = kakiyo_daily_table(daily_rows)
-    kakiyo_raw = kakiyo_raw_table(kakiyo_snaps, kakiyo_changes) if kakiyo_snaps else "<p class='empty'>No Kakiyo snapshots recorded yet.</p>"
 
     funnel = load_funnel()
     if funnel:
@@ -859,11 +840,6 @@ def main():
     <section>
       <h2>Daily activity</h2>
       {kakiyo_daily}
-    </section>
-
-    <section>
-      <h2>Snapshots (raw)</h2>
-      {kakiyo_raw}
     </section>
   </div>
 

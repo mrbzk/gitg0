@@ -12,7 +12,7 @@ together), then an **Instantly** / **Kakiyo** tab switcher. Each tab is
 scoped to just that platform: its own **This week vs. prior week** KPIs, its
 own **Compare date ranges** tool, then **Funnel** (a waterfall chart of that
 platform's pipeline stages), **Weekly totals**, **Monthly totals**, and
-**Daily activity** — plus Kakiyo's raw snapshot history.
+**Daily activity**.
 
 ### Funnels
 
