@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outreach Activity Dashboard</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--page); color: var(--ink-1);
+}
+.viz-root {
+  --page: #f9f9f7; --surface: #fcfcfb; --ink-1:#0b0b0b; --ink-2:#52514e; --ink-mut:#898781;
+  --grid:#e1e0d9; --baseline:#c3c2b7; --border: rgba(11,11,11,0.10);
+  --good: #006300; --bad: #d03b3b;
+  --series-blue: #2a78d6; --series-orange: #eb6834; --series-aqua: #1baf7a;
+  --series-yellow: #eda100; --series-violet: #4a3aa7; --series-red: #e34948;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .viz-root {
+    --page: #0d0d0d; --surface: #1a1a19; --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-mut:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border: rgba(255,255,255,0.10);
+    --good: #0ca30c; --bad: #d03b3b;
+    --series-blue: #3987e5; --series-orange: #d95926; --series-aqua: #199e70;
+    --series-yellow: #c98500; --series-violet: #9085e9; --series-red: #e66767;
+  }
+}
+:root[data-theme="dark"] .viz-root {
+  --page: #0d0d0d; --surface: #1a1a19; --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-mut:#898781;
+  --grid:#2c2c2a; --baseline:#383835; --border: rgba(255,255,255,0.10);
+  --good: #0ca30c; --bad: #d03b3b;
+  --series-blue: #3987e5; --series-orange: #d95926; --series-aqua: #199e70;
+  --series-yellow: #c98500; --series-violet: #9085e9; --series-red: #e66767;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding: 32px 20px 80px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; }
+.sub { color: var(--ink-2); margin: 0 0 32px; font-size: 0.95rem; }
+h2 { font-size: 1.15rem; margin: 0 0 4px; display:flex; align-items:center; gap:8px; }
+h2 .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; margin-bottom: 24px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 16px 0; }
+.tile { padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; }
+.tile-label { font-size: 0.8rem; color: var(--ink-mut); margin-bottom: 6px; }
+.tile-value { font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.tile-sub { font-size: 0.78rem; color: var(--ink-2); margin-top: 4px; }
+.delta { font-weight: 600; }
+.delta.up { color: var(--good); }
+.delta.down { color: var(--bad); }
+.delta.flat { color: var(--ink-mut); font-weight: 400; }
+.note { font-size: 0.85rem; color: var(--ink-2); margin: 8px 0 0; }
+.chart-wrap { margin-top: 16px; }
+.chart { width: 100%; height: auto; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.baseline { stroke: var(--baseline); stroke-width: 1; }
+.axis-label { fill: var(--ink-mut); font-size: 11px; }
+.bar { transition: opacity .1s; }
+.bar:hover { opacity: 0.8; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 0.8rem; color: var(--ink-2); }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.legend-item i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.table-wrap { overflow-x: auto; margin-top: 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { color: var(--ink-mut); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .02em; }
+.rowhead { font-weight: 600; }
+.pill { display: inline-block; margin-left: 8px; font-size: 0.68rem; font-weight: 500; color: var(--ink-mut);
+  border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; text-transform: uppercase; }
+.mut { color: var(--ink-mut); }
+.empty { color: var(--ink-mut); font-size: 0.9rem; }
+footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+<div class="wrap">
+  <h1>Outreach Activity Dashboard</h1>
+  <p class="sub">Week-over-week activity across Kakiyo and Instantly campaigns. Data fetched 2026-08-03T12:20:00Z.</p>
+
+  <section>
+    <h2><span class="dot" style="background:var(--series-blue)"></span>Instantly</h2>
+    <div class='tiles'><div class='tile'><div class='tile-label'>Sent</div><div class='tile-value'>75</div><div class='tile-sub'><span class='delta down'>▼ 75%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Unique opens</div><div class='tile-value'>16</div><div class='tile-sub'><span class='delta down'>▼ 91%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Unique replies</div><div class='tile-value'>1</div><div class='tile-sub'><span class='delta down'>▼ 89%</span> vs prior week</div></div></div><p class='note'>Week of Aug 3–9 is still in progress — totals will grow before it's comparable to a full week.</p><div class='chart-wrap'><svg viewBox='0 0 760 260' class='chart' role='img' aria-label='Weekly activity by metric'><line x1='44' y1='228.0' x2='748' y2='228.0' class='gridline'/><text x='36' y='232.0' class='axis-label' text-anchor='end'>0</text><line x1='44' y1='175.0' x2='748' y2='175.0' class='gridline'/><text x='36' y='179.0' class='axis-label' text-anchor='end'>87</text><line x1='44' y1='122.0' x2='748' y2='122.0' class='gridline'/><text x='36' y='126.0' class='axis-label' text-anchor='end'>173</text><line x1='44' y1='69.0' x2='748' y2='69.0' class='gridline'/><text x='36' y='73.0' class='axis-label' text-anchor='end'>260</text><line x1='44' y1='16.0' x2='748' y2='16.0' class='gridline'/><text x='36' y='20.0' class='axis-label' text-anchor='end'>346</text><line x1='44' y1='228' x2='748' y2='228' class='baseline'/><path d='M63.712,228.0 L63.712,183.61635129279213 Q63.712,179.61635129279213 67.712,179.61635129279213 L92.17066666666668,179.61635129279213 Q96.17066666666668,179.61635129279213 96.17066666666668,183.61635129279213 L96.17066666666668,228.0 Z' fill='var(--series-blue)' class='bar'><title>Jul 6–12 — Sent: 79</title></path><path d='M98.17066666666668,228.0 L98.17066666666668,208.72685252058355 Q98.17066666666668,204.72685252058355 102.17066666666668,204.72685252058355 L126.62933333333334,204.72685252058355 Q130.62933333333334,204.72685252058355 130.62933333333334,208.72685252058355 L130.62933333333334,228.0 Z' fill='var(--series-orange)' class='bar'><title>Jul 6–12 — Unique opens: 38</title></path><path d='M132.62933333333334,228.0 L132.62933333333334,227.10039000433338 Q132.62933333333334,223.10039000433338 136.62933333333334,223.10039000433338 L161.088,223.10039000433338 Q165.088,223.10039000433338 165.088,227.10039000433338 L165.088,228.0 Z' fill='var(--series-aqua)' class='bar'><title>Jul 6–12 — Unique replies: 8</title></path><path d='M204.512,228.0 L204.512,129.108190091001 Q204.512,125.108190091001 208.512,125.108190091001 L232.97066666666666,125.108190091001 Q236.97066666666666,125.108190091001 236.97066666666666,129.108190091001 L236.97066666666666,228.0 Z' fill='var(--series-blue)' class='bar'><title>Jul 13–19 — Sent: 168</title></path><path d='M238.97066666666666,228.0 L238.97066666666666,212.4015600173335 Q238.97066666666666,208.4015600173335 242.97066666666666,208.4015600173335 L267.4293333333333,208.4015600173335 Q271.4293333333333,208.4015600173335 271.4293333333333,212.4015600173335 L271.4293333333333,228.0 Z' fill='var(--series-orange)' class='bar'><title>Jul 13–19 — Unique opens: 32</title></path><path d='M273.4293333333333,228.0 L273.4293333333333,228.0 Q273.4293333333333,227.38754875054167 274.04178458279165,227.38754875054167 L305.27554875054165,227.38754875054167 Q305.888,227.38754875054167 305.888,228.0 L305.888,228.0 Z' fill='var(--series-aqua)' class='bar'><title>Jul 13–19 — Unique replies: 1</title></path><path d='M345.312,228.0 L345.312,198.315181279792 Q345.312,194.315181279792 349.312,194.315181279792 L373.77066666666667,194.315181279792 Q377.77066666666667,194.315181279792 377.77066666666667,198.315181279792 L377.77066666666667,228.0 Z' fill='var(--series-blue)' class='bar'><title>Jul 20–26 — Sent: 55</title></path><path d='M379.77066666666667,228.0 L379.77066666666667,228.0 Q379.77066666666667,224.32529250325004 383.44537416341666,224.32529250325004 L408.55462583658334,224.32529250325004 Q412.22933333333333,224.32529250325004 412.22933333333333,228.0 L412.22933333333333,228.0 Z' fill='var(--series-orange)' class='bar'><title>Jul 20–26 — Unique opens: 6</title></path><path d='M414.22933333333333,228.0 L414.22933333333333,228.0 Q414.22933333333333,227.38754875054167 414.84178458279166,227.38754875054167 L446.07554875054166,227.38754875054167 Q446.688,227.38754875054167 446.688,228.0 L446.688,228.0 Z' fill='var(--series-aqua)' class='bar'><title>Jul 20–26 — Unique replies: 1</title></path><path d='M486.112,228.0 L486.112,47.65217391304347 Q486.112,43.65217391304347 490.112,43.65217391304347 L514.5706666666667,43.65217391304347 Q518.5706666666667,43.65217391304347 518.5706666666667,47.65217391304347 L518.5706666666667,228.0 Z' fill='var(--series-blue)' class='bar'><title>Jul 27–Aug 2 — Sent: 301</title></path><path d='M520.5706666666667,228.0 L520.5706666666667,126.6583850931677 Q520.5706666666667,122.6583850931677 524.5706666666667,122.6583850931677 L549.0293333333334,122.6583850931677 Q553.0293333333334,122.6583850931677 553.0293333333334,126.6583850931677 L553.0293333333334,228.0 Z' fill='var(--series-orange)' class='bar'><title>Jul 27–Aug 2 — Unique opens: 172</title></path><path d='M555.0293333333334,228.0 L555.0293333333334,226.48793875487505 Q555.0293333333334,222.48793875487505 559.0293333333334,222.48793875487505 L583.488,222.48793875487505 Q587.488,222.48793875487505 587.488,226.48793875487505 L587.488,228.0 Z' fill='var(--series-aqua)' class='bar'><title>Jul 27–Aug 2 — Unique replies: 9</title></path><path d='M626.912,228.0 L626.912,186.06615629062543 Q626.912,182.06615629062543 630.912,182.06615629062543 L655.3706666666667,182.06615629062543 Q659.3706666666667,182.06615629062543 659.3706666666667,186.06615629062543 L659.3706666666667,228.0 Z' fill='var(--series-blue)' class='bar'><title>Aug 3–9 — Sent: 75</title></path><path d='M661.3706666666667,228.0 L661.3706666666667,222.20078000866675 Q661.3706666666667,218.20078000866675 665.3706666666667,218.20078000866675 L689.8293333333334,218.20078000866675 Q693.8293333333334,218.20078000866675 693.8293333333334,222.20078000866675 L693.8293333333334,228.0 Z' fill='var(--series-orange)' class='bar'><title>Aug 3–9 — Unique opens: 16</title></path><path d='M695.8293333333334,228.0 L695.8293333333334,228.0 Q695.8293333333334,227.38754875054167 696.4417845827917,227.38754875054167 L727.6755487505417,227.38754875054167 Q728.288,227.38754875054167 728.288,228.0 L728.288,228.0 Z' fill='var(--series-aqua)' class='bar'><title>Aug 3–9 — Unique replies: 1</title></path><text x='114.4' y='252' class='axis-label' text-anchor='middle'>Jul 6–12</text><text x='255.2' y='252' class='axis-label' text-anchor='middle'>Jul 13–19</text><text x='396.0' y='252' class='axis-label' text-anchor='middle'>Jul 20–26</text><text x='536.8' y='252' class='axis-label' text-anchor='middle'>Jul 27–Aug 2</text><text x='677.6' y='252' class='axis-label' text-anchor='middle'>Aug 3–9</text></svg><div class='legend'><span class='legend-item'><i style='background:var(--series-blue)'></i>Sent</span><span class='legend-item'><i style='background:var(--series-orange)'></i>Unique opens</span><span class='legend-item'><i style='background:var(--series-aqua)'></i>Unique replies</span></div></div>
+    <div class='table-wrap'><table><thead><tr><th>Campaign</th><th>Jul 6–12</th><th>Jul 13–19</th><th>Jul 20–26</th><th>Jul 27–Aug 2</th><th>Aug 3–9</th></tr></thead><tbody><tr><td class='rowhead'>Essex - LinkedIn - 30/07/2026<span class='pill'>Active</span></td><td>0 sent / 0 opens / 0 replies</td><td>0 sent / 0 opens / 0 replies</td><td>0 sent / 0 opens / 0 replies</td><td>2 sent / 1 opens / 0 replies</td><td>1 sent / 1 opens / 1 replies</td></tr><tr><td class='rowhead'>Essex - Test 03 - 23/07/2026<span class='pill'>Active</span></td><td>0 sent / 0 opens / 0 replies</td><td>0 sent / 0 opens / 0 replies</td><td>10 sent / 0 opens / 0 replies</td><td>299 sent / 170 opens / 9 replies</td><td>74 sent / 15 opens / 0 replies</td></tr><tr><td class='rowhead'>Essex - Test 02 - 06/07/2026<span class='pill'>Paused</span></td><td>79 sent / 38 opens / 8 replies</td><td>168 sent / 32 opens / 1 replies</td><td>45 sent / 6 opens / 1 replies</td><td>0 sent / 1 opens / 0 replies</td><td>0 sent / 0 opens / 0 replies</td></tr></tbody></table></div>
+  </section>
+
+  <section>
+    <h2><span class="dot" style="background:var(--series-orange)"></span>Kakiyo</h2>
+    <div class='tiles'><div class='tile'><div class='tile-label'>Total prospects</div><div class='tile-value'>293</div><div class='tile-sub'><span class='delta flat'>first snapshot — no comparison yet</span></div></div><div class='tile'><div class='tile-label'>Invitations sent</div><div class='tile-value'>114</div><div class='tile-sub'><span class='delta flat'>first snapshot — no comparison yet</span></div></div><div class='tile'><div class='tile-label'>Invitations accepted</div><div class='tile-value'>22</div><div class='tile-sub'><span class='delta flat'>first snapshot — no comparison yet</span></div></div><div class='tile'><div class='tile-label'>Messages sent</div><div class='tile-value'>36</div><div class='tile-sub'><span class='delta flat'>first snapshot — no comparison yet</span></div></div><div class='tile'><div class='tile-label'>Replies</div><div class='tile-value'>3</div><div class='tile-sub'><span class='delta flat'>first snapshot — no comparison yet</span></div></div><div class='tile'><div class='tile-label'>Qualified</div><div class='tile-value'>1</div><div class='tile-sub'><span class='delta flat'>first snapshot — no comparison yet</span></div></div></div><p class='note'>Kakiyo's API only exposes running totals, not a historical daily feed. This dashboard snapshots those totals on every refresh and diffs consecutive snapshots to build a week-over-week trend — run the refresh again in about a week to get your first week-over-week comparison.</p>
+    <div class='table-wrap'><table><thead><tr><th>Snapshot date</th><th>Total prospects</th><th>Invitations sent</th><th>Invitations accepted</th><th>Messages sent</th><th>Replies</th><th>Qualified</th></tr></thead><tbody><tr><td class='rowhead'>2026-08-03</td><td>293</td><td>114</td><td>22</td><td>36</td><td>3</td><td>1</td></tr></tbody></table></div>
+  </section>
+
+  <footer>Regenerate with <code>python3 scripts/generate_dashboard.py</code> after refreshing data/. See README.md.</footer>
+</div>
+</div>
+</body>
+</html>
