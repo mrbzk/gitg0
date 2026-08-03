@@ -298,6 +298,15 @@ def funnel_chart(stages, hue, split=None):
     return f"<div class='funnel'>{''.join(rows)}</div>"
 
 
+def info_icon(text):
+    return (
+        "<span class='info-wrap'>"
+        "<button type='button' class='info-icon' aria-label='About this section'>i</button>"
+        f"<span class='info-tip' role='tooltip'>{escape(text)}</span>"
+        "</span>"
+    )
+
+
 def totals_table(periods, keys_labels, label_fn):
     """periods: sorted list of (key, dict). keys_labels: [(field, header)]."""
     head = "".join(f"<th>{h}</th>" for _, h in keys_labels)
@@ -457,6 +466,21 @@ th { color: var(--ink-mut); font-weight: 600; font-size: 0.72rem; text-transform
 .mut { color: var(--ink-mut); }
 .empty { color: var(--ink-mut); font-size: 0.9rem; }
 footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-top: 8px; }
+
+.info-wrap { position: relative; display: inline-flex; }
+.info-icon { width: 17px; height: 17px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface);
+  color: var(--ink-mut); font-size: 11px; font-weight: 700; font-style: italic; font-family: Georgia, "Times New Roman", serif;
+  line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.info-icon:hover, .info-icon:focus-visible { color: var(--ink-1); border-color: var(--ink-mut); }
+.info-tip { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: 270px; max-width: 75vw;
+  background: var(--surface); color: var(--ink-2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font-size: 0.78rem; font-weight: 400; line-height: 1.45; box-shadow: 0 6px 20px rgba(0,0,0,0.14);
+  opacity: 0; pointer-events: none; transform: translateY(-4px); transition: opacity .12s ease, transform .12s ease; }
+.info-wrap:hover .info-tip, .info-wrap.open .info-tip { opacity: 1; pointer-events: auto; transform: translateY(0); }
+@media (hover: none) {
+  .info-wrap:hover .info-tip { opacity: 0; pointer-events: none; }
+  .info-wrap.open .info-tip { opacity: 1; pointer-events: auto; }
+}
 
 .presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
 .presets button { font: inherit; font-size: 0.8rem; background: var(--surface); color: var(--ink-1);
@@ -669,6 +693,25 @@ TABS_JS = """
 })();
 """
 
+INFO_JS = """
+(function () {
+  function closeAll() {
+    document.querySelectorAll('.info-wrap.open').forEach(function (w) { w.classList.remove('open'); });
+  }
+  document.querySelectorAll('.info-icon').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var wrap = btn.closest('.info-wrap');
+      var wasOpen = wrap.classList.contains('open');
+      closeAll();
+      if (!wasOpen) wrap.classList.add('open');
+    });
+  });
+  document.addEventListener('click', closeAll);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+})();
+"""
+
 
 def build_css():
     subs = {
@@ -785,13 +828,13 @@ def main():
   <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched {escape(fetched_at)}.</p>
 
   <section>
-    <h2>Compare periods</h2>
+    <h2>Compare periods {info_icon("Pick two date ranges (or use a preset) to compare. This is the one control for the whole page — it drives the Overview below and each platform tab's own Selected period numbers, all at once.")}</h2>
     <p class="sub" style="margin-bottom:12px;">All {len(daily_rows)} loaded days ({escape(min_date)} to {escape(max_date)}) are available to compare — pick any two ranges, or use a preset. This controls every metric below: the overview and each platform's own totals.</p>
     {global_picker}
   </section>
 
   <section>
-    <h2>Overview</h2>
+    <h2>Overview {info_icon("Cross-platform totals for the two periods picked above. Sends and Replies each combine both platforms into one number — see the note under the table for how.")}</h2>
     {overview_output}
     {overview_footnote}
   </section>
@@ -803,57 +846,57 @@ def main():
 
   <div class="tab-panel" data-tab="instantly">
     <section>
-      <h2>Selected period</h2>
+      <h2>Selected period {info_icon("Instantly's own metrics for the same two periods chosen in Compare periods above, with a % change between them.")}</h2>
       {instantly_output}
     </section>
 
     <section>
-      <h2>Funnel</h2>
+      <h2>Funnel {info_icon("A cumulative, all-time view of Instantly's pipeline — Total unique contacts through Sales — independent of the date picker above. Each bar shows its share of total traffic and its share of the stage before it.")}</h2>
       {instantly_funnel}
     </section>
 
     <section>
-      <h2>Weekly totals</h2>
+      <h2>Weekly totals {info_icon("Every week of loaded data, Monday to Sunday, charted and tabled side by side. This is a full history view and isn't affected by the date picker above.")}</h2>
       {instantly_chart}
       {instantly_weekly_table}
     </section>
 
     <section>
-      <h2>Monthly totals</h2>
+      <h2>Monthly totals {info_icon("The same weekly numbers rolled up by calendar month.")}</h2>
       {instantly_monthly_table}
     </section>
 
     <section>
-      <h2>Daily activity</h2>
+      <h2>Daily activity {info_icon("The raw day-by-day numbers everything else on this page is built from.")}</h2>
       {instantly_daily}
     </section>
   </div>
 
   <div class="tab-panel" data-tab="kakiyo">
     <section>
-      <h2>Selected period</h2>
+      <h2>Selected period {info_icon("Kakiyo's own metrics for the same two periods chosen in Compare periods above, with a % change between them.")}</h2>
       {kakiyo_output}
     </section>
 
     <section>
-      <h2>Funnel</h2>
+      <h2>Funnel {info_icon("A cumulative, all-time view of Kakiyo's pipeline — Connections sent through Sales — independent of the date picker above. Each bar shows its share of total traffic and its share of the stage before it.")}</h2>
       {kakiyo_funnel}
     </section>
 
     <section>
-      <h2>Weekly totals</h2>
+      <h2>Weekly totals {info_icon("Every week of loaded data, Monday to Sunday, charted and tabled side by side. Reconstructed from daily snapshots of Kakiyo's running totals, not a native history feed — see the note below. Not affected by the date picker above.")}</h2>
       {kakiyo_chart}
       {kakiyo_note}
       {kakiyo_weekly_table}
     </section>
 
     <section>
-      <h2>Monthly totals</h2>
+      <h2>Monthly totals {info_icon("The same weekly numbers rolled up by calendar month.")}</h2>
       {kakiyo_monthly_table}
     </section>
 
     <section>
-      <h2>Daily activity</h2>
+      <h2>Daily activity {info_icon("The raw day-by-day numbers everything else on this page is built from — reconstructed from snapshot diffs, so days between refreshes show N/A rather than a true daily figure.")}</h2>
       {kakiyo_daily}
     </section>
   </div>
@@ -864,6 +907,7 @@ def main():
 <script id="daily-data" type="application/json">{daily_rows_json}</script>
 <script>{COMPARE_JS}</script>
 <script>{TABS_JS}</script>
+<script>{INFO_JS}</script>
 </body>
 </html>
 """
