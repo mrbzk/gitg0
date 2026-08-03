@@ -7,10 +7,12 @@ refresh it from inside a Claude session (this one or a new one) using the connec
 Kakiyo and Instantly MCP tools.
 
 Open `dashboard.html` in a browser to view it. Layout is modeled on the team's
-outreach tracking spreadsheet: a **this-week-vs-prior-week** summary, an
-interactive **Compare date ranges** tool, **Weekly totals**, **Monthly totals**,
-a full **Daily activity** log, an Instantly per-campaign breakdown, and the
-**Kakiyo snapshots (raw)** history.
+outreach tracking spreadsheet: a cross-platform **this-week-vs-prior-week**
+summary and an interactive **Compare date ranges** tool up top, then an
+**Instantly** / **Kakiyo** tab switcher for the platform-specific detail —
+each tab has its own **Weekly totals**, **Monthly totals**, and **Daily
+activity**, plus Instantly's per-campaign breakdown and Kakiyo's raw snapshot
+history.
 
 The full merged daily dataset (every day Instantly has activity for, plus
 Kakiyo's day-to-day snapshot deltas) is embedded directly in the HTML, so

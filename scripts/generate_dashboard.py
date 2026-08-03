@@ -262,8 +262,8 @@ def totals_table(periods, keys_labels, label_fn):
     return f"<div class='table-wrap'><table><thead><tr><th>Period</th>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
 
 
-PERIOD_COLS = [("sent", "Sends"), ("opens", "Opens"), ("open_rate", "Open rate"), ("interested", "Interested"),
-               ("conn_sent", "Connections sent"), ("conn_accepted", "Connections accepted"), ("completing_goal", "# Completing goal")]
+INSTANTLY_PERIOD_COLS = [("sent", "Sends"), ("opens", "Opens"), ("open_rate", "Open rate"), ("interested", "Interested")]
+KAKIYO_PERIOD_COLS = [("conn_sent", "Connections sent"), ("conn_accepted", "Connections accepted"), ("completing_goal", "# Completing goal")]
 
 
 def wow_tiles(cur, prev):
@@ -277,19 +277,26 @@ def wow_tiles(cur, prev):
     return f"<div class='tiles'>{''.join(tiles)}</div>"
 
 
-def daily_activity_table(rows):
+def instantly_daily_table(rows):
     body = []
     for r in rows:
-        kakiyo_cells = (
-            f"<td>{r['kakiyo_note']}</td><td>{r['kakiyo_note']}</td><td>{r['kakiyo_note']}</td>"
-            if r["kakiyo_note"] else
-            f"<td>{fmt_or_na(r['conn_sent'])}</td><td>{fmt_or_na(r['conn_accepted'])}</td><td>{fmt_or_na(r['completing_goal'])}</td>"
-        )
         body.append(
             f"<tr><td class='rowhead'>{r['date']}</td><td>{r['sent']:,}</td><td>{r['opens']:,}</td>"
-            f"<td>{fmt_pct(r['open_rate'])}</td><td>{r['interested']:,}</td>{kakiyo_cells}</tr>"
+            f"<td>{fmt_pct(r['open_rate'])}</td><td>{r['interested']:,}</td></tr>"
         )
-    head = "<th>Date</th><th>Sends</th><th>Opens</th><th>Open rate</th><th>Interested</th><th>Conn. sent (daily)</th><th>Conn. accepted (daily)</th><th># Completing goal (daily)</th>"
+    head = "<th>Date</th><th>Sends</th><th>Opens</th><th>Open rate</th><th>Interested</th>"
+    return f"<div class='table-wrap'><table><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
+
+
+def kakiyo_daily_table(rows):
+    body = []
+    for r in rows:
+        if r["kakiyo_note"]:
+            cells = f"<td colspan='3' class='mut'>{r['kakiyo_note']}</td>"
+        else:
+            cells = f"<td>{fmt_or_na(r['conn_sent'])}</td><td>{fmt_or_na(r['conn_accepted'])}</td><td>{fmt_or_na(r['completing_goal'])}</td>"
+        body.append(f"<tr><td class='rowhead'>{r['date']}</td>{cells}</tr>")
+    head = "<th>Date</th><th>Conn. sent (daily)</th><th>Conn. accepted (daily)</th><th># Completing goal (daily)</th>"
     return f"<div class='table-wrap'><table><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
 
 
@@ -404,6 +411,16 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
 .compare-table td.pa { border-left: 3px solid var(--series-blue); }
 .compare-table td.pb { border-left: 3px solid var(--series-yellow); }
+
+.tabs { display: flex; gap: 4px; margin: 0 0 20px; border-bottom: 1px solid var(--border); }
+.tabs button { font: inherit; font-size: 0.95rem; font-weight: 600; background: none; color: var(--ink-mut);
+  border: none; border-bottom: 2px solid transparent; padding: 10px 6px; margin-right: 20px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; }
+.tabs button .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.tabs button:hover { color: var(--ink-1); }
+.tabs button.active { color: var(--ink-1); border-bottom-color: var(--ink-1); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 """
 
 
@@ -527,6 +544,25 @@ COMPARE_JS = """
 })();
 """
 
+TABS_JS = """
+(function () {
+  var tabButtons = document.querySelectorAll('.tabs button');
+  var panels = document.querySelectorAll('.tab-panel');
+  function activate(name) {
+    for (var i = 0; i < tabButtons.length; i++) {
+      tabButtons[i].classList.toggle('active', tabButtons[i].getAttribute('data-tab') === name);
+    }
+    for (var j = 0; j < panels.length; j++) {
+      panels[j].classList.toggle('active', panels[j].getAttribute('data-tab') === name);
+    }
+  }
+  for (var i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].addEventListener('click', function (e) { activate(e.currentTarget.getAttribute('data-tab')); });
+  }
+  if (tabButtons.length) activate(tabButtons[0].getAttribute('data-tab'));
+})();
+"""
+
 
 def build_css():
     subs = {
@@ -571,15 +607,18 @@ def main():
         headline = "<p class='empty'>No data yet.</p>"
 
     weekly_chart_periods = [(week_label(k), p) for k, p in weekly_sorted]
-    weekly_table = totals_table(weekly_sorted, PERIOD_COLS, lambda k: f"{week_label(k)} ({k.isoformat()} start)")
-    monthly_table = totals_table(monthly_sorted, PERIOD_COLS, lambda k: month_label(k))
+    instantly_weekly_table = totals_table(weekly_sorted, INSTANTLY_PERIOD_COLS, lambda k: f"{week_label(k)} ({k.isoformat()} start)")
+    kakiyo_weekly_table = totals_table(weekly_sorted, KAKIYO_PERIOD_COLS, lambda k: f"{week_label(k)} ({k.isoformat()} start)")
+    instantly_monthly_table = totals_table(monthly_sorted, INSTANTLY_PERIOD_COLS, lambda k: month_label(k))
+    kakiyo_monthly_table = totals_table(monthly_sorted, KAKIYO_PERIOD_COLS, lambda k: month_label(k))
 
     instantly_chart = bar_chart(weekly_chart_periods, INSTANTLY_WEEKLY_METRICS)
     kakiyo_chart = bar_chart(weekly_chart_periods, KAKIYO_WEEKLY_METRICS) if kakiyo_has_history else (
         "<p class='empty'>Not enough Kakiyo snapshots yet to chart week-over-week change — need at least 2.</p>"
     )
 
-    daily_table = daily_activity_table(daily_rows)
+    instantly_daily = instantly_daily_table(daily_rows)
+    kakiyo_daily = kakiyo_daily_table(daily_rows)
     kakiyo_raw = kakiyo_raw_table(kakiyo_snaps, kakiyo_changes) if kakiyo_snaps else "<p class='empty'>No Kakiyo snapshots recorded yet.</p>"
 
     recent_weeks = [wk for wk, _ in weekly_sorted[-6:]]
@@ -646,41 +685,64 @@ def main():
     <div id="compare-output"></div>
   </section>
 
-  <section>
-    <h2>Weekly totals</h2>
-    <h3><span class="dot" style="background:var(--series-blue)"></span>Instantly (email)</h3>
-    {instantly_chart}
-    <h3><span class="dot" style="background:var(--series-orange)"></span>Kakiyo (LinkedIn)</h3>
-    {kakiyo_chart}
-    {kakiyo_note}
-    {weekly_table}
-  </section>
+  <div class="tabs">
+    <button type="button" data-tab="instantly"><span class="dot" style="background:var(--series-blue)"></span>Instantly (email)</button>
+    <button type="button" data-tab="kakiyo"><span class="dot" style="background:var(--series-orange)"></span>Kakiyo (LinkedIn)</button>
+  </div>
 
-  <section>
-    <h2>Monthly totals</h2>
-    {monthly_table}
-  </section>
+  <div class="tab-panel" data-tab="instantly">
+    <section>
+      <h2>Weekly totals</h2>
+      {instantly_chart}
+      {instantly_weekly_table}
+    </section>
 
-  <section>
-    <h2>Daily activity</h2>
-    {daily_table}
-  </section>
+    <section>
+      <h2>Monthly totals</h2>
+      {instantly_monthly_table}
+    </section>
 
-  <section>
-    <h2>Instantly — by campaign (last 6 weeks)</h2>
-    {campaign_table if campaign_table else "<p class='empty'>No campaign data.</p>"}
-  </section>
+    <section>
+      <h2>Daily activity</h2>
+      {instantly_daily}
+    </section>
 
-  <section>
-    <h2>Kakiyo snapshots (raw)</h2>
-    {kakiyo_raw}
-  </section>
+    <section>
+      <h2>By campaign (last 6 weeks)</h2>
+      {campaign_table if campaign_table else "<p class='empty'>No campaign data.</p>"}
+    </section>
+  </div>
+
+  <div class="tab-panel" data-tab="kakiyo">
+    <section>
+      <h2>Weekly totals</h2>
+      {kakiyo_chart}
+      {kakiyo_note}
+      {kakiyo_weekly_table}
+    </section>
+
+    <section>
+      <h2>Monthly totals</h2>
+      {kakiyo_monthly_table}
+    </section>
+
+    <section>
+      <h2>Daily activity</h2>
+      {kakiyo_daily}
+    </section>
+
+    <section>
+      <h2>Snapshots (raw)</h2>
+      {kakiyo_raw}
+    </section>
+  </div>
 
   <footer>Regenerate with <code>python3 scripts/generate_dashboard.py</code> after refreshing data/. See README.md.</footer>
 </div>
 </div>
 <script id="daily-data" type="application/json">{daily_rows_json}</script>
 <script>{COMPARE_JS}</script>
+<script>{TABS_JS}</script>
 </body>
 </html>
 """
