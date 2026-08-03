@@ -6,18 +6,18 @@ committed to this repo — no server, no hosting, no external API keys required.
 refresh it from inside a Claude session (this one or a new one) using the connected
 Kakiyo and Instantly MCP tools.
 
-Open `dashboard.html` in a browser to view it. Layout is modeled on the team's
-outreach tracking spreadsheet: a cross-platform **this-week-vs-prior-week**
-summary and an interactive **Compare date ranges** tool up top, then an
-**Instantly** / **Kakiyo** tab switcher for the platform-specific detail —
-each tab opens on its **Funnel** (a waterfall chart of that platform's
-pipeline stages), then **Weekly totals**, **Monthly totals**, and **Daily
-activity**, plus Kakiyo's raw snapshot history.
+Open `dashboard.html` in a browser to view it. Up top is a cross-platform
+**Combined metrics** summary (this week vs. prior week, both platforms
+together), then an **Instantly** / **Kakiyo** tab switcher. Each tab is
+scoped to just that platform: its own **This week vs. prior week** KPIs, its
+own **Compare date ranges** tool, then **Funnel** (a waterfall chart of that
+platform's pipeline stages), **Weekly totals**, **Monthly totals**, and
+**Daily activity** — plus Kakiyo's raw snapshot history.
 
 ### Funnels
 
 Each tab's Funnel section is a cumulative, all-time waterfall — not tied to
-the week/month tables — built from `data/funnel.json`:
+the week/month tables or the Compare tool — built from `data/funnel.json`:
 
 - **Kakiyo**: Connections sent → Connections accepted → Contacts replied →
   Contacts qualified → Conversions (`closed`).
@@ -33,12 +33,12 @@ Every bar shows its **% of the top-of-funnel total** and its **% retained
 from the previous stage**.
 
 The full merged daily dataset (every day Instantly has activity for, plus
-Kakiyo's day-to-day snapshot deltas) is embedded directly in the HTML, so
-**Compare date ranges** runs entirely client-side — pick any two custom date
-ranges (or a preset: this week vs last week, this month vs last month, last
-7/30 days vs the previous 7/30) and it recomputes Sends, Opens, Open Rate,
-Interested, Connections Sent/Accepted, and # Completing Goal for both ranges
-with a live delta, no server or rebuild required.
+Kakiyo's day-to-day snapshot deltas) is embedded directly in the HTML once, so
+each tab's **Compare date ranges** tool runs entirely client-side, scoped to
+that platform's own metrics — pick any two custom date ranges (or a preset:
+this week vs last week, this month vs last month, last 7/30 days vs the
+previous 7/30) and it recomputes with a live delta, no server or rebuild
+required.
 
 ## How it works
 
