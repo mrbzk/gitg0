@@ -7,9 +7,18 @@ refresh it from inside a Claude session (this one or a new one) using the connec
 Kakiyo and Instantly MCP tools.
 
 Open `dashboard.html` in a browser to view it. Layout is modeled on the team's
-outreach tracking spreadsheet: a **this-week-vs-prior-week** summary, **Weekly
-totals**, **Monthly totals**, a full **Daily activity** log, an Instantly
-per-campaign breakdown, and the **Kakiyo snapshots (raw)** history.
+outreach tracking spreadsheet: a **this-week-vs-prior-week** summary, an
+interactive **Compare date ranges** tool, **Weekly totals**, **Monthly totals**,
+a full **Daily activity** log, an Instantly per-campaign breakdown, and the
+**Kakiyo snapshots (raw)** history.
+
+The full merged daily dataset (every day Instantly has activity for, plus
+Kakiyo's day-to-day snapshot deltas) is embedded directly in the HTML, so
+**Compare date ranges** runs entirely client-side — pick any two custom date
+ranges (or a preset: this week vs last week, this month vs last month, last
+7/30 days vs the previous 7/30) and it recomputes Sends, Opens, Open Rate,
+Interested, Connections Sent/Accepted, and # Completing Goal for both ranges
+with a live delta, no server or rebuild required.
 
 ## How it works
 

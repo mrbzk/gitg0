@@ -389,6 +389,142 @@ th { color: var(--ink-mut); font-weight: 600; font-size: 0.72rem; text-transform
 .mut { color: var(--ink-mut); }
 .empty { color: var(--ink-mut); font-size: 0.9rem; }
 footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-top: 8px; }
+
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.presets button { font: inherit; font-size: 0.8rem; background: var(--surface); color: var(--ink-1);
+  border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.presets button:hover { background: var(--grid); }
+.presets button.active { background: var(--series-blue); color: #fff; border-color: var(--series-blue); }
+.range-pickers { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 8px; }
+.range-picker { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.range-picker .rp-label { display:flex; align-items:center; gap:6px; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
+.range-picker .rp-label i { width:10px; height:10px; border-radius: 2px; display:inline-block; }
+.range-picker .rp-fields { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; }
+.range-picker input[type="date"] { font: inherit; font-size: 0.82rem; background: var(--page); color: var(--ink-1);
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
+.compare-table td.pa { border-left: 3px solid var(--series-blue); }
+.compare-table td.pb { border-left: 3px solid var(--series-yellow); }
+"""
+
+
+COMPARE_JS = """
+(function () {
+  var dataEl = document.getElementById('daily-data');
+  if (!dataEl) return;
+  var DAILY = JSON.parse(dataEl.textContent);
+  var $ = function (id) { return document.getElementById(id); };
+  var paStart = $('pa-start'), paEnd = $('pa-end'), pbStart = $('pb-start'), pbEnd = $('pb-end');
+  var output = $('compare-output');
+  var presetButtons = document.querySelectorAll('.presets button');
+
+  function isoDate(d) { return d.toISOString().slice(0, 10); }
+  function parseISO(s) { var p = s.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2])); }
+  function addDays(d, n) { var r = new Date(d); r.setUTCDate(r.getUTCDate() + n); return r; }
+  function weekStartOf(d) { var day = (d.getUTCDay() + 6) % 7; return addDays(d, -day); }
+  function monthStartOf(d) { return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)); }
+  function monthEndOf(d) { return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)); }
+
+  var lastDate = DAILY.length ? parseISO(DAILY[DAILY.length - 1].date) : new Date();
+
+  function sumRange(start, end) {
+    var sent = 0, opens = 0, interested = 0, connSent = 0, connAccepted = 0, completingGoal = 0, hasKakiyo = false, days = 0;
+    for (var i = 0; i < DAILY.length; i++) {
+      var r = DAILY[i];
+      if (r.date < start || r.date > end) continue;
+      days++;
+      sent += r.sent; opens += r.opens; interested += r.interested;
+      if (r.conn_sent !== null) { connSent += r.conn_sent; hasKakiyo = true; }
+      if (r.conn_accepted !== null) { connAccepted += r.conn_accepted; hasKakiyo = true; }
+      if (r.completing_goal !== null) { completingGoal += r.completing_goal; hasKakiyo = true; }
+    }
+    var openRate = sent ? (opens / sent * 100) : 0;
+    return { sent: sent, opens: opens, openRate: openRate, interested: interested, connSent: connSent,
+      connAccepted: connAccepted, completingGoal: completingGoal, hasKakiyo: hasKakiyo, days: days };
+  }
+
+  function fmtDelta(cur, prev) {
+    if (prev === 0) {
+      if (cur === 0) return "<span class='delta flat'>– flat</span>";
+      return "<span class='delta up'>▲ new</span>";
+    }
+    var d = (cur - prev) / prev * 100;
+    var arrow = d >= 0 ? '▲' : '▼';
+    var cls = d >= 0 ? 'up' : 'down';
+    return "<span class='delta " + cls + "'>" + arrow + ' ' + Math.abs(d).toFixed(0) + "%</span>";
+  }
+
+  function fmtPct(v) { return v.toFixed(1) + '%'; }
+  function fmtNum(v) { return v.toLocaleString(); }
+
+  var METRICS = [
+    ['sent', 'Sends', false], ['opens', 'Opens', false], ['openRate', 'Open rate', true],
+    ['interested', 'Interested', false], ['connSent', 'Connections sent', false],
+    ['connAccepted', 'Connections accepted', false], ['completingGoal', '# Completing goal', false]
+  ];
+
+  function render() {
+    if (!paStart.value || !paEnd.value || !pbStart.value || !pbEnd.value) return;
+    var a = sumRange(paStart.value, paEnd.value);
+    var b = sumRange(pbStart.value, pbEnd.value);
+    var rows = '';
+    for (var i = 0; i < METRICS.length; i++) {
+      var key = METRICS[i][0], label = METRICS[i][1], isPct = METRICS[i][2];
+      var av = a[key], bv = b[key];
+      var avFmt = isPct ? fmtPct(av) : fmtNum(av);
+      var bvFmt = isPct ? fmtPct(bv) : fmtNum(bv);
+      rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(av, bv) + '</td></tr>';
+    }
+    var kakiyoNote = (!a.hasKakiyo && !b.hasKakiyo)
+      ? "<p class='note'>No Kakiyo snapshot activity fell inside either range — those columns will read 0.</p>" : '';
+    output.innerHTML =
+      '<div class="table-wrap compare-table"><table>' +
+      '<thead><tr><th>Metric</th><th>Period A (' + paStart.value + ' to ' + paEnd.value + ', ' + a.days + 'd)</th>' +
+      '<th>Period B (' + pbStart.value + ' to ' + pbEnd.value + ', ' + b.days + 'd)</th><th>A vs B</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + kakiyoNote;
+  }
+
+  function setPreset(name) {
+    var aStart, aEnd, bStart, bEnd;
+    if (name === 'week') {
+      aStart = weekStartOf(lastDate); aEnd = addDays(aStart, 6);
+      bStart = addDays(aStart, -7); bEnd = addDays(bStart, 6);
+    } else if (name === 'month') {
+      aStart = monthStartOf(lastDate); aEnd = monthEndOf(lastDate);
+      var prevAnchor = addDays(aStart, -1);
+      bStart = monthStartOf(prevAnchor); bEnd = monthEndOf(prevAnchor);
+    } else if (name === '7d') {
+      aEnd = lastDate; aStart = addDays(aEnd, -6);
+      bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -6);
+    } else if (name === '30d') {
+      aEnd = lastDate; aStart = addDays(aEnd, -29);
+      bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -29);
+    } else {
+      return;
+    }
+    paStart.value = isoDate(aStart); paEnd.value = isoDate(aEnd);
+    pbStart.value = isoDate(bStart); pbEnd.value = isoDate(bEnd);
+    for (var i = 0; i < presetButtons.length; i++) {
+      presetButtons[i].classList.toggle('active', presetButtons[i].getAttribute('data-preset') === name);
+    }
+    render();
+  }
+
+  for (var i = 0; i < presetButtons.length; i++) {
+    presetButtons[i].addEventListener('click', function (e) { setPreset(e.currentTarget.getAttribute('data-preset')); });
+  }
+  [paStart, paEnd, pbStart, pbEnd].forEach(function (el) {
+    el.addEventListener('change', function () {
+      for (var i = 0; i < presetButtons.length; i++) presetButtons[i].classList.remove('active');
+      render();
+    });
+  });
+
+  if (DAILY.length) {
+    setPreset('week');
+  } else {
+    output.innerHTML = "<p class='empty'>No data loaded.</p>";
+  }
+})();
 """
 
 
@@ -457,6 +593,10 @@ def main():
         "because activity was zero.</p>"
     )
 
+    min_date = daily_rows[0]["date"] if daily_rows else ""
+    max_date = daily_rows[-1]["date"] if daily_rows else ""
+    daily_rows_json = json.dumps(daily_rows).replace("</", "<\\/")
+
     html_out = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -474,6 +614,36 @@ def main():
   <section>
     <h2>This week vs. prior week</h2>
     {headline}
+  </section>
+
+  <section>
+    <h2>Compare date ranges</h2>
+    <p class="sub" style="margin-bottom:12px;">All {len(daily_rows)} loaded days ({escape(min_date)} to {escape(max_date)}) are available to compare — pick any two ranges, or use a preset.</p>
+    <div class="presets">
+      <button type="button" data-preset="week">This week vs last week</button>
+      <button type="button" data-preset="month">This month vs last month</button>
+      <button type="button" data-preset="7d">Last 7 days vs previous 7 days</button>
+      <button type="button" data-preset="30d">Last 30 days vs previous 30 days</button>
+    </div>
+    <div class="range-pickers">
+      <div class="range-picker">
+        <div class="rp-label"><i style="background:var(--series-blue)"></i>Period A</div>
+        <div class="rp-fields">
+          <input type="date" id="pa-start" min="{escape(min_date)}" max="{escape(max_date)}">
+          <span>to</span>
+          <input type="date" id="pa-end" min="{escape(min_date)}" max="{escape(max_date)}">
+        </div>
+      </div>
+      <div class="range-picker">
+        <div class="rp-label"><i style="background:var(--series-yellow)"></i>Period B</div>
+        <div class="rp-fields">
+          <input type="date" id="pb-start" min="{escape(min_date)}" max="{escape(max_date)}">
+          <span>to</span>
+          <input type="date" id="pb-end" min="{escape(min_date)}" max="{escape(max_date)}">
+        </div>
+      </div>
+    </div>
+    <div id="compare-output"></div>
   </section>
 
   <section>
@@ -509,6 +679,8 @@ def main():
   <footer>Regenerate with <code>python3 scripts/generate_dashboard.py</code> after refreshing data/. See README.md.</footer>
 </div>
 </div>
+<script id="daily-data" type="application/json">{daily_rows_json}</script>
+<script>{COMPARE_JS}</script>
 </body>
 </html>
 """

@@ -69,6 +69,21 @@ th { color: var(--ink-mut); font-weight: 600; font-size: 0.72rem; text-transform
 .mut { color: var(--ink-mut); }
 .empty { color: var(--ink-mut); font-size: 0.9rem; }
 footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-top: 8px; }
+
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.presets button { font: inherit; font-size: 0.8rem; background: var(--surface); color: var(--ink-1);
+  border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.presets button:hover { background: var(--grid); }
+.presets button.active { background: var(--series-blue); color: #fff; border-color: var(--series-blue); }
+.range-pickers { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 8px; }
+.range-picker { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.range-picker .rp-label { display:flex; align-items:center; gap:6px; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
+.range-picker .rp-label i { width:10px; height:10px; border-radius: 2px; display:inline-block; }
+.range-picker .rp-fields { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; }
+.range-picker input[type="date"] { font: inherit; font-size: 0.82rem; background: var(--page); color: var(--ink-1);
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
+.compare-table td.pa { border-left: 3px solid var(--series-blue); }
+.compare-table td.pb { border-left: 3px solid var(--series-yellow); }
 </style>
 </head>
 <body>
@@ -80,6 +95,36 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   <section>
     <h2>This week vs. prior week</h2>
     <div class='tiles'><div class='tile'><div class='tile-label'>Sends</div><div class='tile-value'>75</div><div class='tile-sub'><span class='delta down'>▼ 75%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Opens</div><div class='tile-value'>16</div><div class='tile-sub'><span class='delta down'>▼ 91%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Interested</div><div class='tile-value'>0</div><div class='tile-sub'><span class='delta flat'>– flat</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Connections sent</div><div class='tile-value'>34</div><div class='tile-sub'><span class='delta up'>▲ new</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Connections accepted</div><div class='tile-value'>7</div><div class='tile-sub'><span class='delta up'>▲ new</span> vs prior week</div></div><div class='tile'><div class='tile-label'># Completing goal</div><div class='tile-value'>0</div><div class='tile-sub'><span class='delta flat'>– flat</span> vs prior week</div></div></div><p class='note'>Week of Aug 3–9 is still in progress — totals will grow before it's comparable to a full week.</p>
+  </section>
+
+  <section>
+    <h2>Compare date ranges</h2>
+    <p class="sub" style="margin-bottom:12px;">All 27 loaded days (2026-07-08 to 2026-08-03) are available to compare — pick any two ranges, or use a preset.</p>
+    <div class="presets">
+      <button type="button" data-preset="week">This week vs last week</button>
+      <button type="button" data-preset="month">This month vs last month</button>
+      <button type="button" data-preset="7d">Last 7 days vs previous 7 days</button>
+      <button type="button" data-preset="30d">Last 30 days vs previous 30 days</button>
+    </div>
+    <div class="range-pickers">
+      <div class="range-picker">
+        <div class="rp-label"><i style="background:var(--series-blue)"></i>Period A</div>
+        <div class="rp-fields">
+          <input type="date" id="pa-start" min="2026-07-08" max="2026-08-03">
+          <span>to</span>
+          <input type="date" id="pa-end" min="2026-07-08" max="2026-08-03">
+        </div>
+      </div>
+      <div class="range-picker">
+        <div class="rp-label"><i style="background:var(--series-yellow)"></i>Period B</div>
+        <div class="rp-fields">
+          <input type="date" id="pb-start" min="2026-07-08" max="2026-08-03">
+          <span>to</span>
+          <input type="date" id="pb-end" min="2026-07-08" max="2026-08-03">
+        </div>
+      </div>
+    </div>
+    <div id="compare-output"></div>
   </section>
 
   <section>
@@ -115,5 +160,125 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   <footer>Regenerate with <code>python3 scripts/generate_dashboard.py</code> after refreshing data/. See README.md.</footer>
 </div>
 </div>
+<script id="daily-data" type="application/json">[{"date": "2026-07-08", "sent": 30, "opens": 12, "open_rate": 40.0, "interested": 3, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-09", "sent": 19, "opens": 8, "open_rate": 42.10526315789473, "interested": 1, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-10", "sent": 30, "opens": 13, "open_rate": 43.333333333333336, "interested": 1, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-11", "sent": 0, "opens": 2, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-12", "sent": 0, "opens": 3, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-13", "sent": 30, "opens": 13, "open_rate": 43.333333333333336, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-14", "sent": 30, "opens": 9, "open_rate": 30.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-15", "sent": 30, "opens": 2, "open_rate": 6.666666666666667, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-16", "sent": 40, "opens": 5, "open_rate": 12.5, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-17", "sent": 38, "opens": 2, "open_rate": 5.263157894736842, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-18", "sent": 0, "opens": 0, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-19", "sent": 0, "opens": 1, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-20", "sent": 45, "opens": 1, "open_rate": 2.2222222222222223, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-21", "sent": 0, "opens": 1, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-22", "sent": 0, "opens": 1, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-23", "sent": 0, "opens": 0, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-24", "sent": 10, "opens": 3, "open_rate": 30.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-25", "sent": 0, "opens": 0, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-26", "sent": 0, "opens": 0, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-27", "sent": 75, "opens": 48, "open_rate": 64.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-28", "sent": 40, "opens": 12, "open_rate": 30.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-29", "sent": 65, "opens": 45, "open_rate": 69.23076923076923, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-07-30", "sent": 46, "opens": 18, "open_rate": 39.130434782608695, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": "Baseline (first snapshot)"}, {"date": "2026-07-31", "sent": 75, "opens": 43, "open_rate": 57.333333333333336, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-08-01", "sent": 0, "opens": 1, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-08-02", "sent": 0, "opens": 5, "open_rate": 0.0, "interested": 0, "conn_sent": null, "conn_accepted": null, "completing_goal": null, "kakiyo_note": null}, {"date": "2026-08-03", "sent": 75, "opens": 16, "open_rate": 21.333333333333336, "interested": 0, "conn_sent": 34, "conn_accepted": 7, "completing_goal": 0, "kakiyo_note": null}]</script>
+<script>
+(function () {
+  var dataEl = document.getElementById('daily-data');
+  if (!dataEl) return;
+  var DAILY = JSON.parse(dataEl.textContent);
+  var $ = function (id) { return document.getElementById(id); };
+  var paStart = $('pa-start'), paEnd = $('pa-end'), pbStart = $('pb-start'), pbEnd = $('pb-end');
+  var output = $('compare-output');
+  var presetButtons = document.querySelectorAll('.presets button');
+
+  function isoDate(d) { return d.toISOString().slice(0, 10); }
+  function parseISO(s) { var p = s.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2])); }
+  function addDays(d, n) { var r = new Date(d); r.setUTCDate(r.getUTCDate() + n); return r; }
+  function weekStartOf(d) { var day = (d.getUTCDay() + 6) % 7; return addDays(d, -day); }
+  function monthStartOf(d) { return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)); }
+  function monthEndOf(d) { return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)); }
+
+  var lastDate = DAILY.length ? parseISO(DAILY[DAILY.length - 1].date) : new Date();
+
+  function sumRange(start, end) {
+    var sent = 0, opens = 0, interested = 0, connSent = 0, connAccepted = 0, completingGoal = 0, hasKakiyo = false, days = 0;
+    for (var i = 0; i < DAILY.length; i++) {
+      var r = DAILY[i];
+      if (r.date < start || r.date > end) continue;
+      days++;
+      sent += r.sent; opens += r.opens; interested += r.interested;
+      if (r.conn_sent !== null) { connSent += r.conn_sent; hasKakiyo = true; }
+      if (r.conn_accepted !== null) { connAccepted += r.conn_accepted; hasKakiyo = true; }
+      if (r.completing_goal !== null) { completingGoal += r.completing_goal; hasKakiyo = true; }
+    }
+    var openRate = sent ? (opens / sent * 100) : 0;
+    return { sent: sent, opens: opens, openRate: openRate, interested: interested, connSent: connSent,
+      connAccepted: connAccepted, completingGoal: completingGoal, hasKakiyo: hasKakiyo, days: days };
+  }
+
+  function fmtDelta(cur, prev) {
+    if (prev === 0) {
+      if (cur === 0) return "<span class='delta flat'>– flat</span>";
+      return "<span class='delta up'>▲ new</span>";
+    }
+    var d = (cur - prev) / prev * 100;
+    var arrow = d >= 0 ? '▲' : '▼';
+    var cls = d >= 0 ? 'up' : 'down';
+    return "<span class='delta " + cls + "'>" + arrow + ' ' + Math.abs(d).toFixed(0) + "%</span>";
+  }
+
+  function fmtPct(v) { return v.toFixed(1) + '%'; }
+  function fmtNum(v) { return v.toLocaleString(); }
+
+  var METRICS = [
+    ['sent', 'Sends', false], ['opens', 'Opens', false], ['openRate', 'Open rate', true],
+    ['interested', 'Interested', false], ['connSent', 'Connections sent', false],
+    ['connAccepted', 'Connections accepted', false], ['completingGoal', '# Completing goal', false]
+  ];
+
+  function render() {
+    if (!paStart.value || !paEnd.value || !pbStart.value || !pbEnd.value) return;
+    var a = sumRange(paStart.value, paEnd.value);
+    var b = sumRange(pbStart.value, pbEnd.value);
+    var rows = '';
+    for (var i = 0; i < METRICS.length; i++) {
+      var key = METRICS[i][0], label = METRICS[i][1], isPct = METRICS[i][2];
+      var av = a[key], bv = b[key];
+      var avFmt = isPct ? fmtPct(av) : fmtNum(av);
+      var bvFmt = isPct ? fmtPct(bv) : fmtNum(bv);
+      rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(av, bv) + '</td></tr>';
+    }
+    var kakiyoNote = (!a.hasKakiyo && !b.hasKakiyo)
+      ? "<p class='note'>No Kakiyo snapshot activity fell inside either range — those columns will read 0.</p>" : '';
+    output.innerHTML =
+      '<div class="table-wrap compare-table"><table>' +
+      '<thead><tr><th>Metric</th><th>Period A (' + paStart.value + ' to ' + paEnd.value + ', ' + a.days + 'd)</th>' +
+      '<th>Period B (' + pbStart.value + ' to ' + pbEnd.value + ', ' + b.days + 'd)</th><th>A vs B</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + kakiyoNote;
+  }
+
+  function setPreset(name) {
+    var aStart, aEnd, bStart, bEnd;
+    if (name === 'week') {
+      aStart = weekStartOf(lastDate); aEnd = addDays(aStart, 6);
+      bStart = addDays(aStart, -7); bEnd = addDays(bStart, 6);
+    } else if (name === 'month') {
+      aStart = monthStartOf(lastDate); aEnd = monthEndOf(lastDate);
+      var prevAnchor = addDays(aStart, -1);
+      bStart = monthStartOf(prevAnchor); bEnd = monthEndOf(prevAnchor);
+    } else if (name === '7d') {
+      aEnd = lastDate; aStart = addDays(aEnd, -6);
+      bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -6);
+    } else if (name === '30d') {
+      aEnd = lastDate; aStart = addDays(aEnd, -29);
+      bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -29);
+    } else {
+      return;
+    }
+    paStart.value = isoDate(aStart); paEnd.value = isoDate(aEnd);
+    pbStart.value = isoDate(bStart); pbEnd.value = isoDate(bEnd);
+    for (var i = 0; i < presetButtons.length; i++) {
+      presetButtons[i].classList.toggle('active', presetButtons[i].getAttribute('data-preset') === name);
+    }
+    render();
+  }
+
+  for (var i = 0; i < presetButtons.length; i++) {
+    presetButtons[i].addEventListener('click', function (e) { setPreset(e.currentTarget.getAttribute('data-preset')); });
+  }
+  [paStart, paEnd, pbStart, pbEnd].forEach(function (el) {
+    el.addEventListener('change', function () {
+      for (var i = 0; i < presetButtons.length; i++) presetButtons[i].classList.remove('active');
+      render();
+    });
+  });
+
+  if (DAILY.length) {
+    setPreset('week');
+  } else {
+    output.innerHTML = "<p class='empty'>No data loaded.</p>";
+  }
+})();
+</script>
 </body>
 </html>
