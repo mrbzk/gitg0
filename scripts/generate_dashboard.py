@@ -159,10 +159,10 @@ def build_daily_rows(instantly_by_date, kakiyo_changes):
         kc = kakiyo_changes.get(ds)
         rows.append({
             "date": ds, "sent": sent, "opens": opens, "open_rate": open_rate, "replies": replies, "interested": interested,
-            "conn_sent": None if kc is None else (None if kc["baseline"] else kc["invitationsSent"]),
-            "conn_accepted": None if kc is None else (None if kc["baseline"] else kc["invitationsAccepted"]),
-            "replied": None if kc is None else (None if kc["baseline"] else kc["prospectsAnswers"]),
-            "completing_goal": None if kc is None else (None if kc["baseline"] else kc["qualified"]),
+            "conn_sent": None if kc is None else (kc["totals"]["invitationsSent"] if kc["baseline"] else kc["invitationsSent"]),
+            "conn_accepted": None if kc is None else (kc["totals"]["invitationsAccepted"] if kc["baseline"] else kc["invitationsAccepted"]),
+            "replied": None if kc is None else (kc["totals"]["prospectsAnswers"] if kc["baseline"] else kc["prospectsAnswers"]),
+            "completing_goal": None if kc is None else (kc["totals"]["qualified"] if kc["baseline"] else kc["qualified"]),
             "kakiyo_note": "Baseline (first snapshot)" if (kc and kc["baseline"]) else None,
         })
     return rows
@@ -826,8 +826,10 @@ def main():
         "<p class='note'>Kakiyo only gives us a running total, not a day-by-day history. So each refresh saves a "
         "dated snapshot of those totals, and this dashboard works out day/week/month activity by comparing each "
         "snapshot to the one before it. The 2026-07-30 baseline came from the team's existing tracking spreadsheet; "
-        "everything after that is pulled live. Weeks/months before snapshot tracking began show 0 for Kakiyo "
-        "columns because no snapshot existed yet, not because activity was zero.</p>"
+        "everything after that is pulled live. Because there's no earlier snapshot to compare that first one against, "
+        "its whole running total (80 connections sent, 15 accepted, 1 qualified) is counted as that week's Kakiyo "
+        "activity in the Weekly and Monthly totals below. Weeks/months before snapshot tracking began show 0 for "
+        "Kakiyo columns because no snapshot existed yet, not because activity was zero.</p>"
     )
 
     html_out = f"""<!doctype html>
