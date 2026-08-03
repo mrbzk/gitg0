@@ -309,7 +309,7 @@ def active_conversations_tile(fk):
         f"<div class='tile-value'>{fk['active_conversations']:,}</div>"
         "<div class='tile-sub'>Replied or qualified, with their last message inside the window</div>"
         "</div></div>"
-        f"<p class='note'>As of {escape(fetched)} ({escape(fk.get('active_conversations_source',''))}).</p>"
+        f"<p class='note'>As of {escape(fetched)}.</p>"
     )
 
 
@@ -802,8 +802,8 @@ def main():
         instantly_funnel += (
             "<p class='note'>Emails sent can exceed total unique contacts because each contact receives multiple "
             "steps in a sequence. \"Unknown\" replies are ones Instantly hasn't been marked interested or not "
-            f"interested yet — not counted as negative. Snapshot as of {escape(funnel['fetched_at'])} "
-            f"({escape(fi.get('source',''))}). \"Sales\" is currently sourced from Instantly's own Closed/Won "
+            f"interested yet — not counted as negative. Snapshot as of {escape(funnel['fetched_at'])}. "
+            "\"Sales\" is currently sourced from Instantly's own Closed/Won "
             "status — a firmer source for this number is still being worked out.</p>"
         )
         kakiyo_funnel = funnel_chart(
@@ -813,21 +813,21 @@ def main():
             "orange",
         )
         kakiyo_funnel += (
-            f"<p class='note'>Snapshot as of {escape(funnel['fetched_at'])} ({escape(fk.get('source',''))}). "
-            "\"Sales\" is currently sourced from Kakiyo's own `closed` status — a firmer source for this number "
+            f"<p class='note'>Snapshot as of {escape(funnel['fetched_at'])}. "
+            "\"Sales\" is currently sourced from Kakiyo's own closed-deal status — a firmer source for this number "
             "is still being worked out.</p>"
         )
         kakiyo_active_conversations = active_conversations_tile(fk)
     else:
-        instantly_funnel = kakiyo_funnel = "<p class='empty'>No funnel data recorded yet — see data/funnel.json.</p>"
+        instantly_funnel = kakiyo_funnel = "<p class='empty'>No funnel data recorded yet.</p>"
         kakiyo_active_conversations = "<p class='empty'>No active-conversation data recorded yet.</p>"
 
     kakiyo_note = (
-        "<p class='note'>Kakiyo's API only exposes running totals, not a historical daily feed. Each refresh appends a "
-        "dated snapshot, and this dashboard diffs consecutive snapshots to build day/week/month activity — the "
-        "2026-07-30 baseline came from the team's existing tracking spreadsheet; everything after is pulled live. "
-        "Weeks/months before snapshot tracking began show 0 for Kakiyo columns because no snapshot existed yet, not "
-        "because activity was zero.</p>"
+        "<p class='note'>Kakiyo only gives us a running total, not a day-by-day history. So each refresh saves a "
+        "dated snapshot of those totals, and this dashboard works out day/week/month activity by comparing each "
+        "snapshot to the one before it. The 2026-07-30 baseline came from the team's existing tracking spreadsheet; "
+        "everything after that is pulled live. Weeks/months before snapshot tracking began show 0 for Kakiyo "
+        "columns because no snapshot existed yet, not because activity was zero.</p>"
     )
 
     html_out = f"""<!doctype html>
