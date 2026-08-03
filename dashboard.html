@@ -127,27 +127,10 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched 2026-08-03T12:20:00Z.</p>
 
   <section>
-    <h2>Combined metrics</h2>
-    <p class="sub" style="margin-bottom:0;">This week vs. prior week, across both platforms.</p>
-    <div class='tiles'><div class='tile'><div class='tile-label'>Sends</div><div class='tile-value'>112</div><div class='tile-sub'><span class='delta down'>▼ 63%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Opens</div><div class='tile-value'>16</div><div class='tile-sub'><span class='delta down'>▼ 91%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Replies</div><div class='tile-value'>1</div><div class='tile-sub'><span class='delta down'>▼ 89%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Interested</div><div class='tile-value'>0</div><div class='tile-sub'><span class='delta flat'>– flat</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Connections accepted</div><div class='tile-value'>7</div><div class='tile-sub'><span class='delta up'>▲ new</span> vs prior week</div></div><div class='tile'><div class='tile-label'># Completing goal</div><div class='tile-value'>0</div><div class='tile-sub'><span class='delta flat'>– flat</span> vs prior week</div></div></div><p class='note'>"Sends" combines Instantly's emails sent and Kakiyo's connection requests sent — both are the first outreach touch on their platform, so they're counted as the same step here. "Replies" combines both platforms' reply counts the same way.</p><p class='note'>Week of Aug 3–9 is still in progress — totals will grow before it's comparable to a full week.</p>
-  </section>
-
-  <div class="tabs">
-    <button type="button" data-tab="instantly"><span class="dot" style="background:var(--series-blue)"></span>Instantly (email)</button>
-    <button type="button" data-tab="kakiyo"><span class="dot" style="background:var(--series-orange)"></span>Kakiyo (LinkedIn)</button>
-  </div>
-
-  <div class="tab-panel" data-tab="instantly">
-    <section>
-      <h2>This week vs. prior week</h2>
-      <div class='tiles'><div class='tile'><div class='tile-label'>Sends</div><div class='tile-value'>75</div><div class='tile-sub'><span class='delta down'>▼ 75%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Opens</div><div class='tile-value'>16</div><div class='tile-sub'><span class='delta down'>▼ 91%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Replies</div><div class='tile-value'>1</div><div class='tile-sub'><span class='delta down'>▼ 89%</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Interested</div><div class='tile-value'>0</div><div class='tile-sub'><span class='delta flat'>– flat</span> vs prior week</div></div></div><p class='note'>Week of Aug 3–9 is still in progress — totals will grow before it's comparable to a full week.</p>
-    </section>
-
-    <section>
-      <h2>Compare date ranges</h2>
-      <p class="sub" style="margin-bottom:12px;">All 27 loaded days (2026-07-08 to 2026-08-03) are available to compare — pick any two ranges, or use a preset.</p>
-      
-    <div class="compare-widget" data-metrics='[[&quot;sent&quot;, &quot;Sends&quot;, false], [&quot;opens&quot;, &quot;Opens&quot;, false], [&quot;openRate&quot;, &quot;Open rate&quot;, true], [&quot;replies&quot;, &quot;Replies&quot;, false], [&quot;interested&quot;, &quot;Interested&quot;, false]]' data-needs-kakiyo="0">
+    <h2>Compare periods</h2>
+    <p class="sub" style="margin-bottom:12px;">All 27 loaded days (2026-07-08 to 2026-08-03) are available to compare — pick any two ranges, or use a preset. This controls every metric below: the overview and each platform's own totals.</p>
+    
+    <div id="global-compare">
       <div class="presets">
         <button type="button" data-preset="week">This week vs last week</button>
         <button type="button" data-preset="month">This month vs last month</button>
@@ -172,9 +155,26 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
           </div>
         </div>
       </div>
-      <div data-role="output"></div>
+      <p class="note" data-role="range-note"></p>
     </div>
     
+  </section>
+
+  <section>
+    <h2>Overview</h2>
+    <div class="compare-output" data-metrics='[[[&quot;sent&quot;, &quot;connSent&quot;], &quot;Sends&quot;, false], [&quot;opens&quot;, &quot;Opens&quot;, false], [[&quot;replies&quot;, &quot;replied&quot;], &quot;Replies&quot;, false], [&quot;interested&quot;, &quot;Interested&quot;, false], [&quot;connAccepted&quot;, &quot;Connections accepted&quot;, false], [&quot;completingGoal&quot;, &quot;# Completing goal&quot;, false]]' data-needs-kakiyo="1"></div>
+    <p class='note'>"Sends" combines Instantly's emails sent and Kakiyo's connection requests sent — both are the first outreach touch on their platform, so they're counted as the same step here. "Replies" combines both platforms' reply counts the same way.</p>
+  </section>
+
+  <div class="tabs">
+    <button type="button" data-tab="instantly"><span class="dot" style="background:var(--series-blue)"></span>Instantly (email)</button>
+    <button type="button" data-tab="kakiyo"><span class="dot" style="background:var(--series-orange)"></span>Kakiyo (LinkedIn)</button>
+  </div>
+
+  <div class="tab-panel" data-tab="instantly">
+    <section>
+      <h2>Selected period</h2>
+      <div class="compare-output" data-metrics='[[&quot;sent&quot;, &quot;Sends&quot;, false], [&quot;opens&quot;, &quot;Opens&quot;, false], [&quot;openRate&quot;, &quot;Open rate&quot;, true], [&quot;replies&quot;, &quot;Replies&quot;, false], [&quot;interested&quot;, &quot;Interested&quot;, false]]' data-needs-kakiyo="0"></div>
     </section>
 
     <section>
@@ -201,42 +201,8 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
 
   <div class="tab-panel" data-tab="kakiyo">
     <section>
-      <h2>This week vs. prior week</h2>
-      <div class='tiles'><div class='tile'><div class='tile-label'>Connections sent</div><div class='tile-value'>37</div><div class='tile-sub'><span class='delta up'>▲ new</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Connections accepted</div><div class='tile-value'>7</div><div class='tile-sub'><span class='delta up'>▲ new</span> vs prior week</div></div><div class='tile'><div class='tile-label'>Replies</div><div class='tile-value'>0</div><div class='tile-sub'><span class='delta flat'>– flat</span> vs prior week</div></div><div class='tile'><div class='tile-label'># Completing goal</div><div class='tile-value'>0</div><div class='tile-sub'><span class='delta flat'>– flat</span> vs prior week</div></div></div><p class='note'>Week of Aug 3–9 is still in progress — totals will grow before it's comparable to a full week.</p>
-    </section>
-
-    <section>
-      <h2>Compare date ranges</h2>
-      <p class="sub" style="margin-bottom:12px;">All 27 loaded days (2026-07-08 to 2026-08-03) are available to compare — pick any two ranges, or use a preset.</p>
-      
-    <div class="compare-widget" data-metrics='[[&quot;connSent&quot;, &quot;Connections sent&quot;, false], [&quot;connAccepted&quot;, &quot;Connections accepted&quot;, false], [&quot;replied&quot;, &quot;Replies&quot;, false], [&quot;completingGoal&quot;, &quot;# Completing goal&quot;, false]]' data-needs-kakiyo="1">
-      <div class="presets">
-        <button type="button" data-preset="week">This week vs last week</button>
-        <button type="button" data-preset="month">This month vs last month</button>
-        <button type="button" data-preset="7d">Last 7 days vs previous 7 days</button>
-        <button type="button" data-preset="30d">Last 30 days vs previous 30 days</button>
-      </div>
-      <div class="range-pickers">
-        <div class="range-picker">
-          <div class="rp-label"><i style="background:var(--series-blue)"></i>Period A</div>
-          <div class="rp-fields">
-            <input type="date" data-role="pa-start" min="2026-07-08" max="2026-08-03">
-            <span>to</span>
-            <input type="date" data-role="pa-end" min="2026-07-08" max="2026-08-03">
-          </div>
-        </div>
-        <div class="range-picker">
-          <div class="rp-label"><i style="background:var(--series-yellow)"></i>Period B</div>
-          <div class="rp-fields">
-            <input type="date" data-role="pb-start" min="2026-07-08" max="2026-08-03">
-            <span>to</span>
-            <input type="date" data-role="pb-end" min="2026-07-08" max="2026-08-03">
-          </div>
-        </div>
-      </div>
-      <div data-role="output"></div>
-    </div>
-    
+      <h2>Selected period</h2>
+      <div class="compare-output" data-metrics='[[&quot;connSent&quot;, &quot;Connections sent&quot;, false], [&quot;connAccepted&quot;, &quot;Connections accepted&quot;, false], [&quot;replied&quot;, &quot;Replies&quot;, false], [&quot;completingGoal&quot;, &quot;# Completing goal&quot;, false]]' data-needs-kakiyo="1"></div>
     </section>
 
     <section>
@@ -312,79 +278,98 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   function fmtPct(v) { return v.toFixed(1) + '%'; }
   function fmtNum(v) { return v.toLocaleString(); }
 
-  function initCompareWidget(root) {
-    var metrics = JSON.parse(root.getAttribute('data-metrics'));
-    var needsKakiyo = root.getAttribute('data-needs-kakiyo') === '1';
-    var paStart = root.querySelector('[data-role="pa-start"]'), paEnd = root.querySelector('[data-role="pa-end"]');
-    var pbStart = root.querySelector('[data-role="pb-start"]'), pbEnd = root.querySelector('[data-role="pb-end"]');
-    var output = root.querySelector('[data-role="output"]');
-    var presetButtons = root.querySelectorAll('.presets button');
-
-    function render() {
-      if (!paStart.value || !paEnd.value || !pbStart.value || !pbEnd.value) return;
-      var a = sumRange(paStart.value, paEnd.value);
-      var b = sumRange(pbStart.value, pbEnd.value);
-      var rows = '';
-      for (var i = 0; i < metrics.length; i++) {
-        var key = metrics[i][0], label = metrics[i][1], isPct = metrics[i][2];
-        var av = a[key], bv = b[key];
-        var avFmt = isPct ? fmtPct(av) : fmtNum(av);
-        var bvFmt = isPct ? fmtPct(bv) : fmtNum(bv);
-        rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(av, bv) + '</td></tr>';
-      }
-      var note = (needsKakiyo && !a.hasKakiyo && !b.hasKakiyo)
-        ? "<p class='note'>No Kakiyo snapshot activity fell inside either range — those columns will read 0.</p>" : '';
-      output.innerHTML =
-        '<div class="table-wrap compare-table"><table>' +
-        '<thead><tr><th>Metric</th><th>Period A (' + paStart.value + ' to ' + paEnd.value + ', ' + a.days + 'd)</th>' +
-        '<th>Period B (' + pbStart.value + ' to ' + pbEnd.value + ', ' + b.days + 'd)</th><th>A vs B</th></tr></thead>' +
-        '<tbody>' + rows + '</tbody></table></div>' + note;
+  // A metric key is either a plain field name, or an array of field names to sum
+  // together (Overview merges Instantly + Kakiyo fields into one number this way).
+  function getVal(obj, keyOrArr) {
+    if (Array.isArray(keyOrArr)) {
+      var s = 0;
+      for (var i = 0; i < keyOrArr.length; i++) s += (obj[keyOrArr[i]] || 0);
+      return s;
     }
-
-    function setPreset(name) {
-      var aStart, aEnd, bStart, bEnd;
-      if (name === 'week') {
-        aStart = weekStartOf(lastDate); aEnd = addDays(aStart, 6);
-        bStart = addDays(aStart, -7); bEnd = addDays(bStart, 6);
-      } else if (name === 'month') {
-        aStart = monthStartOf(lastDate); aEnd = monthEndOf(lastDate);
-        var prevAnchor = addDays(aStart, -1);
-        bStart = monthStartOf(prevAnchor); bEnd = monthEndOf(prevAnchor);
-      } else if (name === '7d') {
-        aEnd = lastDate; aStart = addDays(aEnd, -6);
-        bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -6);
-      } else if (name === '30d') {
-        aEnd = lastDate; aStart = addDays(aEnd, -29);
-        bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -29);
-      } else {
-        return;
-      }
-      paStart.value = isoDate(aStart); paEnd.value = isoDate(aEnd);
-      pbStart.value = isoDate(bStart); pbEnd.value = isoDate(bEnd);
-      for (var i = 0; i < presetButtons.length; i++) {
-        presetButtons[i].classList.toggle('active', presetButtons[i].getAttribute('data-preset') === name);
-      }
-      render();
-    }
-
-    for (var i = 0; i < presetButtons.length; i++) {
-      presetButtons[i].addEventListener('click', function (e) { setPreset(e.currentTarget.getAttribute('data-preset')); });
-    }
-    [paStart, paEnd, pbStart, pbEnd].forEach(function (el) {
-      el.addEventListener('change', function () {
-        for (var i = 0; i < presetButtons.length; i++) presetButtons[i].classList.remove('active');
-        render();
-      });
-    });
-
-    if (DAILY.length) {
-      setPreset('week');
-    } else {
-      output.innerHTML = "<p class='empty'>No data loaded.</p>";
-    }
+    return obj[keyOrArr] || 0;
   }
 
-  document.querySelectorAll('.compare-widget').forEach(initCompareWidget);
+  var picker = document.getElementById('global-compare');
+  if (!picker) return;
+  var paStart = picker.querySelector('[data-role="pa-start"]'), paEnd = picker.querySelector('[data-role="pa-end"]');
+  var pbStart = picker.querySelector('[data-role="pb-start"]'), pbEnd = picker.querySelector('[data-role="pb-end"]');
+  var rangeNote = picker.querySelector('[data-role="range-note"]');
+  var presetButtons = picker.querySelectorAll('.presets button');
+  var outputs = document.querySelectorAll('.compare-output');
+  var lastDateStr = DAILY.length ? DAILY[DAILY.length - 1].date : '';
+
+  function renderOne(out, a, b) {
+    var metrics = JSON.parse(out.getAttribute('data-metrics'));
+    var needsKakiyo = out.getAttribute('data-needs-kakiyo') === '1';
+    var rows = '';
+    for (var i = 0; i < metrics.length; i++) {
+      var key = metrics[i][0], label = metrics[i][1], isPct = metrics[i][2];
+      var av = getVal(a, key), bv = getVal(b, key);
+      var avFmt = isPct ? fmtPct(av) : fmtNum(av);
+      var bvFmt = isPct ? fmtPct(bv) : fmtNum(bv);
+      rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(av, bv) + '</td></tr>';
+    }
+    var note = (needsKakiyo && !a.hasKakiyo && !b.hasKakiyo)
+      ? "<p class='note'>No Kakiyo snapshot activity fell inside either range — those columns will read 0.</p>" : '';
+    out.innerHTML =
+      '<div class="table-wrap compare-table"><table>' +
+      '<thead><tr><th>Metric</th><th>Period A (' + paStart.value + ' to ' + paEnd.value + ', ' + a.days + 'd)</th>' +
+      '<th>Period B (' + pbStart.value + ' to ' + pbEnd.value + ', ' + b.days + 'd)</th><th>A vs B</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + note;
+  }
+
+  function renderAll() {
+    if (!paStart.value || !paEnd.value || !pbStart.value || !pbEnd.value) return;
+    var a = sumRange(paStart.value, paEnd.value);
+    var b = sumRange(pbStart.value, pbEnd.value);
+    for (var i = 0; i < outputs.length; i++) renderOne(outputs[i], a, b);
+    var beyond = lastDateStr && (paEnd.value > lastDateStr || pbEnd.value > lastDateStr);
+    rangeNote.textContent = beyond
+      ? 'One of the selected ranges extends past ' + lastDateStr + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
+      : '';
+  }
+
+  function setPreset(name) {
+    var aStart, aEnd, bStart, bEnd;
+    if (name === 'week') {
+      aStart = weekStartOf(lastDate); aEnd = addDays(aStart, 6);
+      bStart = addDays(aStart, -7); bEnd = addDays(bStart, 6);
+    } else if (name === 'month') {
+      aStart = monthStartOf(lastDate); aEnd = monthEndOf(lastDate);
+      var prevAnchor = addDays(aStart, -1);
+      bStart = monthStartOf(prevAnchor); bEnd = monthEndOf(prevAnchor);
+    } else if (name === '7d') {
+      aEnd = lastDate; aStart = addDays(aEnd, -6);
+      bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -6);
+    } else if (name === '30d') {
+      aEnd = lastDate; aStart = addDays(aEnd, -29);
+      bEnd = addDays(aStart, -1); bStart = addDays(bEnd, -29);
+    } else {
+      return;
+    }
+    paStart.value = isoDate(aStart); paEnd.value = isoDate(aEnd);
+    pbStart.value = isoDate(bStart); pbEnd.value = isoDate(bEnd);
+    for (var i = 0; i < presetButtons.length; i++) {
+      presetButtons[i].classList.toggle('active', presetButtons[i].getAttribute('data-preset') === name);
+    }
+    renderAll();
+  }
+
+  for (var i = 0; i < presetButtons.length; i++) {
+    presetButtons[i].addEventListener('click', function (e) { setPreset(e.currentTarget.getAttribute('data-preset')); });
+  }
+  [paStart, paEnd, pbStart, pbEnd].forEach(function (el) {
+    el.addEventListener('change', function () {
+      for (var i = 0; i < presetButtons.length; i++) presetButtons[i].classList.remove('active');
+      renderAll();
+    });
+  });
+
+  if (DAILY.length) {
+    setPreset('week');
+  } else {
+    for (var j = 0; j < outputs.length; j++) outputs[j].innerHTML = "<p class='empty'>No data loaded.</p>";
+  }
 })();
 </script>
 <script>
