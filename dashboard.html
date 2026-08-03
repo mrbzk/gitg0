@@ -58,12 +58,23 @@ section { background: var(--surface); border: 1px solid var(--border); border-ra
 .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 0.8rem; color: var(--ink-2); }
 .legend-item { display: inline-flex; align-items: center; gap: 6px; }
 .legend-item i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-.table-wrap { overflow-x: auto; margin-top: 12px; max-height: 420px; overflow-y: auto; }
+.table-wrap { overflow-x: auto; margin-top: 12px; }
 table { border-collapse: collapse; width: 100%; font-size: 0.8rem; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
 th { color: var(--ink-mut); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: .02em;
-  position: sticky; top: 0; background: var(--surface); }
+  background: var(--surface); }
 .rowhead { font-weight: 600; }
+.pagination-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--ink-2); }
+.pagination-size { display: flex; align-items: center; gap: 6px; }
+.pagination-size select { font: inherit; font-size: 0.78rem; background: var(--page); color: var(--ink-1);
+  border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; }
+.pagination-nav { display: flex; align-items: center; gap: 8px; }
+.pagination-nav button { font: inherit; font-size: 0.78rem; background: var(--surface); color: var(--ink-1);
+  border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.pagination-nav button:hover:not(:disabled) { background: var(--grid); }
+.pagination-nav button:disabled { opacity: 0.4; cursor: default; }
+.pagination-page { font-variant-numeric: tabular-nums; min-width: 44px; text-align: center; }
 .pill { display: inline-block; margin-left: 8px; font-size: 0.65rem; font-weight: 500; color: var(--ink-mut);
   border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; text-transform: uppercase; }
 .mut { color: var(--ink-mut); }
@@ -426,6 +437,82 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   });
   document.addEventListener('click', closeAll);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+})();
+</script>
+<script>
+(function () {
+  var PAGE_SIZES = [10, 25, 50, 100];
+  function init(wrap) {
+    var table = wrap.querySelector('table');
+    var tbody = table && table.querySelector('tbody');
+    if (!tbody) return;
+    var rows = Array.prototype.slice.call(tbody.children);
+    if (rows.length <= PAGE_SIZES[0]) return;
+
+    var bar = document.createElement('div');
+    bar.className = 'pagination-bar';
+
+    var sizeWrap = document.createElement('label');
+    sizeWrap.className = 'pagination-size';
+    sizeWrap.appendChild(document.createTextNode('Show '));
+    var select = document.createElement('select');
+    PAGE_SIZES.filter(function (n) { return n < rows.length; }).concat([rows.length]).forEach(function (n) {
+      var opt = document.createElement('option');
+      opt.value = n === rows.length ? 'all' : String(n);
+      opt.textContent = n === rows.length ? 'All (' + n + ')' : String(n);
+      select.appendChild(opt);
+    });
+    sizeWrap.appendChild(select);
+    sizeWrap.appendChild(document.createTextNode(' at a time'));
+
+    var info = document.createElement('span');
+    info.className = 'pagination-info';
+
+    var prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.textContent = 'Prev';
+    var pageLabel = document.createElement('span');
+    pageLabel.className = 'pagination-page';
+    var nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.textContent = 'Next';
+    var nav = document.createElement('span');
+    nav.className = 'pagination-nav';
+    nav.appendChild(prevBtn);
+    nav.appendChild(pageLabel);
+    nav.appendChild(nextBtn);
+
+    bar.appendChild(sizeWrap);
+    bar.appendChild(info);
+    bar.appendChild(nav);
+    wrap.appendChild(bar);
+
+    var page = 0;
+    function pageSize() { return select.value === 'all' ? rows.length : parseInt(select.value, 10); }
+    function totalPages() { return Math.max(1, Math.ceil(rows.length / pageSize())); }
+    function render() {
+      var size = pageSize();
+      var total = totalPages();
+      if (page >= total) page = total - 1;
+      if (page < 0) page = 0;
+      var start = page * size;
+      var end = Math.min(start + size, rows.length);
+      rows.forEach(function (r, i) { r.style.display = (i >= start && i < end) ? '' : 'none'; });
+      info.textContent = 'Showing ' + (start + 1) + '\u2013' + end + ' of ' + rows.length;
+      pageLabel.textContent = (page + 1) + ' / ' + total;
+      prevBtn.disabled = page === 0;
+      nextBtn.disabled = page >= total - 1;
+    }
+    select.addEventListener('change', function () { page = 0; render(); });
+    prevBtn.addEventListener('click', function () { page--; render(); });
+    nextBtn.addEventListener('click', function () { page++; render(); });
+    page = totalPages() - 1;
+    render();
+  }
+  document.querySelectorAll('.table-wrap').forEach(function (wrap) {
+    if (wrap.classList.contains('compare-table')) return;
+    init(wrap);
+  });
 })();
 </script>
 </body>
