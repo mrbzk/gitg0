@@ -733,7 +733,7 @@ def main():
         fi, fk = funnel["instantly"], funnel["kakiyo"]
         instantly_funnel = funnel_chart(
             [("Total unique contacts", fi["total_unique_contacts"]), ("Emails sent", fi["emails_sent"]),
-             ("Emails replied", fi["emails_replied"]), ("Conversions", fi["conversions"])],
+             ("Emails replied", fi["emails_replied"]), ("Sales", fi["conversions"])],
             "blue",
             split={"stage_index": 2, "segments": [
                 {"label": "positive", "value": fi["emails_replied_positive"], "cls": "good"},
@@ -745,15 +745,20 @@ def main():
             "<p class='note'>Emails sent can exceed total unique contacts because each contact receives multiple "
             "steps in a sequence. \"Unknown\" replies are ones Instantly hasn't been marked interested or not "
             f"interested yet — not counted as negative. Snapshot as of {escape(funnel['fetched_at'])} "
-            f"({escape(fi.get('source',''))}).</p>"
+            f"({escape(fi.get('source',''))}). \"Sales\" is currently sourced from Instantly's own Closed/Won "
+            "status — a firmer source for this number is still being worked out.</p>"
         )
         kakiyo_funnel = funnel_chart(
             [("Connections sent", fk["connections_sent"]), ("Connections accepted", fk["connections_accepted"]),
              ("Contacts replied", fk["contacts_replied"]), ("Contacts qualified", fk["contacts_qualified"]),
-             ("Conversions", fk["conversions"])],
+             ("Sales", fk["conversions"])],
             "orange",
         )
-        kakiyo_funnel += f"<p class='note'>Snapshot as of {escape(funnel['fetched_at'])} ({escape(fk.get('source',''))}).</p>"
+        kakiyo_funnel += (
+            f"<p class='note'>Snapshot as of {escape(funnel['fetched_at'])} ({escape(fk.get('source',''))}). "
+            "\"Sales\" is currently sourced from Kakiyo's own `closed` status — a firmer source for this number "
+            "is still being worked out.</p>"
+        )
     else:
         instantly_funnel = kakiyo_funnel = "<p class='empty'>No funnel data recorded yet — see data/funnel.json.</p>"
 
