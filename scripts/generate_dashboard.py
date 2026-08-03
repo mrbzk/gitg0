@@ -319,16 +319,41 @@ KAKIYO_PERIOD_COLS = [("conn_sent", "Connections sent"), ("conn_accepted", "Conn
 
 INSTANTLY_KPI_FIELDS = [("sent", "Sends"), ("opens", "Opens"), ("replies", "Replies"), ("interested", "Interested")]
 KAKIYO_KPI_FIELDS = [("conn_sent", "Connections sent"), ("conn_accepted", "Connections accepted"), ("replied", "Replies"), ("completing_goal", "# Completing goal")]
-ALL_KPI_FIELDS = INSTANTLY_KPI_FIELDS + KAKIYO_KPI_FIELDS
 
 
-def wow_tiles(cur, prev, fields=ALL_KPI_FIELDS):
+def wow_tiles(cur, prev, fields):
     tiles = []
     for key, label in fields:
         cur_v = cur.get(key, 0)
         sub = fmt_delta(cur_v, prev.get(key, 0)) + " vs prior week" if prev else "<span class='delta flat'>no prior week yet</span>"
         tiles.append(f"<div class='tile'><div class='tile-label'>{escape(label)}</div><div class='tile-value'>{cur_v:,}</div><div class='tile-sub'>{sub}</div></div>")
     return f"<div class='tiles'>{''.join(tiles)}</div>"
+
+
+def combined_kpi_tiles(cur, prev):
+    """Cross-platform KPI tiles. Sends merges Instantly sends + Kakiyo connections sent,
+    and Replies merges both platforms' unique replies — see the footnote this pairs with."""
+    prev = prev or {}
+    has_prev = bool(prev)
+
+    def tile(label, cur_v, prev_v):
+        sub = fmt_delta(cur_v, prev_v) + " vs prior week" if has_prev else "<span class='delta flat'>no prior week yet</span>"
+        return f"<div class='tile'><div class='tile-label'>{escape(label)}</div><div class='tile-value'>{cur_v:,}</div><div class='tile-sub'>{sub}</div></div>"
+
+    tiles = [
+        tile("Sends", cur.get("sent", 0) + cur.get("conn_sent", 0), prev.get("sent", 0) + prev.get("conn_sent", 0)),
+        tile("Opens", cur.get("opens", 0), prev.get("opens", 0)),
+        tile("Replies", cur.get("replies", 0) + cur.get("replied", 0), prev.get("replies", 0) + prev.get("replied", 0)),
+        tile("Interested", cur.get("interested", 0), prev.get("interested", 0)),
+        tile("Connections accepted", cur.get("conn_accepted", 0), prev.get("conn_accepted", 0)),
+        tile("# Completing goal", cur.get("completing_goal", 0), prev.get("completing_goal", 0)),
+    ]
+    footnote = (
+        "<p class='note'>\"Sends\" combines Instantly's emails sent and Kakiyo's connection requests sent — both "
+        "are the first outreach touch on their platform, so they're counted as the same step here. \"Replies\" "
+        "combines both platforms' reply counts the same way.</p>"
+    )
+    return f"<div class='tiles'>{''.join(tiles)}</div>{footnote}"
 
 
 def instantly_daily_table(rows):
@@ -694,7 +719,7 @@ def main():
             f"<p class='note'>Week of {escape(week_label(cur_wk_key))} is still in progress — totals will grow "
             "before it's comparable to a full week.</p>" if in_progress else ""
         )
-        headline = wow_tiles(cur_wk, prev_wk) + in_progress_note
+        headline = combined_kpi_tiles(cur_wk, prev_wk) + in_progress_note
         instantly_kpi = wow_tiles(cur_wk, prev_wk, INSTANTLY_KPI_FIELDS) + in_progress_note
         kakiyo_kpi = wow_tiles(cur_wk, prev_wk, KAKIYO_KPI_FIELDS) + in_progress_note
     else:
