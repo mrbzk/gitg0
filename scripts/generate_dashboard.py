@@ -773,8 +773,8 @@ def main():
     )
 
     weekly_chart_periods = [(week_label(k), p) for k, p in weekly_sorted]
-    instantly_weekly_table = totals_table(weekly_sorted, INSTANTLY_PERIOD_COLS, lambda k: f"{week_label(k)} ({k.isoformat()} start)")
-    kakiyo_weekly_table = totals_table(weekly_sorted, KAKIYO_PERIOD_COLS, lambda k: f"{week_label(k)} ({k.isoformat()} start)")
+    instantly_weekly_table = totals_table(weekly_sorted, INSTANTLY_PERIOD_COLS, lambda k: week_label(k))
+    kakiyo_weekly_table = totals_table(weekly_sorted, KAKIYO_PERIOD_COLS, lambda k: week_label(k))
     instantly_monthly_table = totals_table(monthly_sorted, INSTANTLY_PERIOD_COLS, lambda k: month_label(k))
     kakiyo_monthly_table = totals_table(monthly_sorted, KAKIYO_PERIOD_COLS, lambda k: month_label(k))
 
