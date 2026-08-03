@@ -97,6 +97,7 @@ def load_instantly():
             d = rec["date"]
             by_date[d]["sent"] += rec.get("sent", 0)
             by_date[d]["opens"] += rec.get("unique_opened", 0)
+            by_date[d]["replies"] += rec.get("unique_replies", 0)
             by_date[d]["interested"] += rec.get("opportunities", 0)
     return raw["fetched_at"], by_date
 
@@ -153,13 +154,14 @@ def build_daily_rows(instantly_by_date, kakiyo_changes):
     for d in daterange(lo, hi):
         ds = d.isoformat()
         im = instantly_by_date.get(ds, {})
-        sent, opens, interested = im.get("sent", 0), im.get("opens", 0), im.get("interested", 0)
+        sent, opens, replies, interested = im.get("sent", 0), im.get("opens", 0), im.get("replies", 0), im.get("interested", 0)
         open_rate = (opens / sent * 100) if sent else 0.0
         kc = kakiyo_changes.get(ds)
         rows.append({
-            "date": ds, "sent": sent, "opens": opens, "open_rate": open_rate, "interested": interested,
+            "date": ds, "sent": sent, "opens": opens, "open_rate": open_rate, "replies": replies, "interested": interested,
             "conn_sent": None if kc is None else (None if kc["baseline"] else kc["invitationsSent"]),
             "conn_accepted": None if kc is None else (None if kc["baseline"] else kc["invitationsAccepted"]),
+            "replied": None if kc is None else (None if kc["baseline"] else kc["prospectsAnswers"]),
             "completing_goal": None if kc is None else (None if kc["baseline"] else kc["qualified"]),
             "kakiyo_note": "Baseline (first snapshot)" if (kc and kc["baseline"]) else None,
         })
@@ -171,13 +173,15 @@ def aggregate_period(daily_rows, period_key_fn):
     for row in daily_rows:
         d = date.fromisoformat(row["date"])
         key = period_key_fn(d)
-        p = periods.setdefault(key, {"start": key, "sent": 0, "opens": 0, "interested": 0, "conn_sent": 0, "conn_accepted": 0, "completing_goal": 0})
+        p = periods.setdefault(key, {"start": key, "sent": 0, "opens": 0, "replies": 0, "interested": 0,
+                                      "conn_sent": 0, "conn_accepted": 0, "replied": 0, "completing_goal": 0})
         p["sent"] += row["sent"]
         p["opens"] += row["opens"]
+        p["replies"] += row["replies"]
         p["interested"] += row["interested"]
-        for f, col in (("conn_sent", "conn_sent"), ("conn_accepted", "conn_accepted"), ("completing_goal", "completing_goal")):
+        for f in ("conn_sent", "conn_accepted", "replied", "completing_goal"):
             if row[f] is not None:
-                p[col] += row[f]
+                p[f] += row[f]
     for p in periods.values():
         p["open_rate"] = (p["opens"] / p["sent"] * 100) if p["sent"] else 0.0
     return periods
@@ -313,8 +317,8 @@ INSTANTLY_PERIOD_COLS = [("sent", "Sends"), ("opens", "Opens"), ("open_rate", "O
 KAKIYO_PERIOD_COLS = [("conn_sent", "Connections sent"), ("conn_accepted", "Connections accepted"), ("completing_goal", "# Completing goal")]
 
 
-INSTANTLY_KPI_FIELDS = [("sent", "Sends"), ("opens", "Opens"), ("interested", "Interested")]
-KAKIYO_KPI_FIELDS = [("conn_sent", "Connections sent"), ("conn_accepted", "Connections accepted"), ("completing_goal", "# Completing goal")]
+INSTANTLY_KPI_FIELDS = [("sent", "Sends"), ("opens", "Opens"), ("replies", "Replies"), ("interested", "Interested")]
+KAKIYO_KPI_FIELDS = [("conn_sent", "Connections sent"), ("conn_accepted", "Connections accepted"), ("replied", "Replies"), ("completing_goal", "# Completing goal")]
 ALL_KPI_FIELDS = INSTANTLY_KPI_FIELDS + KAKIYO_KPI_FIELDS
 
 
@@ -350,8 +354,8 @@ def kakiyo_daily_table(rows):
     return f"<div class='table-wrap'><table><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
 
 
-INSTANTLY_COMPARE_METRICS = [["sent", "Sends", False], ["opens", "Opens", False], ["openRate", "Open rate", True], ["interested", "Interested", False]]
-KAKIYO_COMPARE_METRICS = [["connSent", "Connections sent", False], ["connAccepted", "Connections accepted", False], ["completingGoal", "# Completing goal", False]]
+INSTANTLY_COMPARE_METRICS = [["sent", "Sends", False], ["opens", "Opens", False], ["openRate", "Open rate", True], ["replies", "Replies", False], ["interested", "Interested", False]]
+KAKIYO_COMPARE_METRICS = [["connSent", "Connections sent", False], ["connAccepted", "Connections accepted", False], ["replied", "Replies", False], ["completingGoal", "# Completing goal", False]]
 
 
 def compare_widget(metrics, needs_kakiyo, min_date, max_date):
@@ -520,19 +524,20 @@ COMPARE_JS = """
   var lastDate = DAILY.length ? parseISO(DAILY[DAILY.length - 1].date) : new Date();
 
   function sumRange(start, end) {
-    var sent = 0, opens = 0, interested = 0, connSent = 0, connAccepted = 0, completingGoal = 0, hasKakiyo = false, days = 0;
+    var sent = 0, opens = 0, replies = 0, interested = 0, connSent = 0, connAccepted = 0, replied = 0, completingGoal = 0, hasKakiyo = false, days = 0;
     for (var i = 0; i < DAILY.length; i++) {
       var r = DAILY[i];
       if (r.date < start || r.date > end) continue;
       days++;
-      sent += r.sent; opens += r.opens; interested += r.interested;
+      sent += r.sent; opens += r.opens; replies += r.replies; interested += r.interested;
       if (r.conn_sent !== null) { connSent += r.conn_sent; hasKakiyo = true; }
       if (r.conn_accepted !== null) { connAccepted += r.conn_accepted; hasKakiyo = true; }
+      if (r.replied !== null) { replied += r.replied; hasKakiyo = true; }
       if (r.completing_goal !== null) { completingGoal += r.completing_goal; hasKakiyo = true; }
     }
     var openRate = sent ? (opens / sent * 100) : 0;
-    return { sent: sent, opens: opens, openRate: openRate, interested: interested, connSent: connSent,
-      connAccepted: connAccepted, completingGoal: completingGoal, hasKakiyo: hasKakiyo, days: days };
+    return { sent: sent, opens: opens, openRate: openRate, replies: replies, interested: interested, connSent: connSent,
+      connAccepted: connAccepted, replied: replied, completingGoal: completingGoal, hasKakiyo: hasKakiyo, days: days };
   }
 
   function fmtDelta(cur, prev) {
