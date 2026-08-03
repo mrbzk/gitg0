@@ -6,19 +6,27 @@ committed to this repo — no server, no hosting, no external API keys required.
 refresh it from inside a Claude session (this one or a new one) using the connected
 Kakiyo and Instantly MCP tools.
 
-Open `dashboard.html` in a browser to view it.
+Open `dashboard.html` in a browser to view it. Layout is modeled on the team's
+outreach tracking spreadsheet: a **this-week-vs-prior-week** summary, **Weekly
+totals**, **Monthly totals**, a full **Daily activity** log, an Instantly
+per-campaign breakdown, and the **Kakiyo snapshots (raw)** history.
 
 ## How it works
 
 - **Instantly** exposes a real daily analytics feed
   (`get_daily_campaign_analytics`), so `data/instantly_raw.json` holds true daily
-  history and the dashboard aggregates it into Mon–Sun weeks on every regenerate.
+  history and the dashboard aggregates it into Mon–Sun weeks and calendar months
+  on every regenerate.
 - **Kakiyo**'s API only exposes running totals per campaign (no historical
   time series). To get a week-over-week trend anyway, `data/kakiyo_snapshots.jsonl`
   is an append-only log — every refresh appends one row with the current cumulative
-  totals, and the dashboard diffs consecutive rows to show what changed. The first
-  refresh has nothing to compare against; the second (about a week later) produces
-  the first real week-over-week number, and it keeps improving from there.
+  totals (`invitationsSent`, `invitationsAccepted`, `qualified`, etc.), and the
+  dashboard diffs consecutive rows to get each period's real change. The
+  `2026-07-30` baseline row was seeded from the team's existing tracking
+  spreadsheet (Kakiyo's API had no way to look back further); every row after
+  that is pulled live and tagged `"source": "kakiyo-mcp"`. Weeks/months before
+  a snapshot existed show `0` for Kakiyo columns — that means "not tracked yet,"
+  not "no activity."
 
 `scripts/generate_dashboard.py` reads both data files and renders `dashboard.html`.
 It's dependency-free (Python 3 standard library only).
@@ -46,7 +54,7 @@ Ask Claude (in this repo) to "refresh the activity dashboard." It should:
    overwrite — if a snapshot for today's date already exists, replace that line
    instead of duplicating it):
    ```json
-   {"date": "YYYY-MM-DD", "campaigns": [{"id": "...", "name": "...", "status": "active", "prospects": 0, "invitationsSent": 0, "invitationsAccepted": 0, "messagesSent": 0, "prospectsAnswers": 0, "qualified": 0, "closed": 0}]}
+   {"date": "YYYY-MM-DD", "source": "kakiyo-mcp", "campaigns": [{"id": "...", "name": "...", "status": "active", "prospects": 0, "invitationsSent": 0, "invitationsAccepted": 0, "messagesSent": 0, "prospectsAnswers": 0, "qualified": 0, "closed": 0}]}
    ```
 
 3. **Regenerate the HTML**:
