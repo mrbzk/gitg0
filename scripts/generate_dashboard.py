@@ -91,22 +91,14 @@ def fmt_or_na(v, suffix=""):
 # --- load data ------------------------------------------------------------
 def load_instantly():
     raw = json.loads((DATA_DIR / "instantly_raw.json").read_text())
-    campaigns = []
     by_date = defaultdict(lambda: defaultdict(int))
     for camp in raw["campaigns"]:
-        weekly = defaultdict(lambda: defaultdict(int))
         for rec in camp["daily"]:
             d = rec["date"]
             by_date[d]["sent"] += rec.get("sent", 0)
             by_date[d]["opens"] += rec.get("unique_opened", 0)
             by_date[d]["interested"] += rec.get("opportunities", 0)
-            wk = week_start(date.fromisoformat(d)).isoformat()
-            weekly[wk]["sent"] += rec.get("sent", 0)
-            weekly[wk]["opens"] += rec.get("unique_opened", 0)
-            weekly[wk]["replies"] += rec.get("unique_replies", 0)
-        if camp["daily"]:
-            campaigns.append({"id": camp["id"], "name": camp["name"], "status": camp["status"], "weekly": weekly})
-    return raw["fetched_at"], campaigns, by_date
+    return raw["fetched_at"], by_date
 
 
 def load_funnel():
@@ -286,17 +278,18 @@ def funnel_chart(stages, hue, split=None):
             "</div>"
         )
         if split and split["stage_index"] == i:
-            gv, bv = split["good_value"], split["bad_value"]
-            gtot = (gv + bv) or 1
-            gp, bp = gv / gtot * 100, bv / gtot * 100
+            segs = split["segments"]  # [{'label':..., 'value':..., 'cls':'good'|'bad'|'unknown'}, ...]
+            seg_total = sum(s["value"] for s in segs) or 1
+            bar_html = "".join(
+                f"<div class='seg {s['cls']}' style='width:{s['value']/seg_total*100:.1f}%'></div>" for s in segs
+            )
+            legend_html = "".join(
+                f"<span class='legend-item'><i class='{s['cls']}'></i>{s['value']:,} {escape(s['label'])} ({s['value']/seg_total*100:.0f}%)</span>"
+                for s in segs
+            )
             rows.append(
-                "<div class='funnel-row'><div></div>"
-                f"<div class='split-bar'><div class='seg good' style='width:{gp:.1f}%'></div><div class='seg bad' style='width:{bp:.1f}%'></div></div>"
-                "<div></div><div></div></div>"
-                "<div class='funnel-row'><div></div><div class='split-legend'>"
-                f"<span class='legend-item'><i class='good'></i>{gv:,} {escape(split['good_label'])} ({gp:.0f}%)</span>"
-                f"<span class='legend-item'><i class='bad'></i>{bv:,} {escape(split['bad_label'])} ({bp:.0f}%)</span>"
-                "</div></div>"
+                f"<div class='funnel-row'><div></div><div class='split-bar'>{bar_html}</div><div></div><div></div></div>"
+                f"<div class='funnel-row'><div></div><div class='split-legend'>{legend_html}</div></div>"
             )
     return f"<div class='funnel'>{''.join(rows)}</div>"
 
@@ -370,19 +363,6 @@ def kakiyo_raw_table(snaps, changes):
         src = f" <span class='pill'>{escape(snap['source'])}</span>" if snap.get("source") else ""
         rows.append(f"<tr><td class='rowhead'>{snap['date']}{src}</td>{cum_cells}{delta_cells}</tr>")
     return f"<div class='table-wrap'><table><thead><tr><th>Snapshot date</th>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
-
-
-def campaign_breakdown_table(campaigns, weeks):
-    thead = "".join(f"<th>{escape(week_label(date.fromisoformat(wk)))}</th>" for wk in weeks)
-    rows = []
-    status_names = {1: "Active", 2: "Paused", 0: "Draft", 3: "Completed"}
-    for camp in campaigns:
-        cells = []
-        for wk in weeks:
-            m = camp["weekly"].get(wk, {})
-            cells.append(f"<td>{m.get('sent',0)} sent / {m.get('opens',0)} opens / {m.get('replies',0)} replies</td>")
-        rows.append(f"<tr><td class='rowhead'>{escape(camp['name'])}<span class='pill'>{status_names.get(camp['status'], camp['status'])}</span></td>{''.join(cells)}</tr>")
-    return f"<div class='table-wrap'><table><thead><tr><th>Campaign</th>{thead}</tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
 
 
 CSS_TEMPLATE = """
@@ -478,10 +458,12 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
 .split-bar .seg { height: 100%; min-width: 2px; }
 .split-bar .seg.good { background: var(--good); }
 .split-bar .seg.bad { background: var(--bad); }
+.split-bar .seg.unknown { background: var(--ink-mut); }
 .split-legend { grid-column: 2 / 5; display: flex; gap: 16px; font-size: 0.75rem; color: var(--ink-2); }
 .split-legend .legend-item i { width: 9px; height: 9px; border-radius: 2px; }
 .split-legend .legend-item i.good { background: var(--good); }
 .split-legend .legend-item i.bad { background: var(--bad); }
+.split-legend .legend-item i.unknown { background: var(--ink-mut); }
 @media (max-width: 640px) {
   .funnel-row { grid-template-columns: 1fr; gap: 4px; }
   .funnel-value, .funnel-meta { text-align: left; }
@@ -657,7 +639,7 @@ def build_css():
 
 
 def main():
-    fetched_at, campaigns, instantly_by_date = load_instantly()
+    fetched_at, instantly_by_date = load_instantly()
     kakiyo_snaps = load_kakiyo_snapshots()
     kakiyo_changes = kakiyo_daily_changes(kakiyo_snaps)
 
@@ -704,12 +686,17 @@ def main():
             [("Total unique contacts", fi["total_unique_contacts"]), ("Emails sent", fi["emails_sent"]),
              ("Emails replied", fi["emails_replied"]), ("Conversions", fi["conversions"])],
             "blue",
-            split={"stage_index": 2, "good_label": "positive", "good_value": fi["emails_replied_positive"],
-                   "bad_label": "negative", "bad_value": fi["emails_replied_negative"]},
+            split={"stage_index": 2, "segments": [
+                {"label": "positive", "value": fi["emails_replied_positive"], "cls": "good"},
+                {"label": "negative", "value": fi["emails_replied_negative"], "cls": "bad"},
+                {"label": "unknown", "value": fi["emails_replied_unknown"], "cls": "unknown"},
+            ]},
         )
         instantly_funnel += (
             "<p class='note'>Emails sent can exceed total unique contacts because each contact receives multiple "
-            f"steps in a sequence. Snapshot as of {escape(funnel['fetched_at'])} ({escape(fi.get('source',''))}).</p>"
+            "steps in a sequence. \"Unknown\" replies are ones Instantly hasn't been marked interested or not "
+            f"interested yet — not counted as negative. Snapshot as of {escape(funnel['fetched_at'])} "
+            f"({escape(fi.get('source',''))}).</p>"
         )
         kakiyo_funnel = funnel_chart(
             [("Connections sent", fk["connections_sent"]), ("Connections accepted", fk["connections_accepted"]),
@@ -720,9 +707,6 @@ def main():
         kakiyo_funnel += f"<p class='note'>Snapshot as of {escape(funnel['fetched_at'])} ({escape(fk.get('source',''))}).</p>"
     else:
         instantly_funnel = kakiyo_funnel = "<p class='empty'>No funnel data recorded yet — see data/funnel.json.</p>"
-
-    recent_weeks = [wk for wk, _ in weekly_sorted[-6:]]
-    campaign_table = campaign_breakdown_table(campaigns, [wk.isoformat() for wk in recent_weeks]) if campaigns else ""
 
     kakiyo_note = (
         "<p class='note'>Kakiyo's API only exposes running totals, not a historical daily feed. Each refresh appends a "
@@ -810,11 +794,6 @@ def main():
     <section>
       <h2>Daily activity</h2>
       {instantly_daily}
-    </section>
-
-    <section>
-      <h2>By campaign (last 6 weeks)</h2>
-      {campaign_table if campaign_table else "<p class='empty'>No campaign data.</p>"}
     </section>
   </div>
 

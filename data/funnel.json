@@ -5,9 +5,10 @@
     "emails_sent": 678,
     "emails_replied": 20,
     "emails_replied_positive": 6,
-    "emails_replied_negative": 14,
+    "emails_replied_negative": 6,
+    "emails_replied_unknown": 8,
     "conversions": 0,
-    "source": "instantly-mcp:analytics_campaign_overview (all campaigns, all-time)"
+    "source": "instantly-mcp:analytics_campaign_overview + list_leads(FILTER_LEAD_INTERESTED/FILTER_LEAD_NOT_INTERESTED) (all campaigns, all-time)"
   },
   "kakiyo": {
     "connections_sent": 117,

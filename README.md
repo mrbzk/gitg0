@@ -12,8 +12,7 @@ summary and an interactive **Compare date ranges** tool up top, then an
 **Instantly** / **Kakiyo** tab switcher for the platform-specific detail —
 each tab opens on its **Funnel** (a waterfall chart of that platform's
 pipeline stages), then **Weekly totals**, **Monthly totals**, and **Daily
-activity**, plus Instantly's per-campaign breakdown and Kakiyo's raw snapshot
-history.
+activity**, plus Kakiyo's raw snapshot history.
 
 ### Funnels
 
@@ -22,8 +21,9 @@ the week/month tables — built from `data/funnel.json`:
 
 - **Kakiyo**: Connections sent → Connections accepted → Contacts replied →
   Contacts qualified → Conversions (`closed`).
-- **Instantly**: Total unique contacts → Emails sent → Emails replied (with
-  a positive/negative split, from Instantly's interest-status labels) →
+- **Instantly**: Total unique contacts → Emails sent → Emails replied (split
+  positive / negative / unknown, from Instantly's interest-status labels —
+  "unknown" is a reply nobody has triaged yet, not counted as negative) →
   Conversions (`total_closed`). Emails sent can run *higher* than total
   unique contacts — that's expected, since each contact gets multiple steps
   in a sequence — so this is a waterfall (bars sized to their own value),
@@ -93,11 +93,13 @@ Ask Claude (in this repo) to "refresh the activity dashboard." It should:
    - Instantly: `analytics_campaign_overview` (no date range = all-time) for
      `contacted_count` (total unique contacts), `emails_sent_count`, `reply_count_unique`,
      `total_interested` (positive replies), and `total_closed` (conversions). Negative
-     replies = `reply_count_unique - total_interested`.
+     replies come from `list_leads` with `filter: FILTER_LEAD_NOT_INTERESTED` (page
+     through with `starting_after` and count the results — the response has no total
+     count field). Unknown = `reply_count_unique - total_interested - <not-interested count>`.
    ```json
    {
      "fetched_at": "<ISO timestamp>",
-     "instantly": {"total_unique_contacts": 0, "emails_sent": 0, "emails_replied": 0, "emails_replied_positive": 0, "emails_replied_negative": 0, "conversions": 0, "source": "instantly-mcp:analytics_campaign_overview (all campaigns, all-time)"},
+     "instantly": {"total_unique_contacts": 0, "emails_sent": 0, "emails_replied": 0, "emails_replied_positive": 0, "emails_replied_negative": 0, "emails_replied_unknown": 0, "conversions": 0, "source": "instantly-mcp:analytics_campaign_overview (all campaigns, all-time)"},
      "kakiyo": {"connections_sent": 0, "connections_accepted": 0, "contacts_replied": 0, "contacts_qualified": 0, "conversions": 0, "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)"}
    }
    ```
