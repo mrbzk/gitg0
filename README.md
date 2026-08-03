@@ -16,7 +16,9 @@ per-section picker; one selection updates all three at once, live,
 client-side (the full merged daily dataset is embedded once in the HTML).
 Below that, each tab still has its **Funnel** (a waterfall chart of that
 platform's pipeline stages, always all-time — not affected by the picker),
-**Weekly totals**, **Monthly totals**, and **Daily activity**.
+**Weekly totals**, **Monthly totals**, and **Daily activity**. Every section
+heading has a small (i) info bubble — hover on desktop, tap on mobile —
+explaining what it shows.
 
 ### Funnels
 
@@ -24,17 +26,29 @@ Each tab's Funnel section is a cumulative, all-time waterfall — not tied to
 the period picker or the week/month tables — built from `data/funnel.json`:
 
 - **Kakiyo**: Connections sent → Connections accepted → Contacts replied →
-  Contacts qualified → Conversions (`closed`).
+  Contacts qualified → Sales (`closed`).
 - **Instantly**: Total unique contacts → Emails sent → Emails replied (split
   positive / negative / unknown, from Instantly's interest-status labels —
   "unknown" is a reply nobody has triaged yet, not counted as negative) →
-  Conversions (`total_closed`). Emails sent can run *higher* than total
+  Sales (`total_closed`). Emails sent can run *higher* than total
   unique contacts — that's expected, since each contact gets multiple steps
   in a sequence — so this is a waterfall (bars sized to their own value),
   not a strictly-narrowing funnel.
 
 Every bar shows its **% of the top-of-funnel total** and its **% retained
-from the previous stage**.
+from the previous stage**. "Sales" on both funnels currently reads the
+platform's own Closed/Won status — a firmer, definitive source for that
+number is still pending.
+
+### Active conversations (Kakiyo)
+
+A live KPI in the Kakiyo tab, separate from the funnel and not tied to the
+period picker: the count of prospects who've replied or been qualified
+*and* whose most recent message is within the last 3 days — i.e. people
+worth following up with right now. Built from `list_campaign_prospects`
+(`hasResponded: true`, status Replied or Qualified, `lastMessage` inside the
+window). Stored in `data/funnel.json`'s `kakiyo.active_conversations` field
+alongside `active_conversations_window_days` and `active_conversations_fetched_at`.
 
 ## How it works
 
@@ -96,9 +110,13 @@ Ask Claude (in this repo) to "refresh the activity dashboard." It should:
    {
      "fetched_at": "<ISO timestamp>",
      "instantly": {"total_unique_contacts": 0, "emails_sent": 0, "emails_replied": 0, "emails_replied_positive": 0, "emails_replied_negative": 0, "emails_replied_unknown": 0, "conversions": 0, "source": "instantly-mcp:analytics_campaign_overview (all campaigns, all-time)"},
-     "kakiyo": {"connections_sent": 0, "connections_accepted": 0, "contacts_replied": 0, "contacts_qualified": 0, "conversions": 0, "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)"}
+     "kakiyo": {"connections_sent": 0, "connections_accepted": 0, "contacts_replied": 0, "contacts_qualified": 0, "conversions": 0, "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)", "active_conversations": 0, "active_conversations_window_days": 3, "active_conversations_fetched_at": "<ISO timestamp>", "active_conversations_source": "kakiyo-mcp:list_campaign_prospects(hasResponded=true), counting prospects with status Replied or Qualified whose lastMessage falls inside the window"}
    }
    ```
+   `active_conversations` comes from `list_campaign_prospects` per Kakiyo campaign with
+   `hasResponded: true` (paginate with `cursor` if a page fills up), counting prospects
+   with `status` 4 (replied) or 5 (qualified) whose `lastMessage` timestamp is within
+   the last 3 days of now.
 
 4. **Regenerate the HTML**:
    ```
@@ -107,8 +125,14 @@ Ask Claude (in this repo) to "refresh the activity dashboard." It should:
 
 5. Commit and push the updated `data/` files and `dashboard.html`.
 
-For a running trend, refresh roughly once a week (a Claude Routine/cron trigger works
-well for this — ask Claude to set one up if you want it automatic).
+### Automated refresh
+
+A daily Claude Routine ("Kakiyo daily snapshot", `0 0 * * *` UTC) already
+handles steps 2–5 for Kakiyo's snapshot log, funnel numbers, and active
+conversations — it's bound to this session (not a fresh one each time)
+because this org can't currently grant MCP connector access to
+routine-spawned fresh sessions. Instantly's data (step 1) isn't automated
+yet; ask Claude to set that up too if you want the whole pipeline unattended.
 
 ## Files
 

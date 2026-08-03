@@ -11,11 +11,15 @@
     "source": "instantly-mcp:analytics_campaign_overview + list_leads(FILTER_LEAD_INTERESTED/FILTER_LEAD_NOT_INTERESTED) (all campaigns, all-time)"
   },
   "kakiyo": {
-    "connections_sent": 117,
-    "connections_accepted": 22,
-    "contacts_replied": 4,
+    "connections_sent": 127,
+    "connections_accepted": 23,
+    "contacts_replied": 6,
     "contacts_qualified": 1,
     "conversions": 0,
-    "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)"
+    "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)",
+    "active_conversations": 3,
+    "active_conversations_window_days": 3,
+    "active_conversations_fetched_at": "2026-08-03T18:26:10Z",
+    "active_conversations_source": "kakiyo-mcp:list_campaign_prospects(hasResponded=true), counting prospects with status Replied or Qualified whose lastMessage falls inside the window"
   }
 }

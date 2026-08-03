@@ -298,6 +298,21 @@ def funnel_chart(stages, hue, split=None):
     return f"<div class='funnel'>{''.join(rows)}</div>"
 
 
+def active_conversations_tile(fk):
+    if "active_conversations" not in fk:
+        return "<p class='empty'>No active-conversation data recorded yet.</p>"
+    days = fk.get("active_conversations_window_days", 3)
+    fetched = fk.get("active_conversations_fetched_at", "")
+    return (
+        "<div class='tiles'><div class='tile'>"
+        f"<div class='tile-label'>Active conversations (last {days} days)</div>"
+        f"<div class='tile-value'>{fk['active_conversations']:,}</div>"
+        "<div class='tile-sub'>Replied or qualified, with their last message inside the window</div>"
+        "</div></div>"
+        f"<p class='note'>As of {escape(fetched)} ({escape(fk.get('active_conversations_source',''))}).</p>"
+    )
+
+
 def info_icon(text):
     return (
         "<span class='info-wrap'>"
@@ -802,8 +817,10 @@ def main():
             "\"Sales\" is currently sourced from Kakiyo's own `closed` status — a firmer source for this number "
             "is still being worked out.</p>"
         )
+        kakiyo_active_conversations = active_conversations_tile(fk)
     else:
         instantly_funnel = kakiyo_funnel = "<p class='empty'>No funnel data recorded yet — see data/funnel.json.</p>"
+        kakiyo_active_conversations = "<p class='empty'>No active-conversation data recorded yet.</p>"
 
     kakiyo_note = (
         "<p class='note'>Kakiyo's API only exposes running totals, not a historical daily feed. Each refresh appends a "
@@ -876,6 +893,11 @@ def main():
     <section>
       <h2>Selected period {info_icon("Kakiyo's own metrics for the same two periods chosen in Compare periods above, with a % change between them.")}</h2>
       {kakiyo_output}
+    </section>
+
+    <section>
+      <h2>Active conversations {info_icon("A live count, not tied to the date picker above: prospects who've replied or been qualified and whose most recent message was within the window — i.e. someone you could follow up with right now.")}</h2>
+      {kakiyo_active_conversations}
     </section>
 
     <section>
