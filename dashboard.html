@@ -96,11 +96,19 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   .info-wrap.open .info-tip { opacity: 1; pointer-events: auto; }
 }
 
+.compare-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600;
+  color: var(--ink-1); margin-bottom: 10px; cursor: pointer; user-select: none; }
+.compare-toggle input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--series-blue); }
 .presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
 .presets button { font: inherit; font-size: 0.8rem; background: var(--surface); color: var(--ink-1);
   border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .presets button:hover { background: var(--grid); }
 .presets button.active { background: var(--series-blue); color: #fff; border-color: var(--series-blue); }
+[data-role="presets-compare"] { display: none; }
+[data-role="pb-picker"] { display: none; }
+#global-compare.compare-mode [data-role="presets-single"] { display: none; }
+#global-compare.compare-mode [data-role="presets-compare"] { display: flex; }
+#global-compare.compare-mode [data-role="pb-picker"] { display: block; }
 .range-pickers { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 8px; }
 .range-picker { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
 .range-picker .rp-label { display:flex; align-items:center; gap:6px; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
@@ -153,11 +161,22 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched 2026-08-03T12:20:00Z.</p>
 
   <section>
-    <h2>Compare periods <span class='info-wrap'><button type='button' class='info-icon' aria-label='About this section'>i</button><span class='info-tip' role='tooltip'>Pick two date ranges (or use a preset) to compare. This is the one control for the whole page — it drives the Overview below and each platform tab&#x27;s own Selected period numbers, all at once.</span></span></h2>
-    <p class="sub" style="margin-bottom:12px;">All 27 loaded days (2026-07-08 to 2026-08-03) are available to compare — pick any two ranges, or use a preset. This controls every metric below: the overview and each platform's own totals.</p>
+    <h2>Compare periods <span class='info-wrap'><button type='button' class='info-icon' aria-label='About this section'>i</button><span class='info-tip' role='tooltip'>Pick a date range (or use a preset) to see totals for that period. Tick the Compare box to line it up against a second range instead. This is the one control for the whole page — it drives the Overview below and each platform tab&#x27;s own Selected period numbers, all at once.</span></span></h2>
+    <p class="sub" style="margin-bottom:12px;">All 27 loaded days (2026-07-08 to 2026-08-03) are available to look at. Pick a range or use a preset below; tick "Compare to a previous period" to see it side by side with another range. This controls every metric below: the overview and each platform's own totals.</p>
     
     <div id="global-compare">
-      <div class="presets">
+      <label class="compare-toggle">
+        <input type="checkbox" data-role="compare-toggle">
+        Compare to a previous period
+      </label>
+      <div class="presets" data-role="presets-single">
+        <button type="button" data-preset="this-week">This week</button>
+        <button type="button" data-preset="this-month">This month</button>
+        <button type="button" data-preset="last-7d">Last 7 days</button>
+        <button type="button" data-preset="last-30d">Last 30 days</button>
+        <button type="button" data-preset="custom">Custom</button>
+      </div>
+      <div class="presets" data-role="presets-compare">
         <button type="button" data-preset="week">This week vs last week</button>
         <button type="button" data-preset="month">This month vs last month</button>
         <button type="button" data-preset="7d">Last 7 days vs previous 7 days</button>
@@ -165,14 +184,14 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
       </div>
       <div class="range-pickers">
         <div class="range-picker">
-          <div class="rp-label"><i style="background:var(--series-blue)"></i>Period A</div>
+          <div class="rp-label"><i style="background:var(--series-blue)"></i><span data-role="pa-title">Period</span></div>
           <div class="rp-fields">
             <input type="date" data-role="pa-start" min="2026-07-08" max="2026-08-03">
             <span>to</span>
             <input type="date" data-role="pa-end" min="2026-07-08" max="2026-08-03">
           </div>
         </div>
-        <div class="range-picker">
+        <div class="range-picker" data-role="pb-picker">
           <div class="rp-label"><i style="background:var(--series-yellow)"></i>Period B</div>
           <div class="rp-fields">
             <input type="date" data-role="pb-start" min="2026-07-08" max="2026-08-03">
@@ -322,14 +341,20 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
 
   var picker = document.getElementById('global-compare');
   if (!picker) return;
+  var compareToggle = picker.querySelector('[data-role="compare-toggle"]');
   var paStart = picker.querySelector('[data-role="pa-start"]'), paEnd = picker.querySelector('[data-role="pa-end"]');
   var pbStart = picker.querySelector('[data-role="pb-start"]'), pbEnd = picker.querySelector('[data-role="pb-end"]');
+  var paTitle = picker.querySelector('[data-role="pa-title"]');
   var rangeNote = picker.querySelector('[data-role="range-note"]');
-  var presetButtons = picker.querySelectorAll('.presets button');
+  var singleButtons = picker.querySelectorAll('[data-role="presets-single"] button');
+  var compareButtons = picker.querySelectorAll('[data-role="presets-compare"] button');
   var outputs = document.querySelectorAll('.compare-output');
   var lastDateStr = DAILY.length ? DAILY[DAILY.length - 1].date : '';
 
-  function renderOne(out, a, b) {
+  function isCompareMode() { return compareToggle.checked; }
+  function clearActive(buttons) { for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove('active'); }
+
+  function renderCompare(out, a, b) {
     var metrics = JSON.parse(out.getAttribute('data-metrics'));
     var needsKakiyo = out.getAttribute('data-needs-kakiyo') === '1';
     var rows = '';
@@ -349,18 +374,68 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
       '<tbody>' + rows + '</tbody></table></div>' + note;
   }
 
-  function renderAll() {
-    if (!paStart.value || !paEnd.value || !pbStart.value || !pbEnd.value) return;
-    var a = sumRange(paStart.value, paEnd.value);
-    var b = sumRange(pbStart.value, pbEnd.value);
-    for (var i = 0; i < outputs.length; i++) renderOne(outputs[i], a, b);
-    var beyond = lastDateStr && (paEnd.value > lastDateStr || pbEnd.value > lastDateStr);
-    rangeNote.textContent = beyond
-      ? 'One of the selected ranges extends past ' + lastDateStr + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
-      : '';
+  function renderSingle(out, a) {
+    var metrics = JSON.parse(out.getAttribute('data-metrics'));
+    var needsKakiyo = out.getAttribute('data-needs-kakiyo') === '1';
+    var rows = '';
+    for (var i = 0; i < metrics.length; i++) {
+      var key = metrics[i][0], label = metrics[i][1], isPct = metrics[i][2];
+      var av = getVal(a, key);
+      var avFmt = isPct ? fmtPct(av) : fmtNum(av);
+      rows += '<tr><td class="rowhead">' + label + '</td><td>' + avFmt + '</td></tr>';
+    }
+    var note = (needsKakiyo && !a.hasKakiyo)
+      ? "<p class='note'>No Kakiyo snapshot activity fell inside this range — those rows will read 0.</p>" : '';
+    out.innerHTML =
+      '<div class="table-wrap compare-table"><table>' +
+      '<thead><tr><th>Metric</th><th>' + paStart.value + ' to ' + paEnd.value + ' (' + a.days + 'd)</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + note;
   }
 
-  function setPreset(name) {
+  function renderAll() {
+    if (!paStart.value || !paEnd.value) return;
+    if (isCompareMode()) {
+      if (!pbStart.value || !pbEnd.value) return;
+      var a = sumRange(paStart.value, paEnd.value);
+      var b = sumRange(pbStart.value, pbEnd.value);
+      for (var i = 0; i < outputs.length; i++) renderCompare(outputs[i], a, b);
+      var beyond = lastDateStr && (paEnd.value > lastDateStr || pbEnd.value > lastDateStr);
+      rangeNote.textContent = beyond
+        ? 'One of the selected ranges extends past ' + lastDateStr + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
+        : '';
+    } else {
+      var a2 = sumRange(paStart.value, paEnd.value);
+      for (var j = 0; j < outputs.length; j++) renderSingle(outputs[j], a2);
+      var beyond2 = lastDateStr && paEnd.value > lastDateStr;
+      rangeNote.textContent = beyond2
+        ? 'The selected range extends past ' + lastDateStr + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
+        : '';
+    }
+  }
+
+  function setSinglePreset(name) {
+    var aStart, aEnd;
+    if (name === 'this-week') { aStart = weekStartOf(lastDate); aEnd = addDays(aStart, 6); }
+    else if (name === 'this-month') { aStart = monthStartOf(lastDate); aEnd = monthEndOf(lastDate); }
+    else if (name === 'last-7d') { aEnd = lastDate; aStart = addDays(aEnd, -6); }
+    else if (name === 'last-30d') { aEnd = lastDate; aStart = addDays(aEnd, -29); }
+    else if (name === 'custom') {
+      clearActive(singleButtons);
+      var btn = picker.querySelector('[data-preset="custom"]');
+      if (btn) btn.classList.add('active');
+      return;
+    } else {
+      return;
+    }
+    paStart.value = isoDate(aStart); paEnd.value = isoDate(aEnd);
+    clearActive(singleButtons);
+    for (var i = 0; i < singleButtons.length; i++) {
+      singleButtons[i].classList.toggle('active', singleButtons[i].getAttribute('data-preset') === name);
+    }
+    renderAll();
+  }
+
+  function setComparePreset(name) {
     var aStart, aEnd, bStart, bEnd;
     if (name === 'week') {
       aStart = weekStartOf(lastDate); aEnd = addDays(aStart, 6);
@@ -380,24 +455,40 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
     }
     paStart.value = isoDate(aStart); paEnd.value = isoDate(aEnd);
     pbStart.value = isoDate(bStart); pbEnd.value = isoDate(bEnd);
-    for (var i = 0; i < presetButtons.length; i++) {
-      presetButtons[i].classList.toggle('active', presetButtons[i].getAttribute('data-preset') === name);
+    clearActive(compareButtons);
+    for (var i = 0; i < compareButtons.length; i++) {
+      compareButtons[i].classList.toggle('active', compareButtons[i].getAttribute('data-preset') === name);
     }
     renderAll();
   }
 
-  for (var i = 0; i < presetButtons.length; i++) {
-    presetButtons[i].addEventListener('click', function (e) { setPreset(e.currentTarget.getAttribute('data-preset')); });
-  }
-  [paStart, paEnd, pbStart, pbEnd].forEach(function (el) {
-    el.addEventListener('change', function () {
-      for (var i = 0; i < presetButtons.length; i++) presetButtons[i].classList.remove('active');
+  function applyMode() {
+    var compare = isCompareMode();
+    picker.classList.toggle('compare-mode', compare);
+    if (paTitle) paTitle.textContent = compare ? 'Period A' : 'Period';
+    if (compare && (!pbStart.value || !pbEnd.value)) {
+      setComparePreset('week');
+    } else {
       renderAll();
-    });
+    }
+  }
+
+  for (var i = 0; i < singleButtons.length; i++) {
+    singleButtons[i].addEventListener('click', function (e) { setSinglePreset(e.currentTarget.getAttribute('data-preset')); });
+  }
+  for (var i = 0; i < compareButtons.length; i++) {
+    compareButtons[i].addEventListener('click', function (e) { setComparePreset(e.currentTarget.getAttribute('data-preset')); });
+  }
+  [paStart, paEnd].forEach(function (el) {
+    el.addEventListener('change', function () { clearActive(singleButtons); clearActive(compareButtons); renderAll(); });
   });
+  [pbStart, pbEnd].forEach(function (el) {
+    el.addEventListener('change', function () { clearActive(compareButtons); renderAll(); });
+  });
+  compareToggle.addEventListener('change', applyMode);
 
   if (DAILY.length) {
-    setPreset('week');
+    setSinglePreset('this-week');
   } else {
     for (var j = 0; j < outputs.length; j++) outputs[j].innerHTML = "<p class='empty'>No data loaded.</p>";
   }
