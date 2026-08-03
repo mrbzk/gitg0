@@ -10,9 +10,27 @@ Open `dashboard.html` in a browser to view it. Layout is modeled on the team's
 outreach tracking spreadsheet: a cross-platform **this-week-vs-prior-week**
 summary and an interactive **Compare date ranges** tool up top, then an
 **Instantly** / **Kakiyo** tab switcher for the platform-specific detail —
-each tab has its own **Weekly totals**, **Monthly totals**, and **Daily
+each tab opens on its **Funnel** (a waterfall chart of that platform's
+pipeline stages), then **Weekly totals**, **Monthly totals**, and **Daily
 activity**, plus Instantly's per-campaign breakdown and Kakiyo's raw snapshot
 history.
+
+### Funnels
+
+Each tab's Funnel section is a cumulative, all-time waterfall — not tied to
+the week/month tables — built from `data/funnel.json`:
+
+- **Kakiyo**: Connections sent → Connections accepted → Contacts replied →
+  Contacts qualified → Conversions (`closed`).
+- **Instantly**: Total unique contacts → Emails sent → Emails replied (with
+  a positive/negative split, from Instantly's interest-status labels) →
+  Conversions (`total_closed`). Emails sent can run *higher* than total
+  unique contacts — that's expected, since each contact gets multiple steps
+  in a sequence — so this is a waterfall (bars sized to their own value),
+  not a strictly-narrowing funnel.
+
+Every bar shows its **% of the top-of-funnel total** and its **% retained
+from the previous stage**.
 
 The full merged daily dataset (every day Instantly has activity for, plus
 Kakiyo's day-to-day snapshot deltas) is embedded directly in the HTML, so
@@ -68,12 +86,28 @@ Ask Claude (in this repo) to "refresh the activity dashboard." It should:
    {"date": "YYYY-MM-DD", "source": "kakiyo-mcp", "campaigns": [{"id": "...", "name": "...", "status": "active", "prospects": 0, "invitationsSent": 0, "invitationsAccepted": 0, "messagesSent": 0, "prospectsAnswers": 0, "qualified": 0, "closed": 0}]}
    ```
 
-3. **Regenerate the HTML**:
+3. **Pull the funnel snapshot** — overwrite `data/funnel.json` with fresh
+   cumulative, all-time totals for both platforms:
+   - Kakiyo: `list_campaigns` for `invitationsSent`/`invitationsAccepted`/`closed`,
+     `get_analytics_overview` for `totalAnswers`/`totalQualified`.
+   - Instantly: `analytics_campaign_overview` (no date range = all-time) for
+     `contacted_count` (total unique contacts), `emails_sent_count`, `reply_count_unique`,
+     `total_interested` (positive replies), and `total_closed` (conversions). Negative
+     replies = `reply_count_unique - total_interested`.
+   ```json
+   {
+     "fetched_at": "<ISO timestamp>",
+     "instantly": {"total_unique_contacts": 0, "emails_sent": 0, "emails_replied": 0, "emails_replied_positive": 0, "emails_replied_negative": 0, "conversions": 0, "source": "instantly-mcp:analytics_campaign_overview (all campaigns, all-time)"},
+     "kakiyo": {"connections_sent": 0, "connections_accepted": 0, "contacts_replied": 0, "contacts_qualified": 0, "conversions": 0, "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)"}
+   }
+   ```
+
+4. **Regenerate the HTML**:
    ```
    python3 scripts/generate_dashboard.py
    ```
 
-4. Commit and push the updated `data/` files and `dashboard.html`.
+5. Commit and push the updated `data/` files and `dashboard.html`.
 
 For a running trend, refresh roughly once a week (a Claude Routine/cron trigger works
 well for this — ask Claude to set one up if you want it automatic).
@@ -84,6 +118,7 @@ well for this — ask Claude to set one up if you want it automatic).
 data/
   instantly_raw.json      # latest Instantly daily analytics pull (overwritten each refresh)
   kakiyo_snapshots.jsonl   # append-only Kakiyo cumulative-totals log, one JSON line per refresh
+  funnel.json              # cumulative all-time funnel totals for both platforms (overwritten each refresh)
 scripts/
   generate_dashboard.py   # renders dashboard.html from the two data files above
 dashboard.html             # generated output — open this in a browser

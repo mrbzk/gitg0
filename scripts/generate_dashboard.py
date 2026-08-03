@@ -109,6 +109,13 @@ def load_instantly():
     return raw["fetched_at"], campaigns, by_date
 
 
+def load_funnel():
+    path = DATA_DIR / "funnel.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text())
+
+
 def load_kakiyo_snapshots():
     path = DATA_DIR / "kakiyo_snapshots.jsonl"
     if not path.exists():
@@ -245,6 +252,53 @@ def bar_chart(periods_labeled, series, height=240, width=740):
         f"{''.join(grid)}{baseline}{''.join(bars)}{''.join(xlabels)}</svg>"
         f"<div class='legend'>{legend}</div></div>"
     )
+
+
+def funnel_chart(stages, hue, split=None):
+    """stages: [(label, value), ...] in funnel order (not required to be monotonic).
+    hue: 'blue' or 'orange' — the categorical color this platform's funnel is drawn in.
+    split: optional {'stage_index': i, 'good_label':..., 'good_value':..., 'bad_label':..., 'bad_value':...}
+    to render a positive/negative breakdown bar under one stage."""
+    if not stages:
+        return "<p class='empty'>No data yet.</p>"
+    values = [v for _, v in stages]
+    max_v = max(values) or 1
+    total = values[0] or 1
+    n = len(stages)
+    rows = []
+    for i, (label, v) in enumerate(stages):
+        width_pct = v / max_v * 100
+        mix = round(55 * (n - 1 - i) / (n - 1)) if n > 1 else 0
+        fill = f"color-mix(in oklab, var(--series-{hue}) {100 - mix}%, var(--surface) {mix}%)"
+        of_total = v / total * 100
+        if i == 0:
+            meta = f"<b>{of_total:.0f}%</b> of total traffic"
+        else:
+            prev_v = values[i - 1] or 1
+            retained = v / prev_v * 100
+            meta = f"<b>{of_total:.0f}%</b> of total · <b>{retained:.0f}%</b> of prior stage"
+        rows.append(
+            "<div class='funnel-row'>"
+            f"<div class='funnel-label'>{escape(label)}</div>"
+            f"<div class='funnel-track'><div class='funnel-fill' style='width:{width_pct:.1f}%; background:{fill};'></div></div>"
+            f"<div class='funnel-value'>{v:,}</div>"
+            f"<div class='funnel-meta'>{meta}</div>"
+            "</div>"
+        )
+        if split and split["stage_index"] == i:
+            gv, bv = split["good_value"], split["bad_value"]
+            gtot = (gv + bv) or 1
+            gp, bp = gv / gtot * 100, bv / gtot * 100
+            rows.append(
+                "<div class='funnel-row'><div></div>"
+                f"<div class='split-bar'><div class='seg good' style='width:{gp:.1f}%'></div><div class='seg bad' style='width:{bp:.1f}%'></div></div>"
+                "<div></div><div></div></div>"
+                "<div class='funnel-row'><div></div><div class='split-legend'>"
+                f"<span class='legend-item'><i class='good'></i>{gv:,} {escape(split['good_label'])} ({gp:.0f}%)</span>"
+                f"<span class='legend-item'><i class='bad'></i>{bv:,} {escape(split['bad_label'])} ({bp:.0f}%)</span>"
+                "</div></div>"
+            )
+    return f"<div class='funnel'>{''.join(rows)}</div>"
 
 
 def totals_table(periods, keys_labels, label_fn):
@@ -411,6 +465,28 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
 .compare-table td.pa { border-left: 3px solid var(--series-blue); }
 .compare-table td.pb { border-left: 3px solid var(--series-yellow); }
+
+.funnel { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.funnel-row { display: grid; grid-template-columns: 160px 1fr 70px 210px; align-items: center; gap: 12px; }
+.funnel-label { font-size: 0.85rem; font-weight: 600; }
+.funnel-track { background: var(--grid); border-radius: 6px; height: 28px; overflow: hidden; }
+.funnel-fill { height: 100%; border-radius: 6px 0 0 6px; min-width: 3px; }
+.funnel-value { font-size: 0.95rem; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.funnel-meta { font-size: 0.75rem; color: var(--ink-2); }
+.funnel-meta b { color: var(--ink-1); font-variant-numeric: tabular-nums; }
+.split-bar { grid-column: 2 / 3; display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--grid); }
+.split-bar .seg { height: 100%; min-width: 2px; }
+.split-bar .seg.good { background: var(--good); }
+.split-bar .seg.bad { background: var(--bad); }
+.split-legend { grid-column: 2 / 5; display: flex; gap: 16px; font-size: 0.75rem; color: var(--ink-2); }
+.split-legend .legend-item i { width: 9px; height: 9px; border-radius: 2px; }
+.split-legend .legend-item i.good { background: var(--good); }
+.split-legend .legend-item i.bad { background: var(--bad); }
+@media (max-width: 640px) {
+  .funnel-row { grid-template-columns: 1fr; gap: 4px; }
+  .funnel-value, .funnel-meta { text-align: left; }
+  .split-bar, .split-legend { grid-column: auto; }
+}
 
 .tabs { display: flex; gap: 4px; margin: 0 0 20px; border-bottom: 1px solid var(--border); }
 .tabs button { font: inherit; font-size: 0.95rem; font-weight: 600; background: none; color: var(--ink-mut);
@@ -621,6 +697,30 @@ def main():
     kakiyo_daily = kakiyo_daily_table(daily_rows)
     kakiyo_raw = kakiyo_raw_table(kakiyo_snaps, kakiyo_changes) if kakiyo_snaps else "<p class='empty'>No Kakiyo snapshots recorded yet.</p>"
 
+    funnel = load_funnel()
+    if funnel:
+        fi, fk = funnel["instantly"], funnel["kakiyo"]
+        instantly_funnel = funnel_chart(
+            [("Total unique contacts", fi["total_unique_contacts"]), ("Emails sent", fi["emails_sent"]),
+             ("Emails replied", fi["emails_replied"]), ("Conversions", fi["conversions"])],
+            "blue",
+            split={"stage_index": 2, "good_label": "positive", "good_value": fi["emails_replied_positive"],
+                   "bad_label": "negative", "bad_value": fi["emails_replied_negative"]},
+        )
+        instantly_funnel += (
+            "<p class='note'>Emails sent can exceed total unique contacts because each contact receives multiple "
+            f"steps in a sequence. Snapshot as of {escape(funnel['fetched_at'])} ({escape(fi.get('source',''))}).</p>"
+        )
+        kakiyo_funnel = funnel_chart(
+            [("Connections sent", fk["connections_sent"]), ("Connections accepted", fk["connections_accepted"]),
+             ("Contacts replied", fk["contacts_replied"]), ("Contacts qualified", fk["contacts_qualified"]),
+             ("Conversions", fk["conversions"])],
+            "orange",
+        )
+        kakiyo_funnel += f"<p class='note'>Snapshot as of {escape(funnel['fetched_at'])} ({escape(fk.get('source',''))}).</p>"
+    else:
+        instantly_funnel = kakiyo_funnel = "<p class='empty'>No funnel data recorded yet — see data/funnel.json.</p>"
+
     recent_weeks = [wk for wk, _ in weekly_sorted[-6:]]
     campaign_table = campaign_breakdown_table(campaigns, [wk.isoformat() for wk in recent_weeks]) if campaigns else ""
 
@@ -692,6 +792,11 @@ def main():
 
   <div class="tab-panel" data-tab="instantly">
     <section>
+      <h2>Funnel</h2>
+      {instantly_funnel}
+    </section>
+
+    <section>
       <h2>Weekly totals</h2>
       {instantly_chart}
       {instantly_weekly_table}
@@ -714,6 +819,11 @@ def main():
   </div>
 
   <div class="tab-panel" data-tab="kakiyo">
+    <section>
+      <h2>Funnel</h2>
+      {kakiyo_funnel}
+    </section>
+
     <section>
       <h2>Weekly totals</h2>
       {kakiyo_chart}

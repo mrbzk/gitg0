@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-08-03T13:08:20Z",
+  "instantly": {
+    "total_unique_contacts": 491,
+    "emails_sent": 678,
+    "emails_replied": 20,
+    "emails_replied_positive": 6,
+    "emails_replied_negative": 14,
+    "conversions": 0,
+    "source": "instantly-mcp:analytics_campaign_overview (all campaigns, all-time)"
+  },
+  "kakiyo": {
+    "connections_sent": 117,
+    "connections_accepted": 22,
+    "contacts_replied": 4,
+    "contacts_qualified": 1,
+    "conversions": 0,
+    "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)"
+  }
+}
