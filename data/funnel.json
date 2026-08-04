@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-08-03T13:08:20Z",
+  "fetched_at": "2026-08-04T00:15:28Z",
   "instantly": {
     "total_unique_contacts": 491,
     "emails_sent": 678,
@@ -19,7 +19,7 @@
     "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)",
     "active_conversations": 3,
     "active_conversations_window_days": 3,
-    "active_conversations_fetched_at": "2026-08-03T18:26:10Z",
+    "active_conversations_fetched_at": "2026-08-04T00:15:28Z",
     "active_conversations_source": "kakiyo-mcp:list_campaign_prospects(hasResponded=true), counting prospects with status Replied or Qualified whose lastMessage falls inside the window"
   }
 }
