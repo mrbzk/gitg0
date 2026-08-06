@@ -1,14 +1,51 @@
 {
-  "fetched_at": "2026-08-03T12:20:00Z",
-  "date_range": { "start": "2026-06-01", "end": "2026-08-03" },
+  "fetched_at": "2026-08-06T18:05:00Z",
+  "date_range": {
+    "start": "2026-06-01",
+    "end": "2026-08-06"
+  },
   "campaigns": [
     {
       "id": "9ae9191b-d765-4f63-8219-e167266a89cb",
       "name": "Essex - LinkedIn - 30/07/2026",
       "status": 1,
       "daily": [
-        {"date": "2026-07-31", "sent": 2, "contacted": 1, "opened": 5, "unique_opened": 1, "replies": 0, "unique_replies": 0, "clicks": 1, "unique_clicks": 1, "opportunities": 0},
-        {"date": "2026-08-03", "sent": 1, "contacted": 1, "opened": 3, "unique_opened": 1, "replies": 1, "unique_replies": 1, "clicks": 0, "unique_clicks": 0, "opportunities": 0}
+        {
+          "date": "2026-07-31",
+          "sent": 2,
+          "contacted": 1,
+          "opened": 5,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-03",
+          "sent": 1,
+          "contacted": 1,
+          "opened": 3,
+          "unique_opened": 1,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-06",
+          "sent": 2,
+          "contacted": 1,
+          "opened": 0,
+          "unique_opened": 0,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        }
       ]
     },
     {
@@ -16,16 +53,162 @@
       "name": "Essex - Test 03 - 23/07/2026",
       "status": 1,
       "daily": [
-        {"date": "2026-07-24", "sent": 10, "contacted": 10, "opened": 0, "unique_opened": 0, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-25", "sent": 0, "contacted": 0, "opened": 0, "unique_opened": 0, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-27", "sent": 75, "contacted": 75, "opened": 47, "unique_opened": 47, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-28", "sent": 40, "contacted": 40, "opened": 18, "unique_opened": 12, "replies": 1, "unique_replies": 1, "clicks": 1, "unique_clicks": 1, "opportunities": 0},
-        {"date": "2026-07-29", "sent": 65, "contacted": 65, "opened": 56, "unique_opened": 45, "replies": 5, "unique_replies": 4, "clicks": 1, "unique_clicks": 1, "opportunities": 0},
-        {"date": "2026-07-30", "sent": 46, "contacted": 45, "opened": 27, "unique_opened": 18, "replies": 2, "unique_replies": 2, "clicks": 3, "unique_clicks": 3, "opportunities": 0},
-        {"date": "2026-07-31", "sent": 73, "contacted": 73, "opened": 50, "unique_opened": 42, "replies": 1, "unique_replies": 1, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-08-01", "sent": 0, "contacted": 0, "opened": 1, "unique_opened": 1, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-08-02", "sent": 0, "contacted": 0, "opened": 6, "unique_opened": 5, "replies": 1, "unique_replies": 1, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-08-03", "sent": 74, "contacted": 74, "opened": 21, "unique_opened": 15, "replies": 0, "unique_replies": 0, "clicks": 1, "unique_clicks": 1, "opportunities": 0}
+        {
+          "date": "2026-07-24",
+          "sent": 10,
+          "contacted": 10,
+          "opened": 0,
+          "unique_opened": 0,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-25",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 0,
+          "unique_opened": 0,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-27",
+          "sent": 75,
+          "contacted": 75,
+          "opened": 47,
+          "unique_opened": 47,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-28",
+          "sent": 40,
+          "contacted": 40,
+          "opened": 18,
+          "unique_opened": 12,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-29",
+          "sent": 65,
+          "contacted": 65,
+          "opened": 56,
+          "unique_opened": 45,
+          "replies": 5,
+          "unique_replies": 4,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-30",
+          "sent": 46,
+          "contacted": 45,
+          "opened": 27,
+          "unique_opened": 18,
+          "replies": 2,
+          "unique_replies": 2,
+          "clicks": 3,
+          "unique_clicks": 3,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-31",
+          "sent": 73,
+          "contacted": 73,
+          "opened": 50,
+          "unique_opened": 42,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-01",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 1,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-02",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 6,
+          "unique_opened": 5,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-03",
+          "sent": 74,
+          "contacted": 74,
+          "opened": 55,
+          "unique_opened": 46,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-04",
+          "sent": 100,
+          "contacted": 99,
+          "opened": 113,
+          "unique_opened": 81,
+          "replies": 4,
+          "unique_replies": 4,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 2
+        },
+        {
+          "date": "2026-08-05",
+          "sent": 56,
+          "contacted": 56,
+          "opened": 34,
+          "unique_opened": 22,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-06",
+          "sent": 8,
+          "contacted": 8,
+          "opened": 3,
+          "unique_opened": 3,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        }
       ]
     },
     {
@@ -33,22 +216,198 @@
       "name": "Essex - Test 02 - 06/07/2026",
       "status": 2,
       "daily": [
-        {"date": "2026-07-08", "sent": 30, "contacted": 30, "opened": 15, "unique_opened": 12, "replies": 3, "unique_replies": 3, "clicks": 0, "unique_clicks": 0, "opportunities": 3},
-        {"date": "2026-07-09", "sent": 19, "contacted": 19, "opened": 10, "unique_opened": 8, "replies": 7, "unique_replies": 3, "clicks": 0, "unique_clicks": 0, "opportunities": 1},
-        {"date": "2026-07-10", "sent": 30, "contacted": 30, "opened": 28, "unique_opened": 13, "replies": 2, "unique_replies": 2, "clicks": 1, "unique_clicks": 1, "opportunities": 1},
-        {"date": "2026-07-11", "sent": 0, "contacted": 0, "opened": 3, "unique_opened": 2, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-12", "sent": 0, "contacted": 0, "opened": 4, "unique_opened": 3, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-13", "sent": 30, "contacted": 30, "opened": 21, "unique_opened": 13, "replies": 0, "unique_replies": 0, "clicks": 1, "unique_clicks": 1, "opportunities": 0},
-        {"date": "2026-07-14", "sent": 30, "contacted": 30, "opened": 14, "unique_opened": 9, "replies": 0, "unique_replies": 0, "clicks": 2, "unique_clicks": 2, "opportunities": 0},
-        {"date": "2026-07-15", "sent": 30, "contacted": 30, "opened": 2, "unique_opened": 2, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-16", "sent": 40, "contacted": 40, "opened": 15, "unique_opened": 5, "replies": 1, "unique_replies": 1, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-17", "sent": 38, "contacted": 38, "opened": 5, "unique_opened": 2, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-19", "sent": 0, "contacted": 0, "opened": 2, "unique_opened": 1, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-20", "sent": 45, "contacted": 45, "opened": 2, "unique_opened": 1, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-21", "sent": 0, "contacted": 0, "opened": 1, "unique_opened": 1, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-22", "sent": 0, "contacted": 0, "opened": 1, "unique_opened": 1, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-24", "sent": 0, "contacted": 0, "opened": 4, "unique_opened": 3, "replies": 1, "unique_replies": 1, "clicks": 0, "unique_clicks": 0, "opportunities": 0},
-        {"date": "2026-07-27", "sent": 0, "contacted": 0, "opened": 1, "unique_opened": 1, "replies": 0, "unique_replies": 0, "clicks": 0, "unique_clicks": 0, "opportunities": 0}
+        {
+          "date": "2026-07-08",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 15,
+          "unique_opened": 12,
+          "replies": 3,
+          "unique_replies": 3,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 3
+        },
+        {
+          "date": "2026-07-09",
+          "sent": 19,
+          "contacted": 19,
+          "opened": 10,
+          "unique_opened": 8,
+          "replies": 7,
+          "unique_replies": 3,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 1
+        },
+        {
+          "date": "2026-07-10",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 28,
+          "unique_opened": 13,
+          "replies": 2,
+          "unique_replies": 2,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 1
+        },
+        {
+          "date": "2026-07-11",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 3,
+          "unique_opened": 2,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-12",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 4,
+          "unique_opened": 3,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-13",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 21,
+          "unique_opened": 13,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-14",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 14,
+          "unique_opened": 9,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 2,
+          "unique_clicks": 2,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-15",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 2,
+          "unique_opened": 2,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-16",
+          "sent": 40,
+          "contacted": 40,
+          "opened": 15,
+          "unique_opened": 5,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-17",
+          "sent": 38,
+          "contacted": 38,
+          "opened": 5,
+          "unique_opened": 2,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-19",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 2,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-20",
+          "sent": 45,
+          "contacted": 45,
+          "opened": 2,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-21",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 1,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-22",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 1,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-24",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 4,
+          "unique_opened": 3,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-07-27",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 1,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        }
       ]
     }
   ]
