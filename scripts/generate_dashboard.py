@@ -512,6 +512,14 @@ h2 { font-size: 1.15rem; margin: 0 0 4px; display:flex; align-items:center; gap:
 h3 { font-size: 0.95rem; margin: 24px 0 4px; color: var(--ink-2); }
 h2 .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
 section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+.collapsible > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+.collapsible > summary::-webkit-details-marker { display: none; }
+.collapsible > summary h2 { margin: 0; }
+.collapsible > summary .chevron { display: inline-block; font-size: 0.75rem; color: var(--ink-mut);
+  transition: transform .15s ease; }
+.collapsible:not([open]) > summary .chevron { transform: rotate(-90deg); }
+.collapsible:not([open]) > summary { margin-bottom: 0; }
+.collapsible-body { margin-top: 16px; }
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin: 16px 0; }
 .tile { padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; }
 .tile-label { font-size: 0.78rem; color: var(--ink-mut); margin-bottom: 6px; }
@@ -655,10 +663,16 @@ COMPARE_JS = """
 
   function sumRange(start, end) {
     var sent = 0, opens = 0, replies = 0, interested = 0, connSent = 0, connAccepted = 0, replied = 0, completingGoal = 0, hasKakiyo = false, days = 0;
+    var instantlyDays = 0, kakiyoDays = 0, activeDays = 0;
     for (var i = 0; i < DAILY.length; i++) {
       var r = DAILY[i];
       if (r.date < start || r.date > end) continue;
       days++;
+      var iActive = r.sent > 0;
+      var kActive = r.conn_sent !== null && r.conn_sent > 0;
+      if (iActive) instantlyDays++;
+      if (kActive) kakiyoDays++;
+      if (iActive || kActive) activeDays++;
       sent += r.sent; opens += r.opens; replies += r.replies; interested += r.interested;
       if (r.conn_sent !== null) { connSent += r.conn_sent; hasKakiyo = true; }
       if (r.conn_accepted !== null) { connAccepted += r.conn_accepted; hasKakiyo = true; }
@@ -667,7 +681,16 @@ COMPARE_JS = """
     }
     var openRate = sent ? (opens / sent * 100) : 0;
     return { sent: sent, opens: opens, openRate: openRate, replies: replies, interested: interested, connSent: connSent,
-      connAccepted: connAccepted, replied: replied, completingGoal: completingGoal, hasKakiyo: hasKakiyo, days: days };
+      connAccepted: connAccepted, replied: replied, completingGoal: completingGoal, hasKakiyo: hasKakiyo, days: days,
+      instantlyDays: instantlyDays, kakiyoDays: kakiyoDays, activeDays: activeDays };
+  }
+
+  // Sends/replies/etc pace off the days a platform actually sent something, not the
+  // calendar span — a 7-day range with a weekends-off schedule might only have 5 active days.
+  var KAKIYO_KEYS = ['connSent', 'connAccepted', 'replied', 'completingGoal'];
+  function activeDaysFor(period, keyOrArr) {
+    if (Array.isArray(keyOrArr)) return period.activeDays;
+    return KAKIYO_KEYS.indexOf(keyOrArr) !== -1 ? period.kakiyoDays : period.instantlyDays;
   }
 
   function fmtDelta(cur, prev) {
@@ -713,7 +736,7 @@ COMPARE_JS = """
   function renderCompare(out, a, b) {
     var metrics = JSON.parse(out.getAttribute('data-metrics'));
     var needsKakiyo = out.getAttribute('data-needs-kakiyo') === '1';
-    var pacing = a.days > 0 && b.days > 0 && a.days !== b.days;
+    var anyPacing = false;
     var rows = '';
     for (var i = 0; i < metrics.length; i++) {
       var key = metrics[i][0], label = metrics[i][1], isPct = metrics[i][2];
@@ -721,19 +744,24 @@ COMPARE_JS = """
       var avFmt = isPct ? fmtPct(av) : fmtNum(av);
       var bvFmt = isPct ? fmtPct(bv) : fmtNum(bv);
       var deltaA = av, deltaB = bv;
-      if (pacing && !isPct) {
-        var aRate = av / a.days, bRate = bv / b.days;
-        avFmt += " <span class='pace'>(" + aRate.toFixed(1) + "/day)</span>";
-        bvFmt += " <span class='pace'>(" + bRate.toFixed(1) + "/day)</span>";
-        deltaA = aRate; deltaB = bRate;
+      if (!isPct) {
+        var aActive = activeDaysFor(a, key), bActive = activeDaysFor(b, key);
+        if (aActive > 0 && bActive > 0 && aActive !== bActive) {
+          anyPacing = true;
+          var aRate = av / aActive, bRate = bv / bActive;
+          avFmt += " <span class='pace'>(" + aRate.toFixed(1) + "/active day)</span>";
+          bvFmt += " <span class='pace'>(" + bRate.toFixed(1) + "/active day)</span>";
+          deltaA = aRate; deltaB = bRate;
+        }
       }
       rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(deltaA, deltaB) + '</td></tr>';
     }
     var note = (needsKakiyo && !a.hasKakiyo && !b.hasKakiyo)
       ? "<p class='note'>No Kakiyo snapshot activity fell inside either range — those columns will read 0.</p>" : '';
-    var paceNote = pacing
-      ? "<p class='note'>Period A covers " + a.days + " day" + (a.days === 1 ? '' : 's') + " and Period B covers " + b.days +
-        " day" + (b.days === 1 ? '' : 's') + " — since they're uneven, 'A vs B' compares daily pace (value ÷ days shown in brackets), not the raw totals.</p>"
+    var paceNote = anyPacing
+      ? "<p class='note'>Period A and B had a different number of days with actual sending activity (not every day in a " +
+        "range gets sends — e.g. weekends) — so those rows compare daily pace (value ÷ active days, shown in brackets) " +
+        "instead of raw totals.</p>"
       : '';
     out.innerHTML =
       '<div class="table-wrap compare-table"><table>' +
@@ -905,6 +933,7 @@ INFO_JS = """
   document.querySelectorAll('.info-icon').forEach(function (btn) {
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
+      e.preventDefault(); // don't let a click here toggle an ancestor <details>
       var wrap = btn.closest('.info-wrap');
       var wasOpen = wrap.classList.contains('open');
       closeAll();
@@ -1143,15 +1172,19 @@ def main():
   <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched {escape(uk_datetime(fetched_at))}.</p>
 
   <section>
-    <h2>Compare periods {info_icon("Pick a date range (or use a preset) to see totals for that period. Tick the Compare box to line it up against a second range instead. This is the one control for the whole page — it drives the Overview below and each platform tab's own Selected period numbers, all at once. If Period A and B cover a different number of days (e.g. an in-progress week vs a full one), the A vs B change compares daily pace, not raw totals.")}</h2>
+    <h2>Compare periods {info_icon("Pick a date range (or use a preset) to see totals for that period. Tick the Compare box to line it up against a second range instead. This is the one control for the whole page — it drives the Overview below and each platform tab's own Selected period numbers, all at once. If Period A and B had a different number of days with actual sending activity (e.g. an in-progress week vs a full one, or weekends with no sends), the A vs B change compares daily pace over those active days, not raw totals.")}</h2>
     <p class="sub" style="margin-bottom:12px;">All {len(daily_rows)} loaded days ({escape(uk_date(min_date))} to {escape(uk_date(max_date))}) are available to look at. Pick a range or use a preset below; tick "Compare to a previous period" to see it side by side with another range. This controls every metric below: the overview and each platform's own totals.</p>
     {global_picker}
   </section>
 
   <section>
-    <h2>Overview {info_icon("Cross-platform totals for the two periods picked above. Sends and Replies each combine both platforms into one number — see the note under the table for how.")}</h2>
-    {overview_output}
-    {overview_footnote}
+    <details class="collapsible" open>
+      <summary><span class="chevron">▾</span><h2>Overview {info_icon("Cross-platform totals for the two periods picked above. Sends and Replies each combine both platforms into one number — see the note under the table for how.")}</h2></summary>
+      <div class="collapsible-body">
+        {overview_output}
+        {overview_footnote}
+      </div>
+    </details>
   </section>
 
   <div class="tabs">
