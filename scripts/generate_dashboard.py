@@ -516,6 +516,15 @@ body { font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif; }
 h1, h2, h3 { font-family: 'Poppins', 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.01em; }
 h1 { font-size: 1.7rem; margin: 0 0 4px; }
 .sub { color: var(--ink-2); margin: 0 0 32px; font-size: 0.95rem; }
+.page-header { display: flex; align-items: center; gap: 18px; }
+.brand-logo { flex-shrink: 0; }
+.brand-mark { display: inline-block; font-family: 'Poppins', 'Inter', sans-serif; font-weight: 800; font-size: 1.05rem;
+  color: var(--gittgo-lime); background: var(--gittgo-navy); border: 2px solid var(--gittgo-lime);
+  border-radius: 11px; padding: 6px 16px; line-height: 1.2; letter-spacing: -0.01em; }
+.page-header-text { min-width: 0; }
+@media (max-width: 640px) {
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
 h2 { font-size: 1.15rem; margin: 0 0 4px; display:flex; align-items:center; gap:8px; }
 h3 { font-size: 0.95rem; margin: 24px 0 4px; color: var(--ink-2); font-weight: 700; }
 h2 .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
@@ -1176,8 +1185,13 @@ def main():
 <body>
 <div class="viz-root">
 <div class="wrap">
-  <h1>Outreach Activity Dashboard</h1>
-  <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched {escape(uk_datetime(fetched_at))}.</p>
+  <div class="page-header">
+    <span class="brand-logo"><span class="brand-mark">gittgo</span></span>
+    <div class="page-header-text">
+      <h1>Outreach Activity Dashboard</h1>
+      <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched {escape(uk_datetime(fetched_at))}.</p>
+    </div>
+  </div>
 
   <section>
     <h2>Compare periods {info_icon("Pick a date range (or use a preset) to see totals for that period. Tick the Compare box to line it up against a second range instead. This is the one control for the whole page — it drives the Overview below and each platform tab's own Selected period numbers, all at once. If Period A and B had a different number of days with actual sending activity (e.g. an in-progress week vs a full one, or weekends with no sends), the A vs B change compares daily pace over those active days, not raw totals.")}</h2>
