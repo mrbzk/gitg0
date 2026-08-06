@@ -11,7 +11,7 @@ repo root. No third-party deps.
 """
 import json
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from html import escape
 from pathlib import Path
 
@@ -54,6 +54,28 @@ def month_start(d):
 
 def month_label(m):
     return m.strftime("%B %Y")
+
+
+def uk_date(iso_str):
+    """'YYYY-MM-DD' (or a full ISO timestamp) -> 'DD/MM/YYYY'."""
+    if not iso_str:
+        return iso_str
+    try:
+        d = datetime.fromisoformat(iso_str[:10])
+    except ValueError:
+        return iso_str
+    return d.strftime("%d/%m/%Y")
+
+
+def uk_datetime(iso_str):
+    """Full ISO timestamp (e.g. '...Z') -> 'DD/MM/YYYY HH:MM UTC'."""
+    if not iso_str:
+        return iso_str
+    try:
+        d = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
+    except ValueError:
+        return iso_str
+    return d.strftime("%d/%m/%Y %H:%M") + " UTC"
 
 
 def daterange(start, end):
@@ -311,7 +333,7 @@ def active_conversations_tile(fk):
         f"<div class='tile-value'>{fk['active_conversations']:,}</div>"
         "<div class='tile-sub'>Replied or qualified, with their last message inside the window</div>"
         "</div></div>"
-        f"<p class='note'>As of {escape(fetched)}.</p>"
+        f"<p class='note'>As of {escape(uk_datetime(fetched))}.</p>"
     )
 
 
@@ -347,7 +369,7 @@ def instantly_daily_table(rows):
     body = []
     for r in rows:
         body.append(
-            f"<tr><td class='rowhead'>{r['date']}</td><td>{r['sent']:,}</td><td>{r['opens']:,}</td>"
+            f"<tr><td class='rowhead'>{uk_date(r['date'])}</td><td>{r['sent']:,}</td><td>{r['opens']:,}</td>"
             f"<td>{fmt_pct(r['open_rate'])}</td><td>{r['interested']:,}</td></tr>"
         )
     head = "<th>Date</th><th>Sends</th><th>Opens</th><th>Open rate</th><th>Interested</th>"
@@ -361,7 +383,7 @@ def kakiyo_daily_table(rows):
             cells = f"<td colspan='3' class='mut'>{r['kakiyo_note']}</td>"
         else:
             cells = f"<td>{fmt_or_na(r['conn_sent'])}</td><td>{fmt_or_na(r['conn_accepted'])}</td><td>{fmt_or_na(r['completing_goal'])}</td>"
-        body.append(f"<tr><td class='rowhead'>{r['date']}</td>{cells}</tr>")
+        body.append(f"<tr><td class='rowhead'>{uk_date(r['date'])}</td>{cells}</tr>")
     head = "<th>Date</th><th>Conn. sent (daily)</th><th>Conn. accepted (daily)</th><th># Completing goal (daily)</th>"
     return f"<div class='table-wrap'><table><thead><tr>{head}</tr></thead><tbody>{''.join(body)}</tbody></table></div>"
 
@@ -571,6 +593,7 @@ footer { color: var(--ink-mut); font-size: 0.8rem; text-align: center; margin-to
   border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
 .compare-table td.pa { border-left: 3px solid var(--series-blue); }
 .compare-table td.pb { border-left: 3px solid var(--series-yellow); }
+.pace { color: var(--ink-mut); font-size: 0.82em; font-weight: 400; }
 
 .funnel { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
 .funnel-row { display: grid; grid-template-columns: 160px 1fr 70px 210px; align-items: center; gap: 12px; }
@@ -621,6 +644,7 @@ COMPARE_JS = """
   var DAILY = JSON.parse(dataEl.textContent);
 
   function isoDate(d) { return d.toISOString().slice(0, 10); }
+  function fmtDateUK(iso) { var p = iso.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
   function parseISO(s) { var p = s.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2])); }
   function addDays(d, n) { var r = new Date(d); r.setUTCDate(r.getUTCDate() + n); return r; }
   function weekStartOf(d) { var day = (d.getUTCDay() + 6) % 7; return addDays(d, -day); }
@@ -689,21 +713,33 @@ COMPARE_JS = """
   function renderCompare(out, a, b) {
     var metrics = JSON.parse(out.getAttribute('data-metrics'));
     var needsKakiyo = out.getAttribute('data-needs-kakiyo') === '1';
+    var pacing = a.days > 0 && b.days > 0 && a.days !== b.days;
     var rows = '';
     for (var i = 0; i < metrics.length; i++) {
       var key = metrics[i][0], label = metrics[i][1], isPct = metrics[i][2];
       var av = getVal(a, key), bv = getVal(b, key);
       var avFmt = isPct ? fmtPct(av) : fmtNum(av);
       var bvFmt = isPct ? fmtPct(bv) : fmtNum(bv);
-      rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(av, bv) + '</td></tr>';
+      var deltaA = av, deltaB = bv;
+      if (pacing && !isPct) {
+        var aRate = av / a.days, bRate = bv / b.days;
+        avFmt += " <span class='pace'>(" + aRate.toFixed(1) + "/day)</span>";
+        bvFmt += " <span class='pace'>(" + bRate.toFixed(1) + "/day)</span>";
+        deltaA = aRate; deltaB = bRate;
+      }
+      rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(deltaA, deltaB) + '</td></tr>';
     }
     var note = (needsKakiyo && !a.hasKakiyo && !b.hasKakiyo)
       ? "<p class='note'>No Kakiyo snapshot activity fell inside either range — those columns will read 0.</p>" : '';
+    var paceNote = pacing
+      ? "<p class='note'>Period A covers " + a.days + " day" + (a.days === 1 ? '' : 's') + " and Period B covers " + b.days +
+        " day" + (b.days === 1 ? '' : 's') + " — since they're uneven, 'A vs B' compares daily pace (value ÷ days shown in brackets), not the raw totals.</p>"
+      : '';
     out.innerHTML =
       '<div class="table-wrap compare-table"><table>' +
-      '<thead><tr><th>Metric</th><th>Period A (' + paStart.value + ' to ' + paEnd.value + ', ' + a.days + 'd)</th>' +
-      '<th>Period B (' + pbStart.value + ' to ' + pbEnd.value + ', ' + b.days + 'd)</th><th>A vs B</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody></table></div>' + note;
+      '<thead><tr><th>Metric</th><th>Period A (' + fmtDateUK(paStart.value) + ' to ' + fmtDateUK(paEnd.value) + ', ' + a.days + 'd)</th>' +
+      '<th>Period B (' + fmtDateUK(pbStart.value) + ' to ' + fmtDateUK(pbEnd.value) + ', ' + b.days + 'd)</th><th>A vs B</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + paceNote + note;
   }
 
   function renderSingle(out, a) {
@@ -720,7 +756,7 @@ COMPARE_JS = """
       ? "<p class='note'>No Kakiyo snapshot activity fell inside this range — those rows will read 0.</p>" : '';
     out.innerHTML =
       '<div class="table-wrap compare-table"><table>' +
-      '<thead><tr><th>Metric</th><th>' + paStart.value + ' to ' + paEnd.value + ' (' + a.days + 'd)</th></tr></thead>' +
+      '<thead><tr><th>Metric</th><th>' + fmtDateUK(paStart.value) + ' to ' + fmtDateUK(paEnd.value) + ' (' + a.days + 'd)</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div>' + note;
   }
 
@@ -733,14 +769,14 @@ COMPARE_JS = """
       for (var i = 0; i < outputs.length; i++) renderCompare(outputs[i], a, b);
       var beyond = lastDateStr && (paEnd.value > lastDateStr || pbEnd.value > lastDateStr);
       rangeNote.textContent = beyond
-        ? 'One of the selected ranges extends past ' + lastDateStr + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
+        ? 'One of the selected ranges extends past ' + fmtDateUK(lastDateStr) + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
         : '';
     } else {
       var a2 = sumRange(paStart.value, paEnd.value);
       for (var j = 0; j < outputs.length; j++) renderSingle(outputs[j], a2);
       var beyond2 = lastDateStr && paEnd.value > lastDateStr;
       rangeNote.textContent = beyond2
-        ? 'The selected range extends past ' + lastDateStr + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
+        ? 'The selected range extends past ' + fmtDateUK(lastDateStr) + ', the most recent day loaded — those days will read as 0 until the dashboard is refreshed.'
         : '';
     }
   }
@@ -1005,7 +1041,7 @@ def main():
     weekly_chart_periods = [(week_label(k), p) for k, p in weekly_sorted]
     monthly_chart_periods = [(month_label(k), p) for k, p in monthly_sorted]
     daily_chart_periods = [
-        (r["date"], {
+        (uk_date(r["date"]), {
             "sent": r["sent"], "opens": r["opens"], "interested": r["interested"],
             "conn_sent": r["conn_sent"] or 0, "conn_accepted": r["conn_accepted"] or 0,
             "completing_goal": r["completing_goal"] or 0,
@@ -1050,7 +1086,7 @@ def main():
         instantly_funnel += (
             "<p class='note'>Emails sent can exceed total unique contacts because each contact receives multiple "
             "steps in a sequence. \"Unknown\" replies are ones Instantly hasn't been marked interested or not "
-            f"interested yet — not counted as negative. Snapshot as of {escape(funnel['fetched_at'])}. "
+            f"interested yet — not counted as negative. Snapshot as of {escape(uk_datetime(funnel['fetched_at']))}. "
             "\"Sales\" is currently sourced from Instantly's own Closed/Won "
             "status — a firmer source for this number is still being worked out.</p>"
         )
@@ -1061,7 +1097,7 @@ def main():
             "orange",
         )
         kakiyo_funnel += (
-            f"<p class='note'>Snapshot as of {escape(funnel['fetched_at'])}. "
+            f"<p class='note'>Snapshot as of {escape(uk_datetime(funnel['fetched_at']))}. "
             "\"Sales\" is currently sourced from Kakiyo's own closed-deal status — a firmer source for this number "
             "is still being worked out.</p>"
         )
@@ -1073,10 +1109,10 @@ def main():
     kakiyo_note = (
         "<p class='note'>Kakiyo only gives us a running total, not a day-by-day history. So each refresh saves a "
         "dated snapshot of those totals, and this dashboard works out day/week/month activity by comparing each "
-        "snapshot to the one before it. The 2026-07-30 baseline came from the team's existing tracking spreadsheet; "
+        "snapshot to the one before it. The 30/07/2026 baseline came from the team's existing tracking spreadsheet; "
         "everything after that is pulled live. Because there's no earlier snapshot to compare that first one against, "
         "its whole running total (80 connections sent, 15 accepted, 1 qualified) shows up as a single day's/week's "
-        "activity on 2026-07-30 below, whichever view you're looking at. Periods before snapshot tracking began "
+        "activity on 30/07/2026 below, whichever view you're looking at. Periods before snapshot tracking began "
         "show 0 for Kakiyo columns because no snapshot existed yet, not because activity was zero.</p>"
     )
 
@@ -1104,11 +1140,11 @@ def main():
 <div class="viz-root">
 <div class="wrap">
   <h1>Outreach Activity Dashboard</h1>
-  <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched {escape(fetched_at)}.</p>
+  <p class="sub">Week-over-week activity across Kakiyo (LinkedIn) and Instantly (Email) campaigns. Data fetched {escape(uk_datetime(fetched_at))}.</p>
 
   <section>
-    <h2>Compare periods {info_icon("Pick a date range (or use a preset) to see totals for that period. Tick the Compare box to line it up against a second range instead. This is the one control for the whole page — it drives the Overview below and each platform tab's own Selected period numbers, all at once.")}</h2>
-    <p class="sub" style="margin-bottom:12px;">All {len(daily_rows)} loaded days ({escape(min_date)} to {escape(max_date)}) are available to look at. Pick a range or use a preset below; tick "Compare to a previous period" to see it side by side with another range. This controls every metric below: the overview and each platform's own totals.</p>
+    <h2>Compare periods {info_icon("Pick a date range (or use a preset) to see totals for that period. Tick the Compare box to line it up against a second range instead. This is the one control for the whole page — it drives the Overview below and each platform tab's own Selected period numbers, all at once. If Period A and B cover a different number of days (e.g. an in-progress week vs a full one), the A vs B change compares daily pace, not raw totals.")}</h2>
+    <p class="sub" style="margin-bottom:12px;">All {len(daily_rows)} loaded days ({escape(uk_date(min_date))} to {escape(uk_date(max_date))}) are available to look at. Pick a range or use a preset below; tick "Compare to a previous period" to see it side by side with another range. This controls every metric below: the overview and each platform's own totals.</p>
     {global_picker}
   </section>
 
