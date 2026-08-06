@@ -736,7 +736,6 @@ COMPARE_JS = """
   function renderCompare(out, a, b) {
     var metrics = JSON.parse(out.getAttribute('data-metrics'));
     var needsKakiyo = out.getAttribute('data-needs-kakiyo') === '1';
-    var anyPacing = false;
     var rows = '';
     for (var i = 0; i < metrics.length; i++) {
       var key = metrics[i][0], label = metrics[i][1], isPct = metrics[i][2];
@@ -746,23 +745,19 @@ COMPARE_JS = """
       var deltaA = av, deltaB = bv;
       if (!isPct) {
         var aActive = activeDaysFor(a, key), bActive = activeDaysFor(b, key);
-        if (aActive > 0 && bActive > 0 && aActive !== bActive) {
-          anyPacing = true;
-          var aRate = av / aActive, bRate = bv / bActive;
-          avFmt += " <span class='pace'>(" + aRate.toFixed(1) + "/active day)</span>";
-          bvFmt += " <span class='pace'>(" + bRate.toFixed(1) + "/active day)</span>";
-          deltaA = aRate; deltaB = bRate;
-        }
+        var aRate = aActive > 0 ? av / aActive : 0;
+        var bRate = bActive > 0 ? bv / bActive : 0;
+        avFmt += " <span class='pace'>(" + aRate.toFixed(1) + "/active day)</span>";
+        bvFmt += " <span class='pace'>(" + bRate.toFixed(1) + "/active day)</span>";
+        if (aActive > 0 && bActive > 0) { deltaA = aRate; deltaB = bRate; }
       }
       rows += '<tr><td class="rowhead">' + label + '</td><td class="pa">' + avFmt + '</td><td class="pb">' + bvFmt + '</td><td>' + fmtDelta(deltaA, deltaB) + '</td></tr>';
     }
     var note = (needsKakiyo && !a.hasKakiyo && !b.hasKakiyo)
       ? "<p class='note'>No Kakiyo snapshot activity fell inside either range — those columns will read 0.</p>" : '';
-    var paceNote = anyPacing
-      ? "<p class='note'>Period A and B had a different number of days with actual sending activity (not every day in a " +
-        "range gets sends — e.g. weekends) — so those rows compare daily pace (value ÷ active days, shown in brackets) " +
-        "instead of raw totals.</p>"
-      : '';
+    var paceNote = "<p class='note'>Numbers in brackets are the daily pace — value ÷ the days that platform actually " +
+      "sent something (not every day gets sends, e.g. weekends). The % change compares that pace, not the raw totals, " +
+      "for every row above.</p>";
     out.innerHTML =
       '<div class="table-wrap compare-table"><table>' +
       '<thead><tr><th>Metric</th><th>Period A (' + fmtDateUK(paStart.value) + ' to ' + fmtDateUK(paEnd.value) + ', ' + a.days + 'd)</th>' +
