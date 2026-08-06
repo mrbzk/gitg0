@@ -516,13 +516,14 @@ body { font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif; }
 h1, h2, h3 { font-family: 'Poppins', 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.01em; }
 h1 { font-size: 1.7rem; margin: 0 0 4px; }
 .sub { color: var(--ink-2); margin: 0 0 32px; font-size: 0.95rem; }
-.page-header { display: flex; align-items: stretch; gap: 18px; }
+.page-header { display: flex; align-items: stretch; gap: 18px; margin-bottom: 32px; }
 .brand-logo { flex-shrink: 0; display: flex; }
 .brand-mark { display: flex; align-items: center; justify-content: center; font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 800; font-size: 1.4rem; white-space: nowrap;
   color: var(--gittgo-lime); background: var(--gittgo-navy); border: 2px solid var(--gittgo-lime);
   border-radius: 14px; padding: 0 24px; letter-spacing: -0.01em; box-sizing: border-box; }
 .page-header-text { min-width: 0; }
+.page-header-text .sub { margin-bottom: 0; }
 @media (max-width: 640px) {
   .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
   .brand-mark { font-size: 1.05rem; padding: 12px; }
