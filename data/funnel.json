@@ -15,7 +15,7 @@
     "connections_accepted": 52,
     "contacts_replied": 12,
     "contacts_qualified": 2,
-    "conversions": 1,
+    "conversions": 0,
     "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)",
     "active_conversations": 0,
     "active_conversations_window_days": 3,
