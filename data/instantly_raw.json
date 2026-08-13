@@ -1,10 +1,53 @@
 {
-  "fetched_at": "2026-08-06T18:05:00Z",
+  "fetched_at": "2026-08-13T16:40:00Z",
   "date_range": {
     "start": "2026-06-01",
-    "end": "2026-08-06"
+    "end": "2026-08-13"
   },
   "campaigns": [
+    {
+      "id": "d2a1e20b-c541-40f0-a14a-3e25634ca02e",
+      "name": "Essex - Test 04 - 11/08/2026",
+      "status": -2,
+      "daily": [
+        {
+          "date": "2026-08-11",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 6,
+          "unique_opened": 3,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-12",
+          "sent": 100,
+          "contacted": 100,
+          "opened": 85,
+          "unique_opened": 75,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-13",
+          "sent": 87,
+          "contacted": 87,
+          "opened": 29,
+          "unique_opened": 24,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        }
+      ]
+    },
     {
       "id": "9ae9191b-d765-4f63-8219-e167266a89cb",
       "name": "Essex - LinkedIn - 30/07/2026",
@@ -37,6 +80,30 @@
         {
           "date": "2026-08-06",
           "sent": 2,
+          "contacted": 1,
+          "opened": 0,
+          "unique_opened": 0,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-10",
+          "sent": 1,
+          "contacted": 1,
+          "opened": 0,
+          "unique_opened": 0,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-13",
+          "sent": 1,
           "contacted": 1,
           "opened": 0,
           "unique_opened": 0,
@@ -203,6 +270,90 @@
           "contacted": 8,
           "opened": 3,
           "unique_opened": 3,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-07",
+          "sent": 121,
+          "contacted": 121,
+          "opened": 98,
+          "unique_opened": 75,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 2,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-08",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 10,
+          "unique_opened": 6,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-09",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 5,
+          "unique_opened": 3,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-10",
+          "sent": 122,
+          "contacted": 122,
+          "opened": 117,
+          "unique_opened": 90,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-11",
+          "sent": 120,
+          "contacted": 120,
+          "opened": 112,
+          "unique_opened": 99,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 3,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-12",
+          "sent": 18,
+          "contacted": 18,
+          "opened": 13,
+          "unique_opened": 9,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-13",
+          "sent": 31,
+          "contacted": 31,
+          "opened": 12,
+          "unique_opened": 11,
           "replies": 0,
           "unique_replies": 0,
           "clicks": 0,
