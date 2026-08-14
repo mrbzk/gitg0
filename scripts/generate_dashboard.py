@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
-OUT_FILE = ROOT / "dashboard.html"
+OUT_FILE = ROOT / "reports" / "sales-activity.html"
 
 KAKIYO_FIELDS = ["prospects", "invitationsSent", "invitationsAccepted", "messagesSent", "prospectsAnswers", "qualified", "closed"]
 
@@ -1268,6 +1268,7 @@ def main():
 </body>
 </html>
 """
+    OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     OUT_FILE.write_text(html_out)
     print(f"Wrote {OUT_FILE}")
 
