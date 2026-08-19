@@ -1,14 +1,14 @@
 {
-  "fetched_at": "2026-08-13T16:40:00Z",
+  "fetched_at": "2026-08-19T14:48:11Z",
   "date_range": {
     "start": "2026-06-01",
-    "end": "2026-08-13"
+    "end": "2026-08-19"
   },
   "campaigns": [
     {
       "id": "d2a1e20b-c541-40f0-a14a-3e25634ca02e",
       "name": "Essex - Test 04 - 11/08/2026",
-      "status": -2,
+      "status": 1,
       "daily": [
         {
           "date": "2026-08-11",
@@ -38,20 +38,92 @@
           "date": "2026-08-13",
           "sent": 87,
           "contacted": 87,
-          "opened": 29,
-          "unique_opened": 24,
+          "opened": 34,
+          "unique_opened": 28,
           "replies": 0,
           "unique_replies": 0,
           "clicks": 0,
           "unique_clicks": 0,
           "opportunities": 0
+        },
+        {
+          "date": "2026-08-14",
+          "sent": 49,
+          "contacted": 49,
+          "opened": 24,
+          "unique_opened": 17,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-15",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 2,
+          "unique_opened": 2,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-16",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 1,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-17",
+          "sent": 53,
+          "contacted": 53,
+          "opened": 23,
+          "unique_opened": 16,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-18",
+          "sent": 50,
+          "contacted": 50,
+          "opened": 17,
+          "unique_opened": 12,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-19",
+          "sent": 101,
+          "contacted": 100,
+          "opened": 53,
+          "unique_opened": 40,
+          "replies": 3,
+          "unique_replies": 3,
+          "clicks": 2,
+          "unique_clicks": 2,
+          "opportunities": 1
         }
       ]
     },
     {
       "id": "9ae9191b-d765-4f63-8219-e167266a89cb",
       "name": "Essex - LinkedIn - 30/07/2026",
-      "status": 1,
+      "status": 3,
       "daily": [
         {
           "date": "2026-07-31",
@@ -103,6 +175,18 @@
         },
         {
           "date": "2026-08-13",
+          "sent": 1,
+          "contacted": 1,
+          "opened": 0,
+          "unique_opened": 0,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-17",
           "sent": 1,
           "contacted": 1,
           "opened": 0,
@@ -352,6 +436,78 @@
           "date": "2026-08-13",
           "sent": 31,
           "contacted": 31,
+          "opened": 14,
+          "unique_opened": 12,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-14",
+          "sent": 101,
+          "contacted": 101,
+          "opened": 54,
+          "unique_opened": 29,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-15",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 3,
+          "unique_opened": 3,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-16",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 1,
+          "unique_opened": 1,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-17",
+          "sent": 96,
+          "contacted": 96,
+          "opened": 40,
+          "unique_opened": 31,
+          "replies": 3,
+          "unique_replies": 3,
+          "clicks": 4,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-18",
+          "sent": 100,
+          "contacted": 100,
+          "opened": 84,
+          "unique_opened": 67,
+          "replies": 3,
+          "unique_replies": 3,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-19",
+          "sent": 47,
+          "contacted": 47,
           "opened": 12,
           "unique_opened": 11,
           "replies": 0,
@@ -560,6 +716,12 @@
           "opportunities": 0
         }
       ]
+    },
+    {
+      "id": "1c663c40-1741-4f21-8f08-ead45fd568df",
+      "name": "[AI SDR] gittgo AI Sales Agent - Fully Personalized Campaign",
+      "status": -1,
+      "daily": []
     }
   ]
 }
