@@ -1,0 +1,1012 @@
+<title>Outreach Performance</title>
+<style>
+  :root{
+    --bg:#f5f3ed; --surface:#ffffff; --surface-2:#f7f5f0; --surface-3:#eeece4;
+    --border:#eae6da; --border-strong:#d8d3c3;
+    --ink:#17181b; --ink-2:#6b6f76; --ink-3:#9a9ea3;
+    --email:#3b82f6; --email-soft:#e4edfd; --email-tint:#bcd4fb;
+    --linkedin:#f2622e; --linkedin-soft:#fde7dd;
+    --lime:#a3d13c; --lime-strong:#7fae22; --lime-ink:#1c2611;
+    --good:#2f8f3f; --good-soft:#e3f3e3;
+    --warn:#a9711a; --warn-soft:#f7ecd6;
+    --critical:#c0392b; --critical-soft:#fbe4e0;
+    --shadow: 0 1px 2px rgba(20,18,12,.04), 0 14px 30px -18px rgba(20,18,12,.16);
+    --radius: 16px;
+    --logo-bg:#14161a; --logo-green:#9ed13c;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141310; --surface:#1e1c17; --surface-2:#252219; --surface-3:#2c2820;
+      --border:#393426; --border-strong:#4a4433;
+      --ink:#f1ede2; --ink-2:#c2bba6; --ink-3:#8f8873;
+      --email:#4f8ef0; --email-soft:#22304e; --email-tint:#31456f;
+      --linkedin:#d9622e; --linkedin-soft:#3a2418;
+      --lime:#b6dc5c; --lime-strong:#93bd3a; --lime-ink:#12170a;
+      --good:#57c26a; --good-soft:#193621;
+      --warn:#dba13c; --warn-soft:#3a2c11;
+      --critical:#ef7a68; --critical-soft:#3c1e18;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 16px 32px -18px rgba(0,0,0,.6);
+      --logo-bg:#0b0c0e; --logo-green:#a9de52;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141310; --surface:#1e1c17; --surface-2:#252219; --surface-3:#2c2820;
+    --border:#393426; --border-strong:#4a4433;
+    --ink:#f1ede2; --ink-2:#c2bba6; --ink-3:#8f8873;
+    --email:#4f8ef0; --email-soft:#22304e; --email-tint:#31456f;
+    --linkedin:#d9622e; --linkedin-soft:#3a2418;
+    --lime:#b6dc5c; --lime-strong:#93bd3a; --lime-ink:#12170a;
+    --good:#57c26a; --good-soft:#193621;
+    --warn:#dba13c; --warn-soft:#3a2c11;
+    --critical:#ef7a68; --critical-soft:#3c1e18;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 16px 32px -18px rgba(0,0,0,.6);
+    --logo-bg:#0b0c0e; --logo-green:#a9de52;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    font-size:14.5px; line-height:1.5; font-variant-numeric:tabular-nums;
+    padding: 0 0 40px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  h1,h2,h3,h4{font-family:inherit; font-weight:700; letter-spacing:-.01em; text-wrap:balance; color:var(--ink); margin:0;}
+  a{color:var(--email);}
+  .tabular{font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+
+  /* ---------- masthead ---------- */
+  .masthead{max-width:1180px;margin:0 auto;padding:28px 24px 6px;display:flex;align-items:flex-start;gap:18px;}
+  .logo-badge{flex:0 0 auto;background:var(--logo-bg);color:var(--logo-green);font-weight:800;font-size:19px;letter-spacing:-.02em;padding:12px 20px;border-radius:12px;line-height:1;}
+  .masthead h1{font-size:26px;}
+  .masthead .sub{color:var(--ink-2);font-size:13px;margin-top:5px;}
+
+  /* ---------- sticky controls ---------- */
+  .stickybar{position:sticky; top:0; z-index:20; background:var(--bg); padding-top:14px; padding-bottom:6px; box-shadow:0 8px 12px -10px var(--bg);}
+  .tabs{display:flex; gap:4px; max-width:1180px; margin:0 auto; padding:0 24px; overflow-x:auto; border-bottom:1px solid var(--border);}
+  .tab-btn{border:none; background:transparent; padding:10px 4px; margin-right:22px; font-size:13.5px; font-weight:700; color:var(--ink-3); cursor:pointer; border-bottom:2.5px solid transparent; white-space:nowrap; display:flex; align-items:center; gap:7px;}
+  .tab-btn .dot{width:8px;height:8px;border-radius:50%;}
+  .tab-btn.active{color:var(--ink); border-bottom-color:var(--lime-strong);}
+  .tab-btn:hover{color:var(--ink);}
+
+  .tab-panel{display:none; padding:22px 0 8px;}
+  .tab-panel.active{display:block;}
+
+  .subtabs{display:inline-flex; gap:3px; margin-bottom:20px; background:var(--surface-2); border:1px solid var(--border); border-radius:11px; padding:4px;}
+  .subtab-btn{border:none; background:transparent; padding:9px 18px; font-size:13px; font-weight:700; color:var(--ink-2); cursor:pointer; border-radius:8px;}
+  .subtab-btn.active{background:var(--surface); color:var(--email); box-shadow:var(--shadow);}
+  .subtab-btn:hover:not(.active){color:var(--ink);}
+  .subtab-panel{display:none;}
+  .subtab-panel.active{display:block;}
+
+  /* ---------- campaign filter chips ---------- */
+  .campaign-filter{display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin-bottom:18px;}
+  .campaign-filter .cf-label{font-size:11px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--ink-3); margin-right:2px;}
+  .camp-chip{display:inline-flex; align-items:center; gap:7px; border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink); font-size:12px; font-weight:700; padding:6px 13px 6px 10px; border-radius:100px; cursor:pointer; transition:opacity .12s;}
+  .camp-chip .dot{width:8px;height:8px;border-radius:50%; background:var(--email); flex:0 0 auto;}
+  .camp-chip.off{opacity:.4; background:var(--surface-2);}
+  .camp-chip.off .dot{background:var(--ink-3) !important;}
+  .camp-chip:hover{border-color:var(--email);}
+
+  /* ---------- subsequence status cards ---------- */
+  .subseq-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;}
+  @media (max-width:760px){ .subseq-grid{grid-template-columns:1fr;} }
+  .subseq-card{border:1px solid var(--border); border-radius:12px; padding:14px 16px; background:var(--surface-2);}
+  .subseq-card .sc-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;}
+  .subseq-card .sc-title{font-size:13px; font-weight:700;}
+  .subseq-card .sc-body{font-size:12px; color:var(--ink-2); line-height:1.6;}
+  .subseq-card .sc-stats{display:flex; gap:16px; margin-top:9px; padding-top:9px; border-top:1px dashed var(--border);}
+  .subseq-card .sc-stat{font-size:11px; color:var(--ink-3);}
+  .subseq-card .sc-stat b{display:block; font-size:15px; color:var(--ink); font-weight:700;}
+
+  /* ---------- card / details ---------- */
+  details.card{background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px; margin-bottom:18px;}
+  details.card > summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+  details.card > summary::-webkit-details-marker{display:none;}
+  .caret{color:var(--ink-3); font-size:10px; transition:transform .15s ease; display:inline-block; width:10px;}
+  details.card:not([open]) .caret{transform:rotate(-90deg);}
+  details.card > summary h2{font-size:17px;}
+  details.card > summary h3{font-size:15.5px;}
+  .info-ic{width:16px;height:16px;border-radius:50%;background:var(--surface-3);color:var(--ink-3);font-size:10px;font-style:italic;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;flex:0 0 auto;}
+  .card-desc{color:var(--ink-3); font-size:12.5px; flex-basis:100%; margin-top:2px;}
+  .card-body{margin-top:16px;}
+  .tag-static{font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; color:var(--ink-3); background:var(--surface-2); border:1px solid var(--border); padding:2px 7px; border-radius:100px;}
+
+  /* ---------- compare-periods controls ---------- */
+  .compare-toggle{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--ink); cursor:pointer; user-select:none; margin:14px 0 12px;}
+  .compare-toggle input{width:16px;height:16px;accent-color:var(--lime-strong);}
+  .seg{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .seg button{border:1px solid var(--border-strong); background:var(--surface); color:var(--ink); font-size:12.5px; font-weight:700; padding:8px 16px; border-radius:100px; cursor:pointer;}
+  .seg button.active{background:var(--lime); border-color:var(--lime); color:var(--lime-ink);}
+  .seg button:hover:not(.active){background:var(--surface-2);}
+  .period-box{border:1px solid var(--border); border-radius:10px; padding:12px 16px; background:var(--surface-2);}
+  .period-box .plabel{display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:var(--ink); margin-bottom:8px;}
+  .period-box .pmark{width:9px;height:9px;border-radius:3px;background:var(--email);}
+  .period-box .prow{display:flex; align-items:center; gap:10px;}
+  .period-box input[type=date]{font-family:inherit; font-size:13px; padding:7px 9px; border-radius:7px; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink);}
+  .period-note{font-size:12px; color:var(--warn); margin-top:10px;}
+
+  section.block{margin-bottom:0;}
+  .section-head{display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin-bottom:16px; flex-wrap:wrap;}
+  .section-head h2{font-size:18px;}
+  .section-head .desc{color:var(--ink-3); font-size:12.5px; max-width:44ch;}
+
+  /* ---------- channel cards ---------- */
+  .channel-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:900px){ .channel-grid{grid-template-columns:1fr;} }
+  .channel-card{background:var(--surface); border-radius:14px; padding:18px 20px; box-shadow:var(--shadow);}
+  .channel-card .ctitle{display:flex; align-items:center; gap:9px; margin-bottom:2px;}
+  .channel-card .ctitle .swatch{width:10px;height:10px;border-radius:3px;}
+  .channel-card .ctitle h3{font-size:15.5px;}
+  .channel-card .csub{color:var(--ink-3); font-size:11.5px; margin-bottom:12px;}
+  .funnel-row{display:flex; align-items:center; gap:10px; padding:6px 0; border-top:1px dashed var(--border);}
+  .funnel-row:first-of-type{border-top:none;}
+  .funnel-row .flabel{flex:0 0 138px; font-size:12px; color:var(--ink-2);}
+  .funnel-row .fbar-wrap{flex:1; background:var(--surface-2); border-radius:5px; height:14px; overflow:hidden;}
+  .funnel-row .fbar{height:100%; border-radius:5px;}
+  .funnel-row .fval{flex:0 0 auto; font-size:12px; font-weight:700; width:96px; text-align:right;}
+  .funnel-row .fpct{color:var(--ink-3); font-weight:500;}
+
+  /* ---------- charts ---------- */
+  .chart-card{background:var(--surface); border-radius:14px; padding:16px 18px 10px; box-shadow:var(--shadow);}
+  .chart-card h3{font-size:13.5px; font-weight:700; font-family:inherit;}
+  .chart-card .chart-sub{color:var(--ink-3); font-size:11.5px; margin:2px 0 8px;}
+  .legend{display:flex; gap:14px; margin:2px 0 8px;}
+  .legend .item{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-2); font-weight:600;}
+  .legend .sw{width:10px;height:10px;border-radius:2px;}
+  svg text{fill:var(--ink-3); font-size:10px; font-family:inherit;}
+  svg .gridline{stroke:var(--border); stroke-width:1;}
+  .chart-grid-2{display:grid; grid-template-columns:1.4fr 1fr; gap:16px;}
+  @media (max-width:900px){ .chart-grid-2{grid-template-columns:1fr;} }
+
+  /* ---------- tables ---------- */
+  table{width:100%; border-collapse:collapse; font-size:12.8px;}
+  .table-scroll{overflow-x:auto; border-radius:14px; background:var(--surface); box-shadow:var(--shadow);}
+  th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); font-weight:700; padding:10px 13px; white-space:nowrap; border-bottom:1px solid var(--border);}
+  td{padding:10px 13px; border-bottom:1px solid var(--border); vertical-align:middle; white-space:nowrap;}
+  tr:last-child td{border-bottom:none;}
+  td.num, th.num{text-align:right; font-variant-numeric:tabular-nums;}
+  tr.is-draft{opacity:.55;}
+
+  .pill{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:100px; font-size:11px; font-weight:700;}
+  .pill.active{background:var(--good-soft); color:var(--good);}
+  .pill.paused{background:var(--warn-soft); color:var(--warn);}
+  .pill.draft{background:var(--surface-3); color:var(--ink-3);}
+  .pill::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+  .minibar-cell{display:flex; align-items:center; gap:7px; min-width:110px;}
+  .minibar-track{flex:1; height:7px; background:var(--surface-2); border-radius:4px; overflow:hidden; min-width:46px;}
+  .minibar-fill{height:100%; border-radius:4px;}
+  .minibar-num{width:42px; text-align:right; font-weight:700; font-size:12px;}
+  .cell-delta{font-size:10.5px; margin-left:4px;}
+
+  /* ---------- step tables ---------- */
+  .campaign-block{background:var(--surface); border-radius:14px; box-shadow:var(--shadow); margin-bottom:16px; overflow:hidden;}
+  .campaign-block .cb-head{padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; border-bottom:1px solid var(--border); background:var(--surface-2);}
+  .campaign-block .cb-head h3{font-size:14.5px;}
+  .campaign-block .cb-head .cb-meta{font-size:11.5px; color:var(--ink-3);}
+  .campaign-block .cb-body{padding:12px 18px 16px;}
+
+  .ab-row{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;}
+  @media (max-width:700px){ .ab-row{grid-template-columns:1fr;} }
+  .ab-card{border:1px solid var(--border); border-radius:8px; padding:13px 15px; background:var(--surface-2);}
+  .ab-card .ab-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); font-weight:700; margin-bottom:5px;}
+  .ab-card .ab-subject{font-size:13px; font-weight:600; margin-bottom:9px;}
+  .ab-card.winner{border-color:var(--lime-strong); box-shadow:0 0 0 1px var(--lime-strong) inset;}
+  .ab-metric-row{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-2); padding:3px 0;}
+  .ab-metric-row b{color:var(--ink); font-variant-numeric:tabular-nums;}
+
+  /* ---------- timeline ---------- */
+  .timeline{position:relative; margin-left:8px; padding-left:24px; border-left:2px solid var(--border);}
+  .tl-step{position:relative; padding-bottom:15px;}
+  .tl-step:last-child{padding-bottom:0;}
+  .tl-step::before{content:""; position:absolute; left:-31px; top:2px; width:11px; height:11px; border-radius:50%; border:2px solid var(--email); background:var(--surface);}
+  .tl-step .tl-delay{font-size:10.5px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em; font-weight:700;}
+  .tl-step .tl-text{font-size:13px; color:var(--ink-2); margin-top:1px;}
+
+  /* ---------- insights ---------- */
+  .insight-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  @media (max-width:980px){ .insight-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:660px){ .insight-grid{grid-template-columns:1fr;} }
+  .insight{border-radius:14px; padding:14px 16px; background:var(--surface); box-shadow:var(--shadow);}
+  .insight .irow{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;}
+  .insight .itag{display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; padding:3px 8px; border-radius:100px; margin-bottom:0;}
+  .chan-badge{display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700; color:var(--ink-3); white-space:nowrap;}
+  .chan-dot{width:8px; height:8px; border-radius:50%; flex:0 0 auto;}
+  .insight.good .itag{background:var(--good-soft); color:var(--good);}
+  .insight.warn .itag{background:var(--warn-soft); color:var(--warn);}
+  .insight.critical .itag{background:var(--critical-soft); color:var(--critical);}
+  .insight.watch .itag{background:var(--email-soft); color:var(--email);}
+  .insight h4{font-size:13.5px; font-family:inherit; font-weight:700; margin:0 0 5px;}
+  .insight p{margin:0; font-size:12.5px; color:var(--ink-2); line-height:1.5;}
+
+  /* ---------- replies list ---------- */
+  .reply-list{display:grid; grid-template-columns:repeat(2,1fr); gap:9px;}
+  @media (max-width:760px){ .reply-list{grid-template-columns:1fr;} }
+  .reply-item{border:1px solid var(--border); border-radius:8px; padding:9px 12px; background:var(--surface); display:flex; justify-content:space-between; gap:10px; align-items:center;}
+  .reply-item .ri-name{font-size:12.5px; font-weight:700;}
+  .reply-item .ri-role{font-size:11px; color:var(--ink-3); margin-top:1px;}
+  .reply-item .ri-date{font-size:10.5px; color:var(--ink-3); white-space:nowrap; text-align:right;}
+
+  footer{padding:24px 0 6px; color:var(--ink-3); font-size:11.5px; text-align:center;}
+  .sparkline{display:block;}
+</style>
+
+<div class="masthead">
+  <div class="logo-badge">gittgo</div>
+  <div>
+    <h1>Outreach Performance Dashboard</h1>
+    <p class="sub">Every sequence, subsequence and email step across Kakiyo (LinkedIn) and Instantly (Email). Data fetched 20/08/2026 14:25 UTC.</p>
+  </div>
+</div>
+
+<div class="wrap" style="padding-top:22px;">
+  <details class="card" open style="margin-bottom:16px;">
+    <summary>
+      <span class="caret">&#9660;</span>
+      <h2>Compare periods</h2>
+      <span class="info-ic" title="Pick a range or use a preset. This controls every period-aware number on the dashboard, on every tab.">i</span>
+      <div class="card-desc" id="rangeSummary"></div>
+    </summary>
+    <div class="card-body">
+      <label class="compare-toggle"><input type="checkbox" id="compareToggle">Compare to a previous period</label>
+      <div class="seg" id="presetSeg">
+        <button data-preset="week" class="active">This week</button>
+        <button data-preset="month">This month</button>
+        <button data-preset="7">Last 7 days</button>
+        <button data-preset="30">Last 30 days</button>
+        <button data-preset="custom">Custom</button>
+      </div>
+      <div class="period-box">
+        <div class="plabel"><span class="pmark"></span>Period</div>
+        <div class="prow">
+          <input type="date" id="customStart" min="2026-06-01" max="2026-12-31" value="2026-08-10">
+          <span style="color:var(--ink-3);">to</span>
+          <input type="date" id="customEnd" min="2026-06-01" max="2026-12-31" value="2026-08-16">
+        </div>
+      </div>
+      <div class="period-note" id="periodNote" style="display:none;"></div>
+    </div>
+  </details>
+</div>
+
+<div class="stickybar">
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="email"><span class="dot" style="background:var(--email)"></span>Email &middot; Instantly</button>
+    <button class="tab-btn" data-tab="linkedin"><span class="dot" style="background:var(--linkedin)"></span>LinkedIn &middot; Kakiyo</button>
+    <button class="tab-btn" data-tab="insights">Insights</button>
+  </nav>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ EMAIL (Instantly) ============ -->
+  <div class="tab-panel active" id="tab-email" style="padding-top:20px;">
+
+    <div class="campaign-filter" id="campaignFilter">
+      <span class="cf-label">Campaigns:</span>
+    </div>
+
+    <nav class="subtabs" id="subtabsEmail">
+      <button class="subtab-btn active" data-subtab="campaigns">Campaigns</button>
+      <button class="subtab-btn" data-subtab="steps">Email-by-Email</button>
+      <button class="subtab-btn" data-subtab="health">Deliverability</button>
+    </nav>
+
+    <div class="subtab-panel active" id="subtab-campaigns">
+    <details class="card" open>
+      <summary>
+        <span class="caret">&#9660;</span>
+        <h2>Campaigns at a glance</h2>
+        <span class="info-ic" title="Metrics for the selected period; bounce rate is lifetime since Instantly's daily endpoint doesn't include bounces.">i</span>
+      </summary>
+      <div class="card-body">
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Campaign</th><th>Status</th><th>Started</th><th style="width:100px">Trend</th>
+              <th class="num">Sent</th><th class="num">Open rate</th><th class="num">Reply rate</th>
+              <th class="num">Bounce <span class="tag-static">all-time</span></th><th class="num">Opportunities</th>
+            </tr></thead>
+            <tbody id="campaignTableBody"></tbody>
+          </table>
+        </div>
+        <p style="font-size:11px;color:var(--ink-3);margin-top:8px;">Reply rate = unique human replies (excludes auto-replies/OOO) &divide; sent, for the selected period. Deltas compare to the equivalent prior period. Toggle campaigns off above to exclude them from these numbers and the charts below.</p>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>
+        <span class="caret">&#9660;</span>
+        <h2>Send volume &amp; engagement</h2>
+        <span class="info-ic" title="Toggled campaigns only, for the selected period.">i</span>
+      </summary>
+      <div class="card-body">
+        <div class="chart-grid-2">
+          <div class="chart-card">
+            <h3>Sent vs. opened</h3>
+            <p class="chart-sub" id="dailyChartSub">Light bar = sent &middot; solid bar = unique opens</p>
+            <div class="legend"><span class="item"><span class="sw" style="background:var(--email-tint)"></span>Sent</span><span class="item"><span class="sw" style="background:var(--email)"></span>Unique opens</span></div>
+            <div id="dailyChart"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Reply rate</h3>
+            <p class="chart-sub" id="replyChartSub">Human replies &divide; sent</p>
+            <div id="replyRateChart"></div>
+          </div>
+        </div>
+      </div>
+    </details>
+    </div>
+
+    <div class="subtab-panel" id="subtab-steps">
+    <details class="card" open>
+      <summary>
+        <span class="caret">&#9660;</span>
+        <h2>Sequence performance, email by email</h2>
+        <span class="tag-static">all-time</span>
+        <span class="info-ic" title="Instantly's step analytics endpoint doesn't expose a daily breakdown, so this is lifetime, in send order.">i</span>
+      </summary>
+      <div class="card-body">
+
+      <div class="campaign-block" data-campaign="test03">
+        <div class="cb-head"><h3>Essex &ndash; Test 03 <span style="color:var(--ink-3);font-weight:500;">&middot; flagship, active</span></h3><div class="cb-meta">1,303 sent across all 7 scheduled steps</div></div>
+        <div class="cb-body">
+          <div class="table-scroll" style="box-shadow:none;">
+            <table>
+              <thead><tr><th style="width:70px">Step</th><th class="num">Sent</th><th>Open rate</th><th>Reply rate</th><th>Click rate</th></tr></thead>
+              <tbody>
+                <tr><td>1 &middot; opener</td><td class="num tabular">290</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:56.6%;background:var(--email)"></div></div><span class="minibar-num">56.6%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:46.7%;background:var(--good)"></div></div><span class="minibar-num">1.7%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:31%;background:var(--ink-3)"></div></div><span class="minibar-num">3.1%</span></div></td></tr>
+                <tr style="background:var(--good-soft)"><td>2 &middot; follow-up</td><td class="num tabular">272</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:85.3%;background:var(--email)"></div></div><span class="minibar-num">85.3%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:100%;background:var(--good)"></div></div><span class="minibar-num">3.7%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                <tr><td>3 &middot; "not networking"</td><td class="num tabular">257</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:57.2%;background:var(--email)"></div></div><span class="minibar-num">57.2%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:12%;background:var(--ink-3)"></div></div><span class="minibar-num">1.2%</span></div></td></tr>
+                <tr><td>4 &middot; "what gittgo is"</td><td class="num tabular">214</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:55.6%;background:var(--email)"></div></div><span class="minibar-num">55.6%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:50.8%;background:var(--good)"></div></div><span class="minibar-num">1.9%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:9%;background:var(--ink-3)"></div></div><span class="minibar-num">0.9%</span></div></td></tr>
+                <tr><td>5 &middot; Paul testimonial</td><td class="num tabular">167</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:72.5%;background:var(--email)"></div></div><span class="minibar-num">72.5%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:32.6%;background:var(--good)"></div></div><span class="minibar-num">1.2%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:6%;background:var(--ink-3)"></div></div><span class="minibar-num">0.6%</span></div></td></tr>
+                <tr><td>6 &middot; "groups refresh"</td><td class="num tabular">95</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:30.5%;background:var(--email)"></div></div><span class="minibar-num">30.5%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:57.3%;background:var(--good)"></div></div><span class="minibar-num">2.1%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                <tr style="background:var(--critical-soft)"><td>7 &middot; breakup</td><td class="num tabular">8</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:25%;background:var(--email)"></div></div><span class="minibar-num">25%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:11.5px;color:var(--ink-2);margin:11px 2px 0;">Step 2 (first follow-up) is still the strongest email in the sequence on both opens and replies &mdash; more than double the opener's reply rate. The sequence has now run its full 7 steps; step 6 ("groups refresh") is a pleasant surprise at 2.1% reply, but step 7's breakup email has drawn zero replies from its first 8 sends.</p>
+        </div>
+      </div>
+
+      <div class="campaign-block" data-campaign="test02">
+        <div class="cb-head"><h3>Essex &ndash; Test 02 <span style="color:var(--ink-3);font-weight:500;">&middot; paused, for comparison</span></h3><div class="cb-meta">292 sent across 4 reached steps &middot; 40.8% of this list bounced</div></div>
+        <div class="cb-body">
+          <div class="table-scroll" style="box-shadow:none;">
+            <table>
+              <thead><tr><th style="width:70px">Step</th><th class="num">Sent</th><th>Open rate</th><th>Reply rate</th><th>Click rate</th></tr></thead>
+              <tbody>
+                <tr style="background:var(--good-soft)"><td>1 &middot; opener</td><td class="num tabular">130</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:37.7%;background:var(--email)"></div></div><span class="minibar-num">37.7%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:100%;background:var(--good)"></div></div><span class="minibar-num">6.2%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:23%;background:var(--ink-3)"></div></div><span class="minibar-num">2.3%</span></div></td></tr>
+                <tr><td>2 &middot; follow-up</td><td class="num tabular">82</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:40.2%;background:var(--email)"></div></div><span class="minibar-num">40.2%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:39%;background:var(--good)"></div></div><span class="minibar-num">2.4%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                <tr><td>3 &middot; "not networking"</td><td class="num tabular">58</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:20.7%;background:var(--email)"></div></div><span class="minibar-num">20.7%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:9%;background:var(--ink-3)"></div></div><span class="minibar-num">0.9%</span></div></td></tr>
+                <tr style="background:var(--critical-soft)"><td>4 &middot; "what gittgo is"</td><td class="num tabular">22</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--email)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:11.5px;color:var(--ink-2);margin:11px 2px 0;">Opposite pattern to Test 03: almost all replies came from the opener. Read next to Deliverability &mdash; the 6.2% opener reply rate likely reflects a dirty list, not stronger copy.</p>
+        </div>
+      </div>
+
+      <div class="campaign-block" data-campaign="test04">
+        <div class="cb-head"><h3>Essex &ndash; Test 04 <span style="color:var(--ink-3);font-weight:500;">&middot; active since 11 Aug</span></h3><div class="cb-meta">570 sent &middot; now three steps deep, opener A/B still running</div></div>
+        <div class="cb-body">
+          <div class="ab-row">
+            <div class="ab-card winner">
+              <div class="ab-label">Variant A &middot; still ahead</div>
+              <div class="ab-subject">"{{firstName}} &ndash; quick one" (concierge-first opener)</div>
+              <div class="ab-metric-row"><span>Sent</span><b>161</b></div>
+              <div class="ab-metric-row"><span>Unique open rate</span><b>50.9%</b></div>
+              <div class="ab-metric-row"><span>Unique replies</span><b>2</b></div>
+            </div>
+            <div class="ab-card">
+              <div class="ab-label">Variant B</div>
+              <div class="ab-subject">"{{firstName}} &ndash; quick one" (category-exclusivity opener)</div>
+              <div class="ab-metric-row"><span>Sent</span><b>163</b></div>
+              <div class="ab-metric-row"><span>Unique open rate</span><b>48.5%</b></div>
+              <div class="ab-metric-row"><span>Unique replies</span><b>0</b></div>
+            </div>
+          </div>
+          <p style="font-size:11.5px;color:var(--ink-2);margin:13px 2px 0;">The gap has narrowed to ~2pts as volume builds, but Variant A still holds both replies. Step 2 (follow-up) is now the strongest email so far &mdash; 43.1% open, 1.7% reply on 174 sent &mdash; and step 3 has just been reached (72 sent, 1 reply).</p>
+        </div>
+      </div>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>
+        <span class="caret">&#9660;</span>
+        <h2>Reply-nurture subsequence</h2>
+        <span class="info-ic" title="Instantly's subsequence analytics API only exposes live operational status, not historical step-level sent/open/reply counts — so the numbers below are what's actually available, not a step table.">i</span>
+      </summary>
+      <div class="card-body">
+        <p style="font-size:12.5px;color:var(--ink-2);margin:0 0 14px;line-height:1.6;">Both Test 03 and Test 04 run the same "Essex &ndash; July 23 &ndash; Reply" template, but it only triggers when a reply is tagged <b>Interested</b> in the CRM &mdash; not on every reply. That's deliberate (it keeps the nurture for genuinely warm leads only), but it also explains why only a couple of leads have ever entered it against ~29 total replies across the parent campaigns.</p>
+
+        <div class="subseq-grid">
+          <div class="subseq-card">
+            <div class="sc-head"><span class="sc-title">On Test 03</span><span class="pill draft" style="background:var(--surface-3);color:var(--ink-2);">Completed</span></div>
+            <div class="sc-body">Its entrant has run the full 5-step nurture to the end. The subsequence is idle on this campaign until its next "Interested" reply arrives.</div>
+            <div class="sc-stats">
+              <div class="sc-stat"><b>1</b>lead completed</div>
+              <div class="sc-stat"><b>5/5</b>steps sent</div>
+              <div class="sc-stat"><b>Mon&ndash;Fri</b>9am&ndash;6pm IOM</div>
+            </div>
+          </div>
+          <div class="subseq-card">
+            <div class="sc-head"><span class="sc-title">On Test 04</span><span class="pill paused">Waiting</span></div>
+            <div class="sc-body">Follow-up delay not yet met on its active lead, and no new leads are currently ready to enter. All 5 sending accounts are available &mdash; nothing blocking it operationally.</div>
+            <div class="sc-stats">
+              <div class="sc-stat"><b>1</b>follow-up waiting</div>
+              <div class="sc-stat"><b>5/5</b>accounts free</div>
+              <div class="sc-stat"><b>0</b>skips today</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="channel-card" style="max-width:640px;">
+          <div class="csub" style="margin-bottom:14px;">Shared 5-step template &middot; ~11 days end-to-end if no further reply</div>
+          <div class="timeline">
+            <div class="tl-step"><div class="tl-delay">Trigger + 25 min</div><div class="tl-text">Thanks for the reply &mdash; full gittgo overview + £25/mo pricing + link</div></div>
+            <div class="tl-step"><div class="tl-delay">+3 days</div><div class="tl-text">Concierge angle: "you're first call, only take what suits you"</div></div>
+            <div class="tl-step"><div class="tl-delay">+4 days</div><div class="tl-text">Reframe: you also see who's after your service</div></div>
+            <div class="tl-step"><div class="tl-delay">+3 days</div><div class="tl-text">Paul testimonial &mdash; 1200% ROI quote</div></div>
+            <div class="tl-step"><div class="tl-delay">+1 day</div><div class="tl-text">Soft breakup &mdash; "reply whenever, no pressure"</div></div>
+          </div>
+        </div>
+      </div>
+    </details>
+    </div>
+
+    <div class="subtab-panel" id="subtab-health">
+      <details class="card" open>
+        <summary>
+          <span class="caret">&#9660;</span>
+          <h2>Deliverability &amp; sending health</h2>
+          <span class="tag-static">all-time</span>
+          <span class="info-ic" title="Infrastructure isn't the problem — one list is.">i</span>
+        </summary>
+        <div class="card-body">
+          <div class="channel-grid">
+            <div class="table-scroll" style="box-shadow:none;">
+              <table>
+                <thead><tr><th>Mailbox</th><th class="num">Warmup score</th><th class="num">Daily limit</th><th class="num">7d warmup sent</th><th class="num">Inbox placement</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td>hjeffs@gittgoconnect.co.uk</td><td class="num tabular">100</td><td class="num tabular">30/day</td><td class="num tabular">35</td><td class="num tabular">100%</td><td><span class="pill active">Warmed</span></td></tr>
+                  <tr><td>hthomas@gittgoconnect.co.uk</td><td class="num tabular">100</td><td class="num tabular">30/day</td><td class="num tabular">34</td><td class="num tabular">100%</td><td><span class="pill active">Warmed</span></td></tr>
+                  <tr><td>jjames@gittgoconnect.co.uk</td><td class="num tabular">100</td><td class="num tabular">30/day</td><td class="num tabular">35</td><td class="num tabular">100%</td><td><span class="pill active">Warmed</span></td></tr>
+                  <tr><td>rtoms@gittgoconnect.co.uk</td><td class="num tabular">100</td><td class="num tabular">30/day</td><td class="num tabular">34</td><td class="num tabular">100%</td><td><span class="pill active">Warmed</span></td></tr>
+                  <tr><td>tsmith@gittgoconnect.co.uk</td><td class="num tabular">100</td><td class="num tabular">30/day</td><td class="num tabular">30</td><td class="num tabular">100%</td><td><span class="pill active">Warmed</span></td></tr>
+                </tbody>
+              </table>
+              <p style="font-size:11px;color:var(--ink-3);margin:8px 2px 0;">7-day warmup sample (14&ndash;20 Aug): every warmup email from all 5 mailboxes landed in the inbox, none in spam &mdash; 0% spam-placement risk detected this week.</p>
+            </div>
+            <div class="channel-card" style="box-shadow:0 0 0 1.5px var(--critical), var(--shadow);">
+              <div class="ctitle"><span class="swatch" style="background:var(--critical)"></span><h3>Test 02's list is the bounce source</h3></div>
+              <p style="font-size:12.5px;color:var(--ink-2);line-height:1.6;">119 of 292 sends on Essex &ndash; Test 02 bounced (40.8%) &mdash; almost all of the workspace's 164 total bounces come from this one campaign. The other three live campaigns sit between 0% and 3.0%. Re-verify this list before it sends again.</p>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ============ LINKEDIN ============ -->
+  <div class="tab-panel" id="tab-linkedin" style="padding-top:20px;">
+    <details class="card" open>
+      <summary>
+        <span class="caret">&#9660;</span>
+        <h2>LinkedIn &middot; Kakiyo</h2>
+        <span class="tag-static">all-time</span>
+        <span class="info-ic" title="Kakiyo's API doesn't expose a daily history, so this tab isn't period-filtered.">i</span>
+      </summary>
+      <div class="card-body">
+        <div class="channel-grid">
+          <div class="channel-card">
+            <div class="ctitle"><span class="swatch" style="background:var(--linkedin)"></span><h3>Funnel</h3></div>
+            <div class="csub">279 prospects loaded</div>
+            <div class="funnel-row"><div class="flabel">Invites sent</div><div class="fbar-wrap"><div class="fbar" style="width:94.6%;background:var(--linkedin)"></div></div><div class="fval tabular">264 <span class="fpct">94.6%</span></div></div>
+            <div class="funnel-row"><div class="flabel">Accepted</div><div class="fbar-wrap"><div class="fbar" style="width:22.9%;background:var(--linkedin)"></div></div><div class="fval tabular">64 <span class="fpct">22.9%</span></div></div>
+            <div class="funnel-row"><div class="flabel">Already connected</div><div class="fbar-wrap"><div class="fbar" style="width:3.9%;background:var(--linkedin)"></div></div><div class="fval tabular">11 <span class="fpct">3.9%</span></div></div>
+            <div class="funnel-row"><div class="flabel">Conversations started</div><div class="fbar-wrap"><div class="fbar" style="width:26.9%;background:var(--linkedin)"></div></div><div class="fval tabular">75 <span class="fpct">26.9%</span></div></div>
+            <div class="funnel-row"><div class="flabel">Replied</div><div class="fbar-wrap"><div class="fbar" style="width:5%;background:var(--linkedin)"></div></div><div class="fval tabular">14 <span class="fpct">5.0%</span></div></div>
+            <div class="funnel-row"><div class="flabel">Qualified</div><div class="fbar-wrap"><div class="fbar" style="width:0.7%;background:var(--linkedin)"></div></div><div class="fval tabular">2 <span class="fpct">0.7%</span></div></div>
+            <div class="funnel-row"><div class="flabel">Closed</div><div class="fbar-wrap"><div class="fbar" style="width:0.4%;background:var(--linkedin)"></div></div><div class="fval tabular">1</div></div>
+            <p style="font-size:11px;color:var(--ink-3);margin:12px 2px 0;">"Accepted" and "Already connected" are two separate acceptance paths Kakiyo tracks &mdash; 75 total reachable connections either way. Invite volume is now within a few percent of the full 279-prospect list.</p>
+          </div>
+          <div class="channel-card">
+            <div class="ctitle"><h3>Where all 14 replies landed</h3></div>
+            <div class="csub">2 qualified &middot; 12 replied, not yet triaged</div>
+            <div class="reply-list" style="grid-template-columns:1fr;">
+              <div class="reply-item" style="border-color:var(--good);"><div><div class="ri-name">Jamie Lambert <span class="pill active" style="margin-left:4px;">Qualified</span></div><div class="ri-role">Founder, Pure Golf Media</div></div><div class="ri-date">6 Aug</div></div>
+              <div class="reply-item" style="border-color:var(--good);"><div><div class="ri-name">Joseph Pearce <span class="pill active" style="margin-left:4px;">Qualified</span></div><div class="ri-role">Website Transformation Consultant, Chelmsford Web Studio</div></div><div class="ri-date">30 Jul</div></div>
+            </div>
+            <div class="csub" style="margin:14px 0 8px;">Replied, not yet triaged (12)</div>
+            <div class="reply-list">
+              <div class="reply-item"><div><div class="ri-name">Richard King</div><div class="ri-role">Co-Founder &amp; Director, The Cotton Textile Company</div></div><div class="ri-date">20 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Jake Gaskell</div><div class="ri-role">Managing Director &ndash; Rail, Survey Solutions</div></div><div class="ri-date">17 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Jenny Sjollema</div><div class="ri-role">Founder, P&auml;ngels VA</div></div><div class="ri-date">14 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Tim O'Grady</div><div class="ri-role">Director, MinsterFB</div></div><div class="ri-date">7 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Salim Mungroo</div><div class="ri-role">Director, SDS Click</div></div><div class="ri-date">6 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Sam Groeber</div><div class="ri-role">Independent Marketing Consultant</div></div><div class="ri-date">6 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Beverley Deans</div><div class="ri-role">HR Consultant, BDHR</div></div><div class="ri-date">6 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Connor Whiting</div><div class="ri-role">Owner, Motion Wave Digital</div></div><div class="ri-date">3 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Laila Truss</div><div class="ri-role">Head of Projects, CreativeSD</div></div><div class="ri-date">3 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Sian Belton</div><div class="ri-role">Wedding Planner, BusyBrides</div></div><div class="ri-date">3 Aug</div></div>
+              <div class="reply-item"><div><div class="ri-name">Dean Vale</div><div class="ri-role">Creative Director, DV8</div></div><div class="ri-date">30 Jul</div></div>
+              <div class="reply-item"><div><div class="ri-name">Ashlie Bishop</div><div class="ri-role">Head Coach, Big Business Entrepreneurs</div></div><div class="ri-date">28 Jul</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>
+        <span class="caret">&#9660;</span>
+        <h2>Messaging activity &amp; efficiency</h2>
+        <span class="tag-static">all-time</span>
+        <span class="info-ic" title="Kakiyo's full messaging breakdown and computed rate metrics.">i</span>
+      </summary>
+      <div class="card-body">
+        <div class="channel-grid">
+          <div class="channel-card">
+            <div class="ctitle"><h3>Messaging breakdown</h3></div>
+            <div class="funnel-row"><div class="flabel">Initial messages</div><div class="fbar-wrap"><div class="fbar" style="width:72.1%;background:var(--linkedin)"></div></div><div class="fval tabular">75</div></div>
+            <div class="funnel-row"><div class="flabel">Automated follow-ups sent</div><div class="fbar-wrap"><div class="fbar" style="width:0%;background:var(--warn)"></div></div><div class="fval tabular">0</div></div>
+            <div class="funnel-row"><div class="flabel">Total messages sent</div><div class="fbar-wrap"><div class="fbar" style="width:100%;background:var(--linkedin)"></div></div><div class="fval tabular">104</div></div>
+            <div class="funnel-row"><div class="flabel">Waiting on connection</div><div class="fbar-wrap"><div class="fbar" style="width:0%;background:var(--good)"></div></div><div class="fval tabular">0</div></div>
+            <p style="font-size:11.5px;color:var(--ink-2);margin:10px 2px 0;line-height:1.6;">Zero automated follow-ups have ever fired &mdash; every message beyond the 75 initial touches has been sent manually in reply to a prospect. Same pattern as email's under-used reply subsequence: the automation is built but not doing the follow-up work yet.</p>
+          </div>
+          <div class="channel-card">
+            <div class="ctitle"><h3>Recent activity</h3></div>
+            <div class="funnel-row"><div class="flabel">Last 24 hours</div><div class="fbar-wrap"><div class="fbar" style="width:28.9%;background:var(--linkedin)"></div></div><div class="fval tabular">11 msgs</div></div>
+            <div class="funnel-row"><div class="flabel">Last 7 days</div><div class="fbar-wrap"><div class="fbar" style="width:100%;background:var(--linkedin)"></div></div><div class="fval tabular">38 msgs</div></div>
+            <div class="csub" style="margin:14px 0 6px;">Computed rates, all-time</div>
+            <div class="funnel-row"><div class="flabel">Response rate</div><div class="fbar-wrap"><div class="fbar" style="width:5.0%;background:var(--linkedin)"></div></div><div class="fval tabular">5.02%</div></div>
+            <div class="funnel-row"><div class="flabel">Qualification rate</div><div class="fbar-wrap"><div class="fbar" style="width:14.3%;background:var(--linkedin)"></div></div><div class="fval tabular">14.29%</div></div>
+            <div class="funnel-row"><div class="flabel">Conversion rate</div><div class="fbar-wrap"><div class="fbar" style="width:0.7%;background:var(--linkedin)"></div></div><div class="fval tabular">0.72%</div></div>
+            <div class="funnel-row"><div class="flabel">Avg. messages / prospect</div><div class="fbar-wrap"><div class="fbar" style="width:37%;background:var(--linkedin)"></div></div><div class="fval tabular">0.37</div></div>
+            <p style="font-size:11px;color:var(--ink-3);margin:10px 2px 0;">Response rate = answers &divide; messages sent. Qualification rate = qualified &divide; answers. Conversion rate = closed &divide; prospects loaded. No new qualifications in the last 7 days.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>
+        <span class="caret">&#9660;</span>
+        <h2>Agent &amp; list health</h2>
+        <span class="tag-static">all-time</span>
+        <span class="info-ic" title="Kakiyo's LinkedIn automation agent and prospect-list data quality.">i</span>
+      </summary>
+      <div class="card-body">
+        <div class="channel-grid">
+          <div class="channel-card">
+            <div class="ctitle"><h3>Barry McCaughley &middot; agent</h3><span class="pill active" style="margin-left:auto;">Running</span></div>
+            <div class="csub">Spain &middot; Mon&ndash;Fri, 08:00&ndash;18:00</div>
+            <div class="funnel-row"><div class="flabel">Invitations today</div><div class="fbar-wrap"><div class="fbar" style="width:18.5%;background:var(--linkedin)"></div></div><div class="fval tabular">5 / 27</div></div>
+            <div class="funnel-row"><div class="flabel">Messages today</div><div class="fbar-wrap"><div class="fbar" style="width:0.6%;background:var(--linkedin)"></div></div><div class="fval tabular">1 / 159</div></div>
+            <p style="font-size:11.5px;color:var(--ink-2);margin:10px 2px 0;line-height:1.6;">Plenty of headroom on both invitations and messages today &mdash; no alerts flagged. The real constraint isn't a daily cap; it's that 0 automated follow-ups have ever fired (see Messaging breakdown), so most of that messaging capacity goes untouched by design.</p>
+          </div>
+          <div class="channel-card">
+            <div class="ctitle"><h3>List quality</h3></div>
+            <div class="csub">279 prospects, all-time</div>
+            <div class="funnel-row"><div class="flabel">Invalid profile URL</div><div class="fbar-wrap"><div class="fbar" style="width:0%;background:var(--good)"></div></div><div class="fval tabular">0</div></div>
+            <div class="funnel-row"><div class="flabel">Unreachable</div><div class="fbar-wrap"><div class="fbar" style="width:0%;background:var(--good)"></div></div><div class="fval tabular">0</div></div>
+            <div class="funnel-row"><div class="flabel">Blocked</div><div class="fbar-wrap"><div class="fbar" style="width:0%;background:var(--good)"></div></div><div class="fval tabular">0</div></div>
+            <div class="funnel-row"><div class="flabel">Needs an email</div><div class="fbar-wrap"><div class="fbar" style="width:1%;background:var(--warn)"></div></div><div class="fval tabular">3</div></div>
+            <div class="funnel-row"><div class="flabel">Do-not-contact list</div><div class="fbar-wrap"><div class="fbar" style="width:0%;background:var(--good)"></div></div><div class="fval tabular">0</div></div>
+            <p style="font-size:11.5px;color:var(--ink-2);margin:10px 2px 0;line-height:1.6;">Clean list &mdash; unlike Test 02's email bounce problem, nothing here is dragging performance down. Only 3 prospects are missing an email address (harmless for LinkedIn-only outreach).</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ INSIGHTS ============ -->
+  <div class="tab-panel" id="tab-insights" style="padding-top:20px;">
+    <details class="card" open>
+      <summary><span class="caret">&#9660;</span><h2>What's working, what's not</h2></summary>
+      <div class="card-body">
+        <div class="insight-grid">
+          <div class="insight good"><div class="irow"><div class="itag">Working</div><span class="chan-badge"><span class="chan-dot" style="background:var(--email)"></span>Email</span></div><h4>Follow-up beats the opener</h4><p>Test 03's step 2 gets an 85.3% open rate and 3.7% reply rate &mdash; the best of any step, more than double the opener's reply rate. Don't cut it.</p></div>
+          <div class="insight good"><div class="irow"><div class="itag">Working</div><span class="chan-badge"><span class="chan-dot" style="background:var(--email)"></span>Email</span></div><h4>Auto-nurture catches repliers</h4><p>The 5-step reply-triggered subsequence is live on both active campaigns &mdash; responders get a tailored follow-up automatically.</p></div>
+          <div class="insight good"><div class="irow"><div class="itag">Working</div><span class="chan-badge"><span class="chan-dot" style="background:var(--email)"></span>Email</span></div><h4>Sending infrastructure is healthy</h4><p>All 5 mailboxes sit at a 100 warmup score. Whatever's limiting reply rate, it isn't inbox placement.</p></div>
+          <div class="insight warn"><div class="irow"><div class="itag">Watch</div><span class="chan-badge"><span class="chan-dot" style="background:var(--email)"></span>Email</span></div><h4>The breakup step is dead weight, not steps 5&ndash;6</h4><p>Now that Test 03 has run its full 7 steps, steps 5&ndash;6 are still pulling opens and replies &mdash; it's step 7 (breakup) that flatlines at zero replies from its first 8 sends. Watch that email's copy specifically.</p></div>
+          <div class="insight critical"><div class="irow"><div class="itag">Fix</div><span class="chan-badge"><span class="chan-dot" style="background:var(--email)"></span>Email</span></div><h4>Test 02's list needs cleaning</h4><p>A 40.8% bounce rate means well over a third of that list was undeliverable. Its reply rate looks strong on paper but is running on a contaminated sample.</p></div>
+          <div class="insight watch"><div class="irow"><div class="itag">Opportunity</div><span class="chan-badge"><span class="chan-dot" style="background:var(--email)"></span><span class="chan-dot" style="background:var(--linkedin)"></span>Email + LinkedIn</span></div><h4>LinkedIn beats email on reply rate</h4><p>Kakiyo's 5.0% reply rate beats email's ~1.8% blended rate on a fraction of the volume, converting mostly senior marketing/creative owners. Invite volume is now near the top of the list (94.6% of prospects invited) &mdash; the next lever is growing the list itself.</p></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<footer>Sources: Instantly.ai campaign, step &amp; daily analytics, Kakiyo campaign analytics &middot; pulled live 14 Aug 2026 &middot; gittgo internal use</footer>
+
+<script>
+(function(){
+  var CAMPAIGNS = [
+    { id:'test04', name:'Essex &ndash; Test 04', sub:'active, 7-step, A/B on opener', status:'active', started:'2026-08-11',
+      lifetime:{sent:570,leads:561,contacted:438,bounce:17,bouncePct:3.0,opp:1,val:1000},
+      daily:[["2026-08-11",30,3,0,0,0],["2026-08-12",100,75,0,0,0],["2026-08-13",87,28,0,0,0],["2026-08-14",49,17,1,0,0],
+        ["2026-08-15",0,2,0,0,0],["2026-08-16",0,1,0,1,0],["2026-08-17",53,16,0,0,0],["2026-08-18",50,12,1,1,0],
+        ["2026-08-19",101,78,3,2,1],["2026-08-20",100,28,1,0,0]] },
+    { id:'linkedin-email', name:'Essex &ndash; LinkedIn (email)', sub:'small pilot list, completed', status:'completed', started:'2026-07-30',
+      lifetime:{sent:8,leads:2,contacted:5,bounce:0,bouncePct:0,opp:0,val:0},
+      daily:[["2026-07-31",2,1,0,1,0],["2026-08-03",1,1,1,0,0],["2026-08-06",2,0,0,0,0],["2026-08-10",1,0,0,0,0],
+        ["2026-08-13",1,0,0,0,0],["2026-08-17",1,0,0,0,0]] },
+    { id:'test03', name:'Essex &ndash; Test 03', sub:'flagship sequence, all 7 steps reached', status:'active', started:'2026-07-23',
+      lifetime:{sent:1303,leads:315,contacted:1177,bounce:28,bouncePct:2.1,opp:3,val:3000},
+      daily:[["2026-07-24",10,0,0,0,0],["2026-07-25",0,0,0,0,0],["2026-07-27",75,47,0,0,0],["2026-07-28",40,12,1,1,0],
+        ["2026-07-29",65,45,4,1,0],["2026-07-30",46,18,2,3,0],["2026-07-31",73,42,1,0,0],["2026-08-01",0,1,0,0,0],
+        ["2026-08-02",0,5,1,0,0],["2026-08-03",74,46,0,1,0],["2026-08-04",100,81,4,0,2],["2026-08-05",56,22,1,0,0],
+        ["2026-08-06",8,3,0,0,0],["2026-08-07",121,75,0,1,0],["2026-08-08",0,6,0,0,0],["2026-08-09",0,3,0,0,0],
+        ["2026-08-10",122,90,1,0,0],["2026-08-11",120,99,1,1,0],["2026-08-12",18,9,1,0,0],["2026-08-13",31,12,0,0,0],
+        ["2026-08-14",101,29,0,0,0],["2026-08-15",0,3,0,0,0],["2026-08-16",0,1,0,0,0],["2026-08-17",96,31,3,1,0],
+        ["2026-08-18",100,67,3,0,0],["2026-08-19",47,14,0,0,0],["2026-08-20",0,2,0,0,0]] },
+    { id:'test02', name:'Essex &ndash; Test 02', sub:'4-step sequence, older list', status:'paused', started:'2026-07-06',
+      lifetime:{sent:292,leads:130,contacted:292,bounce:119,bouncePct:40.8,opp:4,val:4000},
+      daily:[["2026-07-08",30,12,3,0,3],["2026-07-09",19,8,3,0,1],["2026-07-10",30,13,2,1,1],["2026-07-11",0,2,0,0,0],
+        ["2026-07-12",0,3,0,0,0],["2026-07-13",30,13,0,1,0],["2026-07-14",30,9,0,2,0],["2026-07-15",30,2,0,0,0],
+        ["2026-07-16",40,5,1,0,0],["2026-07-17",38,2,0,0,0],["2026-07-19",0,1,0,0,0],["2026-07-20",45,1,0,0,0],
+        ["2026-07-21",0,1,0,0,0],["2026-07-22",0,1,0,0,0],["2026-07-24",0,3,1,0,0],["2026-07-27",0,1,0,0,0]] }
+  ];
+  // daily row = [date, sent, uniqueOpened, uniqueReplies, uniqueClicks, opportunities]
+
+  var ANCHOR = new Date("2026-08-20T00:00:00Z");
+  var DATA_START = new Date("2026-07-06T00:00:00Z");
+  var MS_DAY = 86400000;
+  function toDate(s){ return new Date(s+"T00:00:00Z"); }
+  function fmtISO(d){ return d.toISOString().slice(0,10); }
+  function fmtDMY(d){ var iso=fmtISO(d); var p=iso.split("-"); return p[2]+"/"+p[1]+"/"+p[0]; }
+  function fmtShort(s){ var p=s.split("-"); return p[1]+"/"+p[2]; }
+  function addDays(d,n){ return new Date(d.getTime()+n*MS_DAY); }
+  function daysBetween(a,b){ return Math.round((b-a)/MS_DAY)+1; }
+  function startOfWeek(d){ var day=d.getUTCDay(); var diff=(day===0?-6:1-day); return addDays(d,diff); }
+
+  var state = { preset:'week', start:null, end:null, compare:false };
+  var activeCampaigns = {};
+  CAMPAIGNS.forEach(function(c){ activeCampaigns[c.id] = (c.status === 'active'); });
+
+  function computeRange(){
+    if (state.preset==='week'){ var s=startOfWeek(ANCHOR); state.start=s; state.end=addDays(s,6); return; }
+    if (state.preset==='month'){ var y=ANCHOR.getUTCFullYear(), m=ANCHOR.getUTCMonth(); state.start=new Date(Date.UTC(y,m,1)); state.end=new Date(Date.UTC(y,m+1,0)); return; }
+    if (state.preset==='custom'){
+      state.start = toDate(document.getElementById('customStart').value);
+      state.end = toDate(document.getElementById('customEnd').value);
+      return;
+    }
+    var n = parseInt(state.preset,10); // '7' or '30'
+    state.end = ANCHOR;
+    state.start = addDays(ANCHOR, -(n-1));
+  }
+  function previousRange(){
+    var len = daysBetween(state.start, state.end);
+    var prevEnd = addDays(state.start, -1);
+    var prevStart = addDays(prevEnd, -(len-1));
+    return {start:prevStart, end:prevEnd};
+  }
+
+  function sumRange(daily, start, end){
+    var out = {sent:0, opened:0, replies:0, clicks:0, opp:0};
+    daily.forEach(function(row){
+      var d = toDate(row[0]);
+      if (d>=start && d<=end){ out.sent+=row[1]; out.opened+=row[2]; out.replies+=row[3]; out.clicks+=row[4]; out.opp+=row[5]; }
+    });
+    return out;
+  }
+  function activeCampaignList(){ return CAMPAIGNS.filter(function(c){ return activeCampaigns[c.id]; }); }
+  function sumAll(start,end){
+    var out = {sent:0, opened:0, replies:0, clicks:0, opp:0};
+    activeCampaignList().forEach(function(c){
+      var s = sumRange(c.daily, start, end);
+      out.sent+=s.sent; out.opened+=s.opened; out.replies+=s.replies; out.clicks+=s.clicks; out.opp+=s.opp;
+    });
+    return out;
+  }
+  function pct(n,d){ return d>0 ? (100*n/d) : 0; }
+  function fmt1(n){ return n.toFixed(1); }
+  function fmtInt(n){ return n.toLocaleString(); }
+
+  function deltaBadgeSmall(curr, prev, unit){
+    unit = unit || 'pt';
+    if (!state.compare) return '';
+    if (prev===0) return curr>0 ? ' <span class="cell-delta" style="color:var(--good)">new</span>' : '';
+    var change = curr-prev;
+    if (Math.abs(change) < (unit==='pt' ? 0.05 : 0.5)) return '';
+    var sign = change>=0 ? '&#9650;' : '&#9660;';
+    var mag = unit==='pt' ? fmt1(Math.abs(change)) : Math.round(Math.abs(change));
+    return ' <span class="cell-delta" style="color:'+(change>=0?'var(--good)':'var(--ink-3)')+'">'+sign+mag+unit+'</span>';
+  }
+
+  function syncInputs(){
+    document.getElementById('customStart').value = fmtISO(state.start);
+    document.getElementById('customEnd').value = fmtISO(state.end);
+  }
+
+  function renderRangeSummary(){
+    var days = daysBetween(DATA_START, ANCHOR);
+    document.getElementById('rangeSummary').textContent =
+      'All '+days+' loaded days ('+fmtDMY(DATA_START)+' to '+fmtDMY(ANCHOR)+') are available. This controls every metric below.';
+    var note = document.getElementById('periodNote');
+    if (state.end > ANCHOR){
+      note.style.display = 'block';
+      note.textContent = 'The selected range extends past '+fmtDMY(ANCHOR)+', the most recent day loaded — those days read as 0.';
+    } else {
+      note.style.display = 'none';
+    }
+  }
+
+  function renderCampaignFilter(){
+    var wrap = document.getElementById('campaignFilter');
+    var html = '<span class="cf-label">Campaigns:</span>' + CAMPAIGNS.map(function(c){
+      var on = !!activeCampaigns[c.id];
+      var isActive = c.status === 'active';
+      var dotColor = !on ? 'var(--ink-3)' : (isActive ? 'var(--email)' : 'var(--email-tint)');
+      var statusNote = isActive ? '' : ' <span style="opacity:.7;">(' + c.status + ')</span>';
+      return '<button type="button" class="camp-chip'+(on?'':' off')+'" data-campaign-id="'+c.id+'" title="'+(isActive?'Active':'Not currently active — '+c.status)+'"><span class="dot" style="background:'+dotColor+'"></span>'+c.name+statusNote+'</button>';
+    }).join('');
+    wrap.innerHTML = html;
+  }
+
+  function applyCampaignBlockVisibility(){
+    Array.prototype.forEach.call(document.querySelectorAll('#subtab-steps .campaign-block[data-campaign]'), function(block){
+      var id = block.getAttribute('data-campaign');
+      block.style.display = activeCampaigns[id] ? '' : 'none';
+    });
+  }
+
+  function svgEl(tag, attrs){
+    var e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function renderDailyChart(){
+    var start = state.start, end = state.end;
+    var days = [];
+    var d = start;
+    while (d<=end){ days.push(fmtISO(d)); d = addDays(d,1); }
+    var byDate = {};
+    days.forEach(function(dt){ byDate[dt] = {sent:0, opened:0}; });
+    activeCampaignList().forEach(function(c){
+      c.daily.forEach(function(row){
+        if (byDate[row[0]]){ byDate[row[0]].sent += row[1]; byDate[row[0]].opened += row[2]; }
+      });
+    });
+    var series = days.map(function(dt){ return [dt, byDate[dt].sent, byDate[dt].opened]; });
+
+    var activeN = activeCampaignList().length;
+    document.getElementById('dailyChartSub').textContent = 'Light bar = sent · solid bar = unique opens · '+days.length+' day(s) · '+activeN+' campaign(s)';
+
+    var W = 660, H = 200, padL = 32, padR = 6, padT = 8, padB = 20;
+    var innerW = W-padL-padR, innerH = H-padT-padB;
+    var maxV = 0; series.forEach(function(s){ maxV = Math.max(maxV, s[1]); });
+    maxV = Math.max(5, Math.ceil(maxV/5)*5);
+    var n = series.length;
+    var step = innerW/n;
+    var bw = Math.max(1.5, Math.min(step*0.62, 22));
+
+    var svg = svgEl("svg", {viewBox:"0 0 "+W+" "+H, width:"100%", height:H, role:"img", "aria-label":"Daily sent versus opened emails"});
+    [0,0.5,1].forEach(function(f){
+      var y = padT+innerH*(1-f);
+      svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:y,y2:y,class:"gridline"}));
+      var t = svgEl("text",{x:2,y:y+3}); t.textContent = Math.round(maxV*f); svg.appendChild(t);
+    });
+    series.forEach(function(s,i){
+      var x = padL + i*step + (step-bw)/2;
+      var hSent = innerH*(s[1]/maxV), hOpen = innerH*(s[2]/maxV);
+      var ySent = padT+innerH-hSent, yOpen = padT+innerH-hOpen;
+      var rSent = svgEl("rect",{x:x,y:ySent,width:bw,height:Math.max(hSent,0),fill:"var(--email-tint)",rx:1.5});
+      var tS = svgEl("title"); tS.textContent = s[0]+" — sent "+s[1]; rSent.appendChild(tS); svg.appendChild(rSent);
+      var rOpen = svgEl("rect",{x:x,y:yOpen,width:bw,height:Math.max(hOpen,0),fill:"var(--email)",rx:1.5});
+      var tO = svgEl("title"); tO.textContent = s[0]+" — opened "+s[2]; rOpen.appendChild(tO); svg.appendChild(rOpen);
+      if (n<=14 || i===0 || i===n-1 || i%Math.ceil(n/8)===0){
+        var t = svgEl("text",{x:x+bw/2,y:H-4,"text-anchor":"middle"}); t.textContent = fmtShort(s[0]); svg.appendChild(t);
+      }
+    });
+    var el = document.getElementById('dailyChart'); el.innerHTML=''; el.appendChild(svg);
+  }
+
+  function renderReplyRateChart(){
+    var start = state.start, end = state.end;
+    var totalDays = daysBetween(start,end);
+    var byDate = {};
+    var d = start; var days=[];
+    while (d<=end){ var k=fmtISO(d); byDate[k]={sent:0,replies:0}; days.push(k); d=addDays(d,1); }
+    activeCampaignList().forEach(function(c){
+      c.daily.forEach(function(row){ if (byDate[row[0]]){ byDate[row[0]].sent+=row[1]; byDate[row[0]].replies+=row[3]; } });
+    });
+    var bucketSize = totalDays<=14 ? 1 : 7;
+    var buckets = [];
+    for (var i=0;i<days.length;i+=bucketSize){
+      var chunk = days.slice(i, i+bucketSize);
+      var sent=0, rep=0;
+      chunk.forEach(function(k){ sent+=byDate[k].sent; rep+=byDate[k].replies; });
+      buckets.push({label: bucketSize===1 ? fmtShort(chunk[0]) : fmtShort(chunk[0])+'–'+fmtShort(chunk[chunk.length-1]), sent:sent, r:rep, rate: sent>0?100*rep/sent:0});
+    }
+    document.getElementById('replyChartSub').textContent = 'Human replies ÷ sent, by '+(bucketSize===1?'day':'week');
+
+    var W = 460, H = 200, padL = 32, padR = 10, padT = 12, padB = 22;
+    var innerW = W-padL-padR, innerH = H-padT-padB;
+    var maxV = Math.max.apply(null, buckets.map(function(b){return b.rate;}).concat([2]));
+    maxV = Math.ceil(maxV*1.15*10)/10;
+    var n = buckets.length;
+
+    var svg = svgEl("svg",{viewBox:"0 0 "+W+" "+H, width:"100%", height:H, role:"img", "aria-label":"Reply rate trend"});
+    [0,0.5,1].forEach(function(f){
+      var y = padT+innerH*(1-f);
+      svg.appendChild(svgEl("line",{x1:padL,x2:W-padR,y1:y,y2:y,class:"gridline"}));
+      var t = svgEl("text",{x:2,y:y+3}); t.textContent=(maxV*f).toFixed(1)+"%"; svg.appendChild(t);
+    });
+    var coords;
+    if (n===1){
+      coords = [[padL+innerW/2, padT+innerH*(1-buckets[0].rate/maxV)]];
+    } else {
+      var stepX = innerW/(n-1);
+      coords = buckets.map(function(b,i){ return [padL+i*stepX, padT+innerH*(1-b.rate/maxV)]; });
+    }
+    if (n>1){
+      var path = "M "+coords.map(function(c){return c[0]+" "+c[1];}).join(" L ");
+      svg.appendChild(svgEl("path",{d:path, fill:"none", stroke:"var(--lime-strong)", "stroke-width":2.5, "stroke-linejoin":"round", "stroke-linecap":"round"}));
+      var areaD = "M "+coords[0][0]+" "+(padT+innerH)+" L "+coords.map(function(c){return c[0]+" "+c[1];}).join(" L ")+" L "+coords[n-1][0]+" "+(padT+innerH)+" Z";
+      svg.appendChild(svgEl("path",{d:areaD, fill:"var(--lime-strong)", opacity:"0.14"}));
+    }
+    coords.forEach(function(c,i){
+      var isLast = i===n-1;
+      var dot = svgEl("circle",{cx:c[0],cy:c[1],r:isLast?4.5:3, fill:"var(--lime-strong)"});
+      var t = svgEl("title"); t.textContent = buckets[i].label+": "+buckets[i].rate.toFixed(2)+"% ("+buckets[i].r+"/"+buckets[i].sent+")"; dot.appendChild(t);
+      svg.appendChild(dot);
+      if (n<=12){
+        var lbl = svgEl("text",{x:c[0], y:H-6, "text-anchor": i===0?"start":(i===n-1?"end":"middle")});
+        lbl.textContent = buckets[i].label; svg.appendChild(lbl);
+      }
+    });
+    var el = document.getElementById('replyRateChart'); el.innerHTML=''; el.appendChild(svg);
+  }
+
+  function sparkline(series, start, end){
+    var days=[]; var d=start;
+    while(d<=end){ days.push(fmtISO(d)); d=addDays(d,1); }
+    var map = {}; series.forEach(function(r){ map[r[0]]=r[1]; });
+    var vals = days.map(function(dt){ return map[dt]||0; });
+    var maxV = Math.max.apply(null, vals.concat([1]));
+    var W=90,H=24,pad=2;
+    var n=vals.length;
+    var barsW = n>0 ? (W-2*pad)/n : W;
+    var bars = vals.map(function(v,i){
+      var x = pad + i*barsW;
+      var h = (H-2*pad)*(v/maxV);
+      return '<rect x="'+x.toFixed(1)+'" y="'+(H-pad-h).toFixed(1)+'" width="'+Math.max(1,barsW*0.7).toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" fill="var(--email-tint)" rx="1"><title>'+fmtShort(days[i])+': '+v+'</title></rect>';
+    }).join('');
+    return '<svg class="sparkline" viewBox="0 0 '+W+' '+H+'" width="90" height="24">'+bars+'</svg>';
+  }
+
+  function renderCampaignTable(){
+    var rows = activeCampaignList().map(function(c){
+      var cur = sumRange(c.daily, state.start, state.end);
+      var prevR = previousRange();
+      var prev = state.compare ? sumRange(c.daily, prevR.start, prevR.end) : {sent:0,opened:0,replies:0};
+      var openRate = pct(cur.opened, cur.sent);
+      var replyRate = pct(cur.replies, cur.sent);
+      var prevOpenRate = pct(prev.opened, prev.sent);
+      var prevReplyRate = pct(prev.replies, prev.sent);
+      var pillCls = c.status==='active' ? 'active' : (c.status==='paused' ? 'paused' : 'draft');
+      var bounceColor = c.lifetime.bouncePct>15 ? 'var(--critical)' : (c.lifetime.bouncePct>8 ? 'var(--warn)' : 'var(--good)');
+      return '<tr>'+
+        '<td><b>'+c.name+'</b><br><span style="color:var(--ink-3);font-size:11px">'+c.sub+'</span></td>'+
+        '<td><span class="pill '+pillCls+'">'+c.status.charAt(0).toUpperCase()+c.status.slice(1)+'</span></td>'+
+        '<td>'+c.started.slice(5)+'</td>'+
+        '<td>'+sparkline(c.daily, state.start, state.end)+'</td>'+
+        '<td class="num tabular">'+fmtInt(cur.sent)+deltaBadgeSmall(cur.sent, prev.sent, '')+'</td>'+
+        '<td class="num"><div class="minibar-cell" style="justify-content:flex-end"><div class="minibar-track"><div class="minibar-fill" style="width:'+Math.min(100,openRate)+'%;background:var(--email)"></div></div><span class="minibar-num">'+fmt1(openRate)+'%</span></div>'+deltaBadgeSmall(openRate,prevOpenRate)+'</td>'+
+        '<td class="num"><div class="minibar-cell" style="justify-content:flex-end"><div class="minibar-track"><div class="minibar-fill" style="width:'+Math.min(100,replyRate*8)+'%;background:var(--good)"></div></div><span class="minibar-num">'+fmt1(replyRate)+'%</span></div>'+deltaBadgeSmall(replyRate,prevReplyRate)+'</td>'+
+        '<td class="num"><div class="minibar-cell" style="justify-content:flex-end"><div class="minibar-track"><div class="minibar-fill" style="width:'+Math.min(100,c.lifetime.bouncePct)+'%;background:'+bounceColor+'"></div></div><span class="minibar-num">'+fmt1(c.lifetime.bouncePct)+'%</span></div></td>'+
+        '<td class="num tabular">'+(c.lifetime.opp>0 ? c.lifetime.opp+' · £'+fmtInt(c.lifetime.val) : '&mdash;')+'</td>'+
+        '</tr>';
+    }).join('');
+    rows += '<tr class="is-draft"><td><b>AI SDR &ndash; Fully Personalized</b><br><span style="color:var(--ink-3);font-size:11px">never launched</span></td><td><span class="pill draft">Draft</span></td><td>&mdash;</td><td>&mdash;</td><td class="num">0</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>';
+    document.getElementById('campaignTableBody').innerHTML = rows;
+  }
+
+  function renderAll(){
+    computeRange();
+    syncInputs();
+    renderRangeSummary();
+    renderCampaignFilter();
+    renderDailyChart();
+    renderReplyRateChart();
+    renderCampaignTable();
+    applyCampaignBlockVisibility();
+  }
+
+  document.getElementById('presetSeg').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-preset]');
+    if (!btn) return;
+    Array.prototype.forEach.call(document.querySelectorAll('#presetSeg button'), function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    state.preset = btn.getAttribute('data-preset');
+    renderAll();
+  });
+  document.getElementById('customStart').addEventListener('change', function(){
+    state.preset='custom';
+    Array.prototype.forEach.call(document.querySelectorAll('#presetSeg button'), function(b){ b.classList.toggle('active', b.getAttribute('data-preset')==='custom'); });
+    renderAll();
+  });
+  document.getElementById('customEnd').addEventListener('change', function(){
+    state.preset='custom';
+    Array.prototype.forEach.call(document.querySelectorAll('#presetSeg button'), function(b){ b.classList.toggle('active', b.getAttribute('data-preset')==='custom'); });
+    renderAll();
+  });
+  document.getElementById('compareToggle').addEventListener('change', function(e){ state.compare = e.target.checked; renderAll(); });
+
+  document.getElementById('campaignFilter').addEventListener('click', function(e){
+    var chip = e.target.closest('.camp-chip');
+    if (!chip) return;
+    var id = chip.getAttribute('data-campaign-id');
+    var onCount = CAMPAIGNS.filter(function(c){ return activeCampaigns[c.id]; }).length;
+    if (activeCampaigns[id] && onCount <= 1) return; // keep at least one campaign on
+    activeCampaigns[id] = !activeCampaigns[id];
+    renderAll();
+  });
+
+  document.getElementById('tabs').addEventListener('click', function(e){
+    var btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function(b){ b.classList.remove('active'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.tab-panel'), function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.getAttribute('data-tab')).classList.add('active');
+  });
+
+  var subtabsEmail = document.getElementById('subtabsEmail');
+  if (subtabsEmail){
+    subtabsEmail.addEventListener('click', function(e){
+      var btn = e.target.closest('.subtab-btn');
+      if (!btn) return;
+      Array.prototype.forEach.call(subtabsEmail.querySelectorAll('.subtab-btn'), function(b){ b.classList.remove('active'); });
+      Array.prototype.forEach.call(document.querySelectorAll('#tab-email .subtab-panel'), function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('subtab-'+btn.getAttribute('data-subtab')).classList.add('active');
+    });
+  }
+
+  renderAll();
+})();
+</script>
