@@ -19,7 +19,7 @@
     "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)",
     "active_conversations": 1,
     "active_conversations_window_days": 3,
-    "active_conversations_fetched_at": "2026-08-19T14:48:11Z",
+    "active_conversations_fetched_at": "2026-08-20T00:08:04Z",
     "active_conversations_source": "kakiyo-mcp:list_campaign_prospects(hasResponded=true), counting prospects with status Replied or Qualified whose lastMessage falls inside the window"
   }
 }
