@@ -307,13 +307,13 @@
           <table>
             <thead><tr>
               <th>Campaign</th><th>Status</th><th>Started</th><th style="width:100px">Trend</th>
-              <th class="num">Sent</th><th class="num">Open rate</th><th class="num">Reply rate</th>
+              <th class="num">Sent</th><th class="num">Open rate</th><th class="num">Replies <span class="tag-static">all-time</span></th>
               <th class="num">Bounce <span class="tag-static">all-time</span></th><th class="num">Opportunities</th>
             </tr></thead>
             <tbody id="campaignTableBody"></tbody>
           </table>
         </div>
-        <p style="font-size:11px;color:var(--ink-3);margin-top:8px;">Reply rate = unique human replies (excludes auto-replies/OOO) &divide; sent, for the selected period. Deltas compare to the equivalent prior period. Toggle campaigns off above to exclude them from these numbers and the charts below.</p>
+        <p style="font-size:11px;color:var(--ink-3);margin-top:8px;">Open/Sent are for the selected period; deltas compare to the equivalent prior period. Replies is lifetime, split by Instantly's interest-status label (excludes auto-replies/OOO) &mdash; sentiment isn't tracked per day, so it can't be period-filtered the way opens and sends can. Toggle campaigns off above to exclude them from these numbers and the charts below.</p>
       </div>
     </details>
 
@@ -663,16 +663,16 @@
 (function(){
   var CAMPAIGNS = [
     { id:'test04', name:'Essex &ndash; Test 04', sub:'active, 7-step, A/B on opener', status:'active', started:'2026-08-11',
-      lifetime:{sent:570,leads:561,contacted:438,bounce:17,bouncePct:3.0,opp:1,val:1000},
+      lifetime:{sent:570,leads:561,contacted:438,bounce:17,bouncePct:3.0,opp:1,val:1000,replyTotal:6,replyPos:1,replyNeg:5,replyUnk:0},
       daily:[["2026-08-11",30,3,0,0,0],["2026-08-12",100,75,0,0,0],["2026-08-13",87,28,0,0,0],["2026-08-14",49,17,1,0,0],
         ["2026-08-15",0,2,0,0,0],["2026-08-16",0,1,0,1,0],["2026-08-17",53,16,0,0,0],["2026-08-18",50,12,1,1,0],
         ["2026-08-19",101,78,3,2,1],["2026-08-20",100,28,1,0,0]] },
     { id:'linkedin-email', name:'Essex &ndash; LinkedIn (email)', sub:'small pilot list, completed', status:'completed', started:'2026-07-30',
-      lifetime:{sent:8,leads:2,contacted:5,bounce:0,bouncePct:0,opp:0,val:0},
+      lifetime:{sent:8,leads:2,contacted:5,bounce:0,bouncePct:0,opp:0,val:0,replyTotal:1,replyPos:0,replyNeg:0,replyUnk:1},
       daily:[["2026-07-31",2,1,0,1,0],["2026-08-03",1,1,1,0,0],["2026-08-06",2,0,0,0,0],["2026-08-10",1,0,0,0,0],
         ["2026-08-13",1,0,0,0,0],["2026-08-17",1,0,0,0,0]] },
     { id:'test03', name:'Essex &ndash; Test 03', sub:'flagship sequence, all 7 steps reached', status:'active', started:'2026-07-23',
-      lifetime:{sent:1303,leads:315,contacted:1177,bounce:28,bouncePct:2.1,opp:3,val:3000},
+      lifetime:{sent:1303,leads:315,contacted:1177,bounce:28,bouncePct:2.1,opp:3,val:3000,replyTotal:23,replyPos:3,replyNeg:17,replyUnk:3},
       daily:[["2026-07-24",10,0,0,0,0],["2026-07-25",0,0,0,0,0],["2026-07-27",75,47,0,0,0],["2026-07-28",40,12,1,1,0],
         ["2026-07-29",65,45,4,1,0],["2026-07-30",46,18,2,3,0],["2026-07-31",73,42,1,0,0],["2026-08-01",0,1,0,0,0],
         ["2026-08-02",0,5,1,0,0],["2026-08-03",74,46,0,1,0],["2026-08-04",100,81,4,0,2],["2026-08-05",56,22,1,0,0],
@@ -681,7 +681,7 @@
         ["2026-08-14",101,29,0,0,0],["2026-08-15",0,3,0,0,0],["2026-08-16",0,1,0,0,0],["2026-08-17",96,31,3,1,0],
         ["2026-08-18",100,67,3,0,0],["2026-08-19",47,14,0,0,0],["2026-08-20",0,2,0,0,0]] },
     { id:'test02', name:'Essex &ndash; Test 02', sub:'4-step sequence, older list', status:'paused', started:'2026-07-06',
-      lifetime:{sent:292,leads:130,contacted:292,bounce:119,bouncePct:40.8,opp:4,val:4000},
+      lifetime:{sent:292,leads:130,contacted:292,bounce:119,bouncePct:40.8,opp:4,val:4000,replyTotal:10,replyPos:4,replyNeg:1,replyUnk:5},
       daily:[["2026-07-08",30,12,3,0,3],["2026-07-09",19,8,3,0,1],["2026-07-10",30,13,2,1,1],["2026-07-11",0,2,0,0,0],
         ["2026-07-12",0,3,0,0,0],["2026-07-13",30,13,0,1,0],["2026-07-14",30,9,0,2,0],["2026-07-15",30,2,0,0,0],
         ["2026-07-16",40,5,1,0,0],["2026-07-17",38,2,0,0,0],["2026-07-19",0,1,0,0,0],["2026-07-20",45,1,0,0,0],
@@ -924,9 +924,7 @@
       var prevR = previousRange();
       var prev = state.compare ? sumRange(c.daily, prevR.start, prevR.end) : {sent:0,opened:0,replies:0};
       var openRate = pct(cur.opened, cur.sent);
-      var replyRate = pct(cur.replies, cur.sent);
       var prevOpenRate = pct(prev.opened, prev.sent);
-      var prevReplyRate = pct(prev.replies, prev.sent);
       var pillCls = c.status==='active' ? 'active' : (c.status==='paused' ? 'paused' : 'draft');
       var bounceColor = c.lifetime.bouncePct>15 ? 'var(--critical)' : (c.lifetime.bouncePct>8 ? 'var(--warn)' : 'var(--good)');
       return '<tr>'+
@@ -936,7 +934,7 @@
         '<td>'+sparkline(c.daily, state.start, state.end)+'</td>'+
         '<td class="num tabular">'+fmtInt(cur.sent)+deltaBadgeSmall(cur.sent, prev.sent, '')+'</td>'+
         '<td class="num"><div class="minibar-cell" style="justify-content:flex-end"><div class="minibar-track"><div class="minibar-fill" style="width:'+Math.min(100,openRate)+'%;background:var(--email)"></div></div><span class="minibar-num">'+fmt1(openRate)+'%</span></div>'+deltaBadgeSmall(openRate,prevOpenRate)+'</td>'+
-        '<td class="num"><div class="minibar-cell" style="justify-content:flex-end"><div class="minibar-track"><div class="minibar-fill" style="width:'+Math.min(100,replyRate*8)+'%;background:var(--good)"></div></div><span class="minibar-num">'+fmt1(replyRate)+'%</span></div>'+deltaBadgeSmall(replyRate,prevReplyRate)+'</td>'+
+        '<td class="num"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><b class="tabular" style="font-size:13.5px;">'+c.lifetime.replyTotal+'</b><span style="font-size:11px;white-space:nowrap;"><span style="color:var(--good);font-weight:700;">+'+c.lifetime.replyPos+'</span>&nbsp;<span style="color:var(--critical);font-weight:700;">&minus;'+c.lifetime.replyNeg+'</span>'+(c.lifetime.replyUnk>0 ? '&nbsp;<span style="color:var(--ink-3);font-weight:600;">'+c.lifetime.replyUnk+' unk</span>' : '')+'</span></div></td>'+
         '<td class="num"><div class="minibar-cell" style="justify-content:flex-end"><div class="minibar-track"><div class="minibar-fill" style="width:'+Math.min(100,c.lifetime.bouncePct)+'%;background:'+bounceColor+'"></div></div><span class="minibar-num">'+fmt1(c.lifetime.bouncePct)+'%</span></div></td>'+
         '<td class="num tabular">'+(c.lifetime.opp>0 ? c.lifetime.opp+' · £'+fmtInt(c.lifetime.val) : '&mdash;')+'</td>'+
         '</tr>';
