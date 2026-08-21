@@ -194,14 +194,19 @@
   .campaign-block .cb-head .cb-meta{font-size:11.5px; color:var(--ink-3);}
   .campaign-block .cb-body{padding:12px 18px 16px;}
 
-  .ab-row{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;}
-  @media (max-width:700px){ .ab-row{grid-template-columns:1fr;} }
-  .ab-card{border:1px solid var(--border); border-radius:8px; padding:13px 15px; background:var(--surface-2);}
-  .ab-card .ab-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); font-weight:700; margin-bottom:5px;}
-  .ab-card .ab-subject{font-size:13px; font-weight:600; margin-bottom:9px;}
-  .ab-card.winner{border-color:var(--lime-strong); box-shadow:0 0 0 1px var(--lime-strong) inset;}
-  .ab-metric-row{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-2); padding:3px 0;}
-  .ab-metric-row b{color:var(--ink); font-variant-numeric:tabular-nums;}
+  .step-toggle{border:1px solid var(--border-strong); background:var(--surface); color:var(--ink-3); width:26px; height:26px; border-radius:7px; cursor:pointer; font-size:11px; display:inline-flex; align-items:center; justify-content:center; transition:transform .15s ease;}
+  .step-toggle:hover{color:var(--ink); border-color:var(--email);}
+  .step-toggle.open{transform:rotate(90deg); color:var(--email); border-color:var(--email);}
+  tr.step-detail{display:none;}
+  tr.step-detail.open{display:table-row;}
+  tr.step-detail td{background:var(--surface-2); padding:16px 18px; white-space:normal;}
+  .step-copy{max-width:64ch;}
+  .step-copy .sc-subject{font-size:12.5px; font-weight:700; color:var(--ink); margin-bottom:10px; padding-bottom:10px; border-bottom:1px dashed var(--border);}
+  .step-copy .sc-subject .sc-label{font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:10px; color:var(--ink-3); margin-right:6px;}
+  .step-copy .sc-body p{font-size:13px; color:var(--ink-2); line-height:1.65; margin:0 0 10px;}
+  .step-copy .sc-body p:last-child{margin-bottom:0;}
+  .step-copy .sc-body a{color:var(--email);}
+  .step-copy .merge{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11.5px; background:var(--surface-3); color:var(--ink-3); padding:0 3px; border-radius:3px;}
 
   /* ---------- timeline ---------- */
   .timeline{position:relative; margin-left:8px; padding-left:24px; border-left:2px solid var(--border);}
@@ -363,40 +368,112 @@
         <div class="cb-body">
           <div class="table-scroll" style="box-shadow:none;">
             <table>
-              <thead><tr><th style="width:70px">Step</th><th class="num">Sent</th><th>Open rate</th><th>Reply rate</th><th>Click rate</th></tr></thead>
+              <thead><tr><th style="width:70px">Step</th><th class="num">Sent</th><th>Open rate</th><th>Reply rate</th><th>Click rate</th><th style="width:36px"></th></tr></thead>
               <tbody>
                 <tr><td>1 &middot; opener</td><td class="num tabular">290</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:56.6%;background:var(--email)"></div></div><span class="minibar-num">56.6%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:46.7%;background:var(--good)"></div></div><span class="minibar-num">1.7%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:31%;background:var(--ink-3)"></div></div><span class="minibar-num">3.1%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:31%;background:var(--ink-3)"></div></div><span class="minibar-num">3.1%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span><span class="merge">{{firstName}}</span> - quick one</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>We're putting a gittgo group together over in <span class="merge">{{town|Essex}}</span>. 100 local businesses, but only one per trade, so there'd be just the one <span class="merge">{{Business Type|business like yours}}</span> in the room. We've been researching local businesses for it, and <span class="merge">{{companyName|your business}}</span> is one of the few that really stood out.</p>
+                    <p>It's £25+VAT a month, cancel whenever. Less a networking thing, more a group of local owners who actually help each other out.</p>
+                    <p>Alright if I send you a bit more?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
                 <tr style="background:var(--good-soft)"><td>2 &middot; follow-up</td><td class="num tabular">272</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:85.3%;background:var(--email)"></div></div><span class="minibar-num">85.3%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:100%;background:var(--good)"></div></div><span class="minibar-num">3.7%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>, just raising this again in case it got buried. The <span class="merge">{{Business Type|your trade}}</span> spot in <span class="merge">{{town|Essex}}</span> is still there if you fancy a look?</p>
+                  </div>
+                </div></td></tr>
                 <tr><td>3 &middot; "not networking"</td><td class="num tabular">257</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:57.6%;background:var(--email)"></div></div><span class="minibar-num">57.6%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:12%;background:var(--ink-3)"></div></div><span class="minibar-num">1.2%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:12%;background:var(--ink-3)"></div></div><span class="minibar-num">1.2%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>The bit people don't expect: you're in a room of 100 local owners and no one does what you do. Nobody's eyeing up your customers. It's a structured business meeting designed to facilitate growth and connection.</p>
+                    <p>With a room full of business owners you're not there to collect cards from junior sales people. You're there to solve real business problems, get referrals and build strategic partnerships.</p>
+                    <p>Can I show you how a group comes together?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
                 <tr><td>4 &middot; "what gittgo is"</td><td class="num tabular">214</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:56.1%;background:var(--email)"></div></div><span class="minibar-num">56.1%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:50.8%;background:var(--good)"></div></div><span class="minibar-num">1.9%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:9%;background:var(--ink-3)"></div></div><span class="minibar-num">0.9%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:9%;background:var(--ink-3)"></div></div><span class="minibar-num">0.9%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>Let me be honest about what gittgo really is, because "networking" sells it short. We meet once a quarter, so four proper days a year, and not one of them is a 6am breakfast you'll resent. You get keynote speakers who've actually grown businesses like yours, access to businesses who have already expressed an interest in what you do, and a unique meeting structure proven over 5 years to deliver results.</p>
+                    <p>At only £25+VAT a month we offer so much more than those 4 days: a black-tie county dinner with 500 local businesses, access to gittgo concierge where we deliver real referrals from the public, and FutureProof, our national event with a few thousand businesses under one roof. Not bad for the price of a couple of coffees a week.</p>
+                    <p>Sound like your sort of thing?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
                 <tr><td>5 &middot; Paul testimonial</td><td class="num tabular">167</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:72.5%;background:var(--email)"></div></div><span class="minibar-num">72.5%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:32.6%;background:var(--good)"></div></div><span class="minibar-num">1.2%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:6%;background:var(--ink-3)"></div></div><span class="minibar-num">0.6%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:6%;background:var(--ink-3)"></div></div><span class="minibar-num">0.6%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>One of our members, Paul, put it better than I could. He said knowing everyone in the room had been properly vetted meant he felt comfortable committing from day 1, and that's paid him back many times over.</p>
+                    <p>It's hard to put a price on a local network that is really behind you.</p>
+                    <p>Reckon it's worth a look for <span class="merge">{{companyName|your business}}</span>?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
                 <tr><td>6 &middot; "groups refresh"</td><td class="num tabular">95</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:30.5%;background:var(--email)"></div></div><span class="minibar-num">30.5%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:57.3%;background:var(--good)"></div></div><span class="minibar-num">2.1%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>One more thing that tends to surprise people. You're not just sat in the room hoping someone notices you. Our structured meetings, experienced hosts and an innovative format refined over 5 years of trying to change the networking game ensure meaningful connections and a group of totally engaged business owners who actually help each other.</p>
+                    <p>Our groups refresh each year, so there are always new people to meet rather than the same faces.</p>
+                    <p>Fancy being the <span class="merge">{{Business Type|one}}</span> in the <span class="merge">{{town|Essex}}</span> room?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
                 <tr style="background:var(--critical-soft)"><td>7 &middot; breakup</td><td class="num tabular">8</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:25%;background:var(--email)"></div></div><span class="minibar-num">25%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>I'll stop cluttering your inbox now, promise. The <span class="merge">{{Business Type|your trade}}</span> seat in <span class="merge">{{town|Essex}}</span> will go to someone at some point, but there's no rush on my end and no hard feelings either way.</p>
+                    <p>If you're ever curious, it's all here: <a href="https://gittgo.co.uk/gittgo100">gittgo.co.uk/gittgo100</a></p>
+                    <p>Either way, wishing <span class="merge">{{companyName|your business}}</span> a cracking rest of the year.</p>
+                  </div>
+                </div></td></tr>
               </tbody>
             </table>
           </div>
-          <p style="font-size:11.5px;color:var(--ink-2);margin:11px 2px 0;">Step 2 (first follow-up) is still the strongest email in the sequence on both opens and replies &mdash; more than double the opener's reply rate. The sequence has now run its full 7 steps; step 6 ("groups refresh") is a pleasant surprise at 2.1% reply, but step 7's breakup email has drawn zero replies from its first 8 sends.</p>
+          <p style="font-size:11.5px;color:var(--ink-2);margin:11px 2px 0;">Step 2 (first follow-up) is still the strongest email in the sequence on both opens and replies &mdash; more than double the opener's reply rate. The sequence has now run its full 7 steps; step 6 ("groups refresh") is a pleasant surprise at 2.1% reply, but step 7's breakup email has drawn zero replies from its first 8 sends. Click the arrow on any row to read that email.</p>
         </div>
       </div>
 
@@ -405,51 +482,144 @@
         <div class="cb-body">
           <div class="table-scroll" style="box-shadow:none;">
             <table>
-              <thead><tr><th style="width:70px">Step</th><th class="num">Sent</th><th>Open rate</th><th>Reply rate</th><th>Click rate</th></tr></thead>
+              <thead><tr><th style="width:70px">Step</th><th class="num">Sent</th><th>Open rate</th><th>Reply rate</th><th>Click rate</th><th style="width:36px"></th></tr></thead>
               <tbody>
                 <tr style="background:var(--good-soft)"><td>1 &middot; opener</td><td class="num tabular">130</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:37.7%;background:var(--email)"></div></div><span class="minibar-num">37.7%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:100%;background:var(--good)"></div></div><span class="minibar-num">6.2%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:23%;background:var(--ink-3)"></div></div><span class="minibar-num">2.3%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:23%;background:var(--ink-3)"></div></div><span class="minibar-num">2.3%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span><span class="merge">{{firstName}}</span> - quick one</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>We're putting a gittgo group together over in <span class="merge">{{town|Essex}}</span>. 100 local businesses, but only one per trade, so there'd be just the one <span class="merge">{{Business Type|business like yours}}</span> in the room. We've been researching local businesses for it, and <span class="merge">{{companyName|your business}}</span> is one of the few that really stood out.</p>
+                    <p>It's £25+VAT a month, cancel whenever. Less a networking thing, more a group of local owners who actually help each other out.</p>
+                    <p>Alright if I send you a bit more?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
                 <tr><td>2 &middot; follow-up</td><td class="num tabular">82</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:40.2%;background:var(--email)"></div></div><span class="minibar-num">40.2%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:39%;background:var(--good)"></div></div><span class="minibar-num">2.4%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>, just raising this again in case it got buried. The <span class="merge">{{Business Type|your trade}}</span> spot in <span class="merge">{{town|Essex}}</span> is still there if you fancy a look?</p>
+                  </div>
+                </div></td></tr>
                 <tr><td>3 &middot; "not networking"</td><td class="num tabular">58</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:20.7%;background:var(--email)"></div></div><span class="minibar-num">20.7%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:9%;background:var(--ink-3)"></div></div><span class="minibar-num">0.9%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:9%;background:var(--ink-3)"></div></div><span class="minibar-num">0.9%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>The bit people don't expect: you're in a room of 100 local owners and no one does what you do. Nobody's eyeing up your customers. It's a structured business meeting designed to facilitate growth and connection.</p>
+                    <p>With a room full of business owners you're not there to collect cards from junior sales people. You're there to solve real business problems, get referrals and build strategic partnerships.</p>
+                    <p>Can I show you how a group comes together?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
                 <tr style="background:var(--critical-soft)"><td>4 &middot; "what gittgo is"</td><td class="num tabular">22</td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--email)"></div></div><span class="minibar-num">0%</span></div></td>
                   <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
-                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td></tr>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>Let me be honest about what gittgo really is, because "networking" sells it short. We meet once a quarter, so four proper days a year, and not one of them is a 6am breakfast you'll resent. You get keynote speakers who've actually grown businesses like yours, access to businesses who have already expressed an interest in what you do, and a unique meeting structure proven over 5 years to deliver results.</p>
+                    <p>At only £25+VAT a month we offer so much more than those 4 days: a black-tie county dinner with 500 local businesses, access to gittgo concierge where we deliver real referrals from the public, and FutureProof, our national event with a few thousand businesses under one roof. Not bad for the price of a couple of coffees a week.</p>
+                    <p>Sound like your sort of thing?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
               </tbody>
             </table>
           </div>
-          <p style="font-size:11.5px;color:var(--ink-2);margin:11px 2px 0;">Opposite pattern to Test 03: almost all replies came from the opener. Read next to Deliverability &mdash; the 6.2% opener reply rate likely reflects a dirty list, not stronger copy.</p>
+          <p style="font-size:11.5px;color:var(--ink-2);margin:11px 2px 0;">Opposite pattern to Test 03: almost all replies came from the opener. Read next to Deliverability &mdash; the 6.2% opener reply rate likely reflects a dirty list, not stronger copy. Click the arrow on any row to read that email.</p>
         </div>
       </div>
 
       <div class="campaign-block" data-campaign="test04">
-        <div class="cb-head"><h3>Essex &ndash; Test 04 <span style="color:var(--ink-3);font-weight:500;">&middot; active since 11 Aug</span></h3><div class="cb-meta">570 sent &middot; now three steps deep, opener A/B still running</div></div>
+        <div class="cb-head"><h3>Essex &ndash; Test 04 <span style="color:var(--ink-3);font-weight:500;">&middot; active since 11 Aug</span></h3><div class="cb-meta">570 sent &middot; 3 steps reached (opener still A/B testing) &middot; steps 4&ndash;7 not yet reached</div></div>
         <div class="cb-body">
-          <div class="ab-row">
-            <div class="ab-card winner">
-              <div class="ab-label">Variant A &middot; still ahead</div>
-              <div class="ab-subject">"{{firstName}} &ndash; quick one" (concierge-first opener)</div>
-              <div class="ab-metric-row"><span>Sent</span><b>161</b></div>
-              <div class="ab-metric-row"><span>Unique open rate</span><b>67.1%</b></div>
-              <div class="ab-metric-row"><span>Unique replies</span><b>2</b></div>
-            </div>
-            <div class="ab-card">
-              <div class="ab-label">Variant B</div>
-              <div class="ab-subject">"{{firstName}} &ndash; quick one" (category-exclusivity opener)</div>
-              <div class="ab-metric-row"><span>Sent</span><b>163</b></div>
-              <div class="ab-metric-row"><span>Unique open rate</span><b>62.6%</b></div>
-              <div class="ab-metric-row"><span>Unique replies</span><b>0</b></div>
-            </div>
+          <div class="table-scroll" style="box-shadow:none;">
+            <table>
+              <thead><tr><th style="width:70px">Step</th><th class="num">Sent</th><th>Open rate</th><th>Reply rate</th><th>Click rate</th><th style="width:36px"></th></tr></thead>
+              <tbody>
+                <tr style="background:var(--good-soft)"><td>1 &middot; opener &mdash; Variant A</td><td class="num tabular">161</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:67.1%;background:var(--email)"></div></div><span class="minibar-num">67.1%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:72.1%;background:var(--good)"></div></div><span class="minibar-num">1.2%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:6.2%;background:var(--ink-3)"></div></div><span class="minibar-num">0.6%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span><span class="merge">{{firstName}}</span> - quick one <span style="color:var(--good);font-weight:700;">&middot; winning so far</span></div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>I'd like to introduce you to gittgo100, where we are reimagining business networking.</p>
+                    <p>We've been looking at some of the businesses around <span class="merge">{{town|Essex}}</span>, and <span class="merge">{{companyName|your business}}</span> caught our attention.</p>
+                    <p>We're building gittgo100 around a fairly simple idea: business networking should be about better, more profitable connections, not more contacts.</p>
+                    <p>So rather than filling rooms with as many people as possible, we're creating local groups of established business owners, with one business represented in each category.</p>
+                    <p>Thought it might be relevant to you. Worth sending you a little more?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
+                <tr><td>1 &middot; opener &mdash; Variant B</td><td class="num tabular">163</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:62.6%;background:var(--email)"></div></div><span class="minibar-num">62.6%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--good)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:18.4%;background:var(--ink-3)"></div></div><span class="minibar-num">1.8%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span><span class="merge">{{firstName}}</span> - quick one <span style="color:var(--ink-3);">&middot; trimmed intro</span></div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>We've been looking at some of the businesses around <span class="merge">{{town|Essex}}</span>, and <span class="merge">{{companyName|your business}}</span> caught our attention.</p>
+                    <p>We're building gittgo100 around a fairly simple idea: business networking should be about better, more profitable connections, not more contacts.</p>
+                    <p>So rather than filling rooms with as many people as possible, we're creating local groups of established business owners, with one business represented in each category.</p>
+                    <p>Thought it might be relevant to you. Worth sending you a little more?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
+                <tr><td>2 &middot; follow-up</td><td class="num tabular">174</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:43.7%;background:var(--email)"></div></div><span class="minibar-num">43.7%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:100%;background:var(--good)"></div></div><span class="minibar-num">1.7%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>, just raising this again in case it got buried. The <span class="merge">{{Business Type|your trade}}</span> spot in <span class="merge">{{town|Essex}}</span> is still there if you fancy a look?</p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
+                <tr><td>3 &middot; not networking</td><td class="num tabular">72</td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:27.8%;background:var(--email)"></div></div><span class="minibar-num">27.8%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:80.8%;background:var(--good)"></div></div><span class="minibar-num">1.4%</span></div></td>
+                  <td><div class="minibar-cell"><div class="minibar-track"><div class="minibar-fill" style="width:0%;background:var(--ink-3)"></div></div><span class="minibar-num">0%</span></div></td>
+                  <td class="num"><button type="button" class="step-toggle" aria-label="Show email content">&#9656;</button></td></tr>
+                <tr class="step-detail"><td colspan="6"><div class="step-copy">
+                  <div class="sc-subject"><span class="sc-label">Subject</span>&mdash; (same thread, no new subject)</div>
+                  <div class="sc-body">
+                    <p>Hi <span class="merge">{{firstName|there}}</span>,</p>
+                    <p>One of the things we're trying to change with gittgo100 is what people expect from business networking.</p>
+                    <p>You're not there to collect business cards or work a room full of salespeople.</p>
+                    <p>Our meetings bring local business owners together to solve problems, make useful introductions, share opportunities and build relationships that can actually lead somewhere.</p>
+                    <p>That's really the point of gittgo100: great connections are worth having.</p>
+                    <p>You can see how the gittgo100 model works here: <a href="https://gittgoconnect.co.uk/">https://gittgoconnect.co.uk/</a></p>
+                    <p><span class="merge">{{accountSignature}}</span></p>
+                  </div>
+                </div></td></tr>
+              </tbody>
+            </table>
           </div>
-          <p style="font-size:11.5px;color:var(--ink-2);margin:13px 2px 0;">Both variants keep climbing as late opens roll in &mdash; the gap sits at ~4.5pts now, Variant A still ahead and still the only one with replies. Step 2 (follow-up) is the strongest email so far &mdash; 43.7% open, 1.7% reply on 174 sent &mdash; and step 3 (72 sent, 1 reply) is settling in around 27.8% open.</p>
+          <p style="font-size:11.5px;color:var(--ink-2);margin:11px 2px 0;">Both opener variants keep climbing as late opens roll in &mdash; the gap sits at ~4.5pts now, Variant A (the fuller intro) still ahead and still the only one with replies. Step 2 (follow-up) is the strongest email so far by reply rate, and step 3 is just settling in. Click the arrow on any row to read that email.</p>
         </div>
       </div>
       </div>
@@ -989,6 +1159,18 @@
     if (activeCampaigns[id] && onCount <= 1) return; // keep at least one campaign on
     activeCampaigns[id] = !activeCampaigns[id];
     renderAll();
+  });
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.step-toggle');
+    if (!btn) return;
+    var row = btn.closest('tr');
+    var detail = row.nextElementSibling;
+    if (!detail || !detail.classList.contains('step-detail')) return;
+    var open = detail.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.innerHTML = open ? '&#9662;' : '&#9656;';
+    btn.setAttribute('aria-label', open ? 'Hide email content' : 'Show email content');
   });
 
   document.getElementById('tabs').addEventListener('click', function(e){
