@@ -1,8 +1,8 @@
 {
-  "fetched_at": "2026-08-19T14:48:11Z",
+  "fetched_at": "2026-08-21T00:09:16Z",
   "date_range": {
     "start": "2026-06-01",
-    "end": "2026-08-19"
+    "end": "2026-08-21"
   },
   "campaigns": [
     {
@@ -110,13 +110,25 @@
           "date": "2026-08-19",
           "sent": 101,
           "contacted": 100,
-          "opened": 53,
-          "unique_opened": 40,
+          "opened": 99,
+          "unique_opened": 78,
           "replies": 3,
           "unique_replies": 3,
           "clicks": 2,
           "unique_clicks": 2,
           "opportunities": 1
+        },
+        {
+          "date": "2026-08-20",
+          "sent": 100,
+          "contacted": 100,
+          "opened": 77,
+          "unique_opened": 72,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
         }
       ]
     },
@@ -508,8 +520,20 @@
           "date": "2026-08-19",
           "sent": 47,
           "contacted": 47,
-          "opened": 12,
-          "unique_opened": 11,
+          "opened": 16,
+          "unique_opened": 14,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-20",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 3,
+          "unique_opened": 2,
           "replies": 0,
           "unique_replies": 0,
           "clicks": 0,
