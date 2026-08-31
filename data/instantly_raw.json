@@ -1,14 +1,14 @@
 {
-  "fetched_at": "2026-08-23T00:05:48Z",
+  "fetched_at": "2026-08-31T00:05:00Z",
   "date_range": {
     "start": "2026-06-01",
-    "end": "2026-08-23"
+    "end": "2026-08-27"
   },
   "campaigns": [
     {
       "id": "d2a1e20b-c541-40f0-a14a-3e25634ca02e",
       "name": "Essex - Test 04 - 11/08/2026",
-      "status": 1,
+      "status": 2,
       "daily": [
         {
           "date": "2026-08-11",
@@ -153,6 +153,121 @@
           "clicks": 0,
           "unique_clicks": 0,
           "opportunities": 0
+        },
+        {
+          "date": "2026-08-23",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 2,
+          "unique_opened": 2,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-24",
+          "sent": 51,
+          "contacted": 51,
+          "opened": 41,
+          "unique_opened": 30,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 2,
+          "unique_clicks": 2,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-25",
+          "sent": 45,
+          "contacted": 45,
+          "opened": 20,
+          "unique_opened": 15,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-26",
+          "sent": 45,
+          "contacted": 45,
+          "opened": 18,
+          "unique_opened": 13,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-27",
+          "sent": 46,
+          "contacted": 46,
+          "opened": 32,
+          "unique_opened": 25,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
+        }
+      ]
+    },
+    {
+      "id": "9bac725f-611a-46d4-98df-5683b2684ac5",
+      "name": "Essex - Test 05 - 23/08/2026",
+      "status": 2,
+      "daily": [
+        {
+          "date": "2026-08-24",
+          "sent": 49,
+          "contacted": 49,
+          "opened": 12,
+          "unique_opened": 10,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 1
+        },
+        {
+          "date": "2026-08-25",
+          "sent": 75,
+          "contacted": 75,
+          "opened": 58,
+          "unique_opened": 52,
+          "replies": 2,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-26",
+          "sent": 75,
+          "contacted": 75,
+          "opened": 51,
+          "unique_opened": 46,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-27",
+          "sent": 74,
+          "contacted": 74,
+          "opened": 45,
+          "unique_opened": 41,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 1,
+          "unique_clicks": 1,
+          "opportunities": 0
         }
       ]
     },
@@ -238,7 +353,7 @@
     {
       "id": "61a53f1a-3fce-443d-8b11-626bfb8f252e",
       "name": "Essex - Test 03 - 23/07/2026",
-      "status": 1,
+      "status": 2,
       "daily": [
         {
           "date": "2026-07-24",
@@ -586,6 +701,66 @@
           "unique_replies": 0,
           "clicks": 0,
           "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-23",
+          "sent": 0,
+          "contacted": 0,
+          "opened": 3,
+          "unique_opened": 3,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-24",
+          "sent": 50,
+          "contacted": 50,
+          "opened": 17,
+          "unique_opened": 11,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 5,
+          "unique_clicks": 1,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-25",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 21,
+          "unique_opened": 11,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-26",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 20,
+          "unique_opened": 16,
+          "replies": 1,
+          "unique_replies": 1,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-08-27",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 6,
+          "unique_opened": 6,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 2,
+          "unique_clicks": 1,
           "opportunities": 0
         }
       ]
