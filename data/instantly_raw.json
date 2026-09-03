@@ -1,14 +1,14 @@
 {
-  "fetched_at": "2026-09-02T00:12:15Z",
+  "fetched_at": "2026-09-03T00:14:22Z",
   "date_range": {
     "start": "2026-06-01",
-    "end": "2026-09-02"
+    "end": "2026-09-03"
   },
   "campaigns": [
     {
       "id": "d2a1e20b-c541-40f0-a14a-3e25634ca02e",
       "name": "Essex - Test 04 - 11/08/2026",
-      "status": 1,
+      "status": 2,
       "daily": [
         {
           "date": "2026-08-11",
@@ -273,13 +273,25 @@
           "clicks": 0,
           "unique_clicks": 0,
           "opportunities": 0
+        },
+        {
+          "date": "2026-09-02",
+          "sent": 45,
+          "contacted": 45,
+          "opened": 27,
+          "unique_opened": 19,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 2,
+          "unique_clicks": 1,
+          "opportunities": 0
         }
       ]
     },
     {
       "id": "9bac725f-611a-46d4-98df-5683b2684ac5",
       "name": "Essex - Test 05 - 23/08/2026",
-      "status": 1,
+      "status": 2,
       "daily": [
         {
           "date": "2026-08-24",
@@ -376,6 +388,18 @@
           "clicks": 0,
           "unique_clicks": 0,
           "opportunities": 0
+        },
+        {
+          "date": "2026-09-02",
+          "sent": 75,
+          "contacted": 75,
+          "opened": 30,
+          "unique_opened": 22,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 2,
+          "unique_clicks": 2,
+          "opportunities": 0
         }
       ]
     },
@@ -461,7 +485,7 @@
     {
       "id": "61a53f1a-3fce-443d-8b11-626bfb8f252e",
       "name": "Essex - Test 03 - 23/07/2026",
-      "status": 1,
+      "status": 2,
       "daily": [
         {
           "date": "2026-07-24",
@@ -925,6 +949,18 @@
           "contacted": 30,
           "opened": 17,
           "unique_opened": 7,
+          "replies": 0,
+          "unique_replies": 0,
+          "clicks": 0,
+          "unique_clicks": 0,
+          "opportunities": 0
+        },
+        {
+          "date": "2026-09-02",
+          "sent": 30,
+          "contacted": 30,
+          "opened": 20,
+          "unique_opened": 8,
           "replies": 0,
           "unique_replies": 0,
           "clicks": 0,
