@@ -1,7 +1,7 @@
 {
-  "fetched_at": "2026-09-04T00:13:49Z",
+  "fetched_at": "2026-09-05T00:05:59Z",
   "instantly": {
-    "total_unique_contacts": 3307,
+    "total_unique_contacts": 3439,
     "emails_sent": 3444,
     "emails_replied": 52,
     "emails_replied_positive": 11,
@@ -17,9 +17,9 @@
     "contacts_qualified": 4,
     "conversions": 0,
     "source": "kakiyo-mcp:list_campaigns + get_analytics_overview (all campaigns, all-time)",
-    "active_conversations": 3,
+    "active_conversations": 0,
     "active_conversations_window_days": 3,
-    "active_conversations_fetched_at": "2026-09-04T00:13:49Z",
+    "active_conversations_fetched_at": "2026-09-05T00:05:59Z",
     "active_conversations_source": "kakiyo-mcp:list_campaign_prospects(hasResponded=true), counting prospects with status Replied or Qualified whose lastMessage falls inside the window"
   }
 }
